@@ -36,4 +36,24 @@ aside.sidebar{
 .card{
     display: grid;
     grid-template-rows: minmax(1px, 30%) 1fr minmax(1px, 30%);
+    /* box-shadow: 2px 3px 5px #000; */
+    border: 1px solid #b1b1b1;
+}
+.card_header{
+    display: flex;
+    background: #1f70bd;
+    color: #f1f1f1;
+    padding: 0.3rem;
+}
+
+.card_body{
+    display: flex;
+    flex-direction: column;
+    padding: 0.3rem;
+}
+.card_footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 0.3rem;
 }
