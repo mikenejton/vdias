@@ -136,6 +136,15 @@ class DocStorage(models.Model):
 
 # -----------------------------------------------------------
 
+# Уведомления пользователя
+class UserNotification(models.Model):
+    user = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Пользователь')
+    msg_type = models.CharField('Тип уведомления', max_length=300)
+    msg = models.TextField('Уведомление')
+    msg_author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='MsgAuthor', verbose_name='Пользователь')
+    created = models.DateTimeField('Дата создания', auto_now_add=True)
+# -----------------------------------------------------------
+
 # Логирование действий
 class DataLogger(models.Model):
     model_name = models.CharField('Модель', max_length = 300, blank=True, null=True)
