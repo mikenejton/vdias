@@ -2,35 +2,39 @@
 <!-- карточный ЛК. ПОДУМАТЬ!!! Разные index'ы по ролям (вопрос отличий) -->
 {% block content %}
 <div class="component_wrapper">
+    <div class="card">
+        <form method="post" action="{% url 'find-vitem' %}">
+        {% csrf_token %}
+        <div class="card_header">Поиск заявки на верификацию</div>
+        <div class="card_body">
+            <div class="input_wrapper">
+                <input type="text" placeholder="Физ.лицо" name="person">
+            </div>
+            <div class="input_wrapper">
+                <input type="text" placeholder="Организация" name="organization">
+            </div>
+        </div>
+        <div class="card_footer">
+            <button type="submit">Найти</button>
+        </div>
+        </form>
+    </div>
     {% if ex_user.user_role.role_lvl <= 3 %}
         <div class="card">
             <div class="card_header">Я - исполнитель</div>
             <div class="card_body">Всего; В работе; Закрыто</div>
-            <div class="card_footer">Кнопка Открыть</div>
+            <div class="card_footer"><button>Открыть</button></div>
         </div>
     {% endif %}
     <div class="card">
         <div class="card_header">Мои заявки</div>
         <div class="card_body">Всего; В работе; Закрыто</div>
-        <div class="card_footer">Кнопка Открыть</div>
+        <div class="card_footer"><button>Открыть</button></div>
     </div>
     <div class="card">
         <div class="card_header">Доработки</div>
         <div class="card_body">На доработке; Доработано</div>
-        <div class="card_footer">Кнопка Открыть</div>
-    </div>
-    <div class="card">
-        <form method="post" action="{% url 'find-vitem' %}">
-        {% csrf_token %}
-        <div class="card_header">Поиск</div>
-        <div class="card_body">
-            <input type="text" placeholder="Физ.лицо" name="person">
-            <input type="text" placeholder="Организация" name="organization">
-        </div>
-        <div class="card_footer">
-            <input type="submit" value="Найти">
-        </div>
-        </form>
+        <div class="card_footer"><button>Открыть</button></div>
     </div>
 </div>
 {% endblock %}

@@ -3,7 +3,7 @@
 {% block content %}
 
 
-<div class="card">
+<div class="card" style="align-self: center;">
 <form method="post" action="{% url 'login' %}">
 	<div class="card_header">Авторизация</div>
 	<div class="card_body">
@@ -11,11 +11,15 @@
 		{% if form.errors %}
 			<p>Неверный логин и/или пароль</p>
 		{% endif %}
-		<input type="text" name="username" placeholder="Логин">
-		<input type="password" name="password" placeholder="Пароль">
+		<div class="input_wrapper">
+			<input type="text" name="username" placeholder="Логин">
+		</div>
+		<div class="input_wrapper">
+			<input type="password" name="password" placeholder="Пароль">
+		</div>
 	</div>
 	<div class="card_footer">
-		<input type="submit" value="login" />
+		<button type="submit">Войти</button>
 		<input type="hidden" name="next" value="{{ next }}" />
 	</div>
 </form>
