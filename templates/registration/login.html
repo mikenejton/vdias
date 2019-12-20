@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="card">
+<form method="post" action="{% url 'login' %}">
+	<div class="card_header">Авторизация</div>
+	<div class="card_body">
+		{% csrf_token %}
+		{% if form.errors %}
+			<p>Неверный логин и/или пароль</p>
+		{% endif %}
+		<input type="text" name="username" placeholder="Логин">
+		<input type="password" name="password" placeholder="Пароль">
+	</div>
+	<div class="card_footer">
+		<input type="submit" value="login" />
+		<input type="hidden" name="next" value="{{ next }}" />
+	</div>
+</form>
+</div>
+{% endblock %}

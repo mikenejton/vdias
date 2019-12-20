@@ -1,0 +1,38 @@
+*{margin: 0;padding: 0;}
+body{
+    height: 100vh;
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "sidebar mainbox";
+    grid-template-columns: minmax(1px, 20%) 1fr;
+    grid-template-rows: minmax(1px, 5%) 1fr;
+}
+
+header{
+    grid-area: header;
+    border-bottom: 1px solid #6d6d6d;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 15px;
+}
+
+aside.sidebar{
+    grid-area: sidebar;
+    border-right: 1px solid #6d6d6d;
+}
+.mainbox{
+    grid-area: mainbox;
+    padding: 1rem;
+}
+
+.component_wrapper{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+}
+.card{
+    display: grid;
+    grid-template-rows: minmax(1px, 30%) 1fr minmax(1px, 30%);
+}
