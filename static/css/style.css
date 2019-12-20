@@ -31,6 +31,7 @@ aside.sidebar{
 .component_wrapper{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+    grid-gap: 1rem;
 }
 .card{
     display: grid;
