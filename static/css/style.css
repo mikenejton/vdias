@@ -39,15 +39,14 @@ aside.sidebar{
 .mb-card{
     display: flex;
     flex-direction: column;
-    border: 1px solid #b1b1b1;
+    border: 1px solid #ced4da;
     border-radius: 0.25rem;
 }
 .mb-card_header{
     display: flex;
     min-height: 20px;
-    background: #1f70bd;
+    border-bottom: 1px solid #ced4da;
     align-items: center;
-    color: #f1f1f1;
     padding: 0.3rem;
 }
 
@@ -62,5 +61,6 @@ aside.sidebar{
     min-height: 20px;
     flex-direction: row;
     justify-content: flex-end;
+    border-top: 1px solid #ced4da;
     padding: 0.3rem;
 }
