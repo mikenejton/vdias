@@ -8,19 +8,6 @@ body{
     grid-template-columns: minmax(1px, 20%) 1fr;
     grid-template-rows: minmax(1px, 5%) 1fr;
 }
-a{
-    text-decoration: none;
-    font-style: none;
-}
-
-input, select, datalist{
-    border: none;
-    border-bottom: 1px solid #b1b1b1;
-    width: 100%;
-}
-input:focus, select:focus, datalist:focus{
-    border-bottom: 1px solid #1f70bd;
-}
 .input_wrapper{
     margin: 0.3rem 0.2rem;
 }
@@ -49,12 +36,13 @@ aside.sidebar{
     grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
     grid-gap: 1rem;
 }
-.card{
+.mb-card{
     display: flex;
     flex-direction: column;
     border: 1px solid #b1b1b1;
+    border-radius: 0.25rem;
 }
-.card_header{
+.mb-card_header{
     display: flex;
     min-height: 20px;
     background: #1f70bd;
@@ -63,13 +51,13 @@ aside.sidebar{
     padding: 0.3rem;
 }
 
-.card_body{
+.mb-card_body{
     display: flex;
     flex: 1;
     flex-direction: column;
     padding: 0.3rem;
 }
-.card_footer{
+.mb-card_footer{
     display: flex;
     min-height: 20px;
     flex-direction: row;

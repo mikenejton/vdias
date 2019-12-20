@@ -2,39 +2,39 @@
 <!-- карточный ЛК. ПОДУМАТЬ!!! Разные index'ы по ролям (вопрос отличий) -->
 {% block content %}
 <div class="component_wrapper">
-    <div class="card">
+    <div class="mb-card">
         <form method="post" action="{% url 'find-vitem' %}">
         {% csrf_token %}
-        <div class="card_header">Поиск заявки на верификацию</div>
-        <div class="card_body">
+        <div class="mb-card_header">Поиск заявки на верификацию</div>
+        <div class="mb-card_body">
             <div class="input_wrapper">
-                <input type="text" placeholder="Физ.лицо" name="person">
+                <input type="text" class="form-control" name="person" placeholder="Физ.лицо">
             </div>
             <div class="input_wrapper">
-                <input type="text" placeholder="Организация" name="organization">
+                <input type="text" class="form-control" name="organization" placeholder="Организация">
             </div>
         </div>
-        <div class="card_footer">
-            <button type="submit">Найти</button>
+        <div class="mb-card_footer">
+            <button type="submit" class="btn btn-primary">Найти</button>
         </div>
         </form>
     </div>
     {% if ex_user.user_role.role_lvl <= 3 %}
-        <div class="card">
-            <div class="card_header">Я - исполнитель</div>
-            <div class="card_body">Всего; В работе; Закрыто</div>
-            <div class="card_footer"><button>Открыть</button></div>
+        <div class="mb-card">
+            <div class="mb-card_header">Я - исполнитель</div>
+            <div class="mb-card_body">Всего; В работе; Закрыто</div>
+            <div class="mb-card_footer"><button class="btn btn-outline-primary">Открыть</button></div>
         </div>
     {% endif %}
-    <div class="card">
-        <div class="card_header">Мои заявки</div>
-        <div class="card_body">Всего; В работе; Закрыто</div>
-        <div class="card_footer"><button>Открыть</button></div>
+    <div class="mb-card">
+        <div class="mb-card_header">Мои заявки</div>
+        <div class="mb-card_body">Всего; В работе; Закрыто</div>
+        <div class="mb-card_footer"><button class="btn btn-outline-primary">Открыть</button></div>
     </div>
-    <div class="card">
-        <div class="card_header">Доработки</div>
-        <div class="card_body">На доработке; Доработано</div>
-        <div class="card_footer"><button>Открыть</button></div>
+    <div class="mb-card">
+        <div class="mb-card_header">Доработки</div>
+        <div class="mb-card_body">На доработке; Доработано</div>
+        <div class="mb-card_footer"><button class="btn btn-outline-primary">Открыть</button></div>
     </div>
 </div>
 {% endblock %}
