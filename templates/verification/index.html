@@ -15,15 +15,15 @@
                 </div>
             </div>
             <div class="mb-card_footer">
-                <button type="submit" class="btn btn-primary">Найти</button>
+                <button type="submit" class="btn btn-primary btn-sm">Найти</button>
             </div>
         </div>
     </form>
     {% if ex_user.user_role.role_lvl <= 3 %}
         <div class="mb-card">
             <div class="mb-card_header">Я - исполнитель</div>
-            <div class="mb-card_body">Всего; В работе; Закрыто</div>
-            <div class="mb-card_footer"><button class="btn btn-outline-primary">Открыть</button></div>
+            <div class="mb-card_body">Всего; В работе; Закрыто</p></div>
+            <div class="mb-card_footer"><button class="btn btn-primary btn-sm">Открыть</button></div>
         </div>
     {% endif %}
     <div class="mb-card">
@@ -33,7 +33,7 @@
             В работе
             Закрыто
         </div>
-        <div class="mb-card_footer"><button class="btn btn-outline-primary">Открыть</button></div>
+        <div class="mb-card_footer"><button class="btn btn-primary btn-sm">Открыть</button></div>
     </div>
     <div class="mb-card">
         <div class="mb-card_header">Доработки</div>

@@ -2,7 +2,7 @@
 
 {% block content %}
 <table class="table table-hover table-striped">
-    <thead class="thead-dark">
+    <thead>
         <tr>
             <th scope="col">ID заявки</th>
             <th scope="col">Физ.Лицо</th>
@@ -21,9 +21,9 @@
             <td>{{ item.organization.organization }}</td>
             <td>{{ item.dias_status }}</td>
             <td>{{ item.to_fix }}</td>
-            <td>{{ item.case_officer }}</td>
+            <td>{{ item.case_officer.user.last_name }} {{ item.case_officer.user.last_name }}</td>
             <td>{{ item.created }}</td>
-            <td>{{ item.author }}</td>
+            <td>{{ item.author.user.last_name }} {{ item.author.user.first_name }}</td>
         </tr>
     {% empty %}
         <p>Результаты не найдены</p>

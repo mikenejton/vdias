@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
     <title>{{ page_title }}</title>
 </head>
 <body>
     <header>
-        Header goes here
+        <h3><a href="{% url 'index' %}">Отдел верификации</a></h3>
         <div class="user_box">
             {% if user.is_authenticated %}
                 Здравствуйте, {{ user.last_name }} {{ user.first_name}}
@@ -22,7 +22,17 @@
             {% endif %}
         </div>
     </header>
-    <aside class="sidebar">Sidebar goes gere</aside>
+    <aside class="sidebar">
+        {% if user.is_authenticated %}
+            <ul class="sibar-menu">
+                <li><a href="{% url 'index' %}" class="sibar-menu_item {% if request.path == '/' %}active{% endif %}">Главная</a></li>
+                <li><a href="{% url 'create-item' %}" class="sibar-menu_item {% if '/create-item' in request.path %}active{% endif %}">Создать заявку</a></li>
+                {% if user.is_superuser %}
+                <li><a href="/admin" class="sibar-menu_item">Администрирование</a></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </aside>
     <div class="mainbox">
         {% block content %}
         {% endblock content %}

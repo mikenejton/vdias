@@ -19,7 +19,7 @@ class ExtendedUser(models.Model):
 
 # Базовые модели
 class Person(models.Model):
-    fio = models.CharField('ФИО', max_length=500)
+    fio = models.CharField('ФИО', max_length=500, blank=True)
     last_name = models.CharField('Фамилия', max_length=300)
     first_name = models.CharField('Имя', max_length=300)
     patronymic = models.CharField('Отчетство', max_length=300, blank=True, null=True)
@@ -67,7 +67,7 @@ class Organization(models.Model):
 class PersonWithRole(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     person_role = models.CharField('Роль', max_length=300)
-    verificated = models.BooleanField('Верифицирован')
+    verificated = models.BooleanField('Верифицирован', default=False)
     releated_organization = models.ForeignKey(Organization, on_delete=models.PROTECT, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
@@ -80,7 +80,7 @@ class PersonWithRole(models.Model):
 class OrganizationWithRole(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     organization_role = models.CharField('Роль', max_length=300)
-    verificated = models.BooleanField('Верифицировано')
+    verificated = models.BooleanField('Верифицировано', default=False)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
@@ -93,8 +93,8 @@ class VerificationItem(models.Model):
     person = models.ForeignKey(PersonWithRole, on_delete=models.CASCADE, blank = True, null = True)
     organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank = True, null = True)
     dias_status = models.CharField('Статус проверки', max_length = 300)
-    to_fix = models.BooleanField('На доработке')
-    fixed = models.BooleanField('Доработано')
+    to_fix = models.BooleanField('На доработке', default=False)
+    fixed = models.BooleanField('Доработано', default=False)
     dias_comment = models.TextField('Комментарий ДИАС', blank=True, null=True)
     case_officer = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='CaseOfficer', blank=True, null=True, verbose_name='Исполнитель')
     created = models.DateTimeField('Дата создания', auto_now_add=True)
@@ -105,6 +105,7 @@ class VerificationItem(models.Model):
         if self.to_fix:
             self.fixed = False
         super().save(*args, **kwargs)
+        return self.id
     
     def __str__(self):
         caption = ''
@@ -125,9 +126,9 @@ class DocStorage(models.Model):
     doc_name = models.CharField('Имя документа', max_length = 300)
     file_name = models.CharField('FileName', max_length = 700)
     file_path = models.CharField('FilePath', max_length = 700)
-    scan = models.BooleanField('Скан')
-    original = models.BooleanField('Оригинал')
-    accepted = models.BooleanField('Проверен')
+    scan = models.BooleanField('Скан', default=False)
+    original = models.BooleanField('Оригинал', default=False)
+    accepted = models.BooleanField('Проверен', default=False)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):

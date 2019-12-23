@@ -12,14 +12,14 @@
 			<p>Неверный логин и/или пароль</p>
 		{% endif %}
 		<div class="input_wrapper">
-			<input type="text" name="username" placeholder="Логин">
+			<input type="text" name="username" class="form-control" placeholder="Логин">
 		</div>
 		<div class="input_wrapper">
-			<input type="password" name="password" placeholder="Пароль">
+			<input type="password" name="password" class="form-control" placeholder="Пароль">
 		</div>
 	</div>
 	<div class="mb-card_footer">
-		<button type="submit">Войти</button>
+		<button type="submit" class="btn btn-primary btn-sm">Войти</button>
 		<input type="hidden" name="next" value="{{ next }}" />
 	</div>
 </form>

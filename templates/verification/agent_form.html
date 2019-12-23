@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form action="new-agent" method="post">
+    {% csrf_token %}
+    <input type="text" name="last_name">
+    <input type="text" name="first_name">
+    <input type="text" name="patronymic">
+    <input type="date" name="dob">
+    <input type="hidden" name="author" value="{{request.user.id}}">
+    <input type="submit" value="Сохранить">
+</form>
+<script>
+</script>
+{% endblock %}

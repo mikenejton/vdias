@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="app">
+    <form action="create-item" method="POST">
+        {% csrf_token %}
+        Выберите объект верификации
+        <select name="item_type" v-model='itemType'>
+        {% if user.extendeduser.user_role.role_name != "HR" %}
+            <option>Партнер</option>
+            <option>Агент</option>
+        {% endif %}
+        {% if user.extendeduser.user_role.role_name == "HR" or user.extendeduser.user_role.role_name == "Admin" %}
+            <option>Штатный сотрудник</option>
+        {% endif %}
+            <option>Контрагент</option>
+        </select>
+        <button type="submit">Далее</button>
+    </form>
+</div>
+
+<script>
+var vm = new Vue({
+    el: '#app',
+    delimiters: ['{[', ']}'],
+    data:{
+        itemType: ''
+
+    }
+})
+</script>
+{% endblock %}

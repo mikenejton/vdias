@@ -5,8 +5,12 @@ body{
     grid-template-areas:
         "header header"
         "sidebar mainbox";
-    grid-template-columns: minmax(1px, 20%) 1fr;
+    grid-template-columns: min-content 1fr;
     grid-template-rows: minmax(1px, 5%) 1fr;
+}
+a{
+    text-decoration: none;
+    color: #212529;
 }
 .input_wrapper{
     margin: 0.3rem 0.2rem;
@@ -24,7 +28,27 @@ header{
 aside.sidebar{
     grid-area: sidebar;
     border-right: 1px solid #6d6d6d;
+    display: flex;
+    flex-direction: column;
 }
+.sidebar-menu{
+    display: flex;
+    flex-direction: column;
+}
+.sibar-menu_item{
+    display: block;
+    padding: 0.5rem 0.8rem;
+    color: #212529;
+}
+.sibar-menu_item:hover{
+    background: #007bff;
+    color: #fff;
+}
+.sibar-menu_item.active{
+    background: #007bff;
+    color: #fff;
+}
+
 .mainbox{
     grid-area: mainbox;
     padding: 1rem;
