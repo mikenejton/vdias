@@ -30,4 +30,12 @@ def find_vitem(request):
     print(request.POST)
     user_access = [models.ExtendedUser.objects.get(id=request.user.id).user_role.role_name, models.ExtendedUser.objects.get(id=request.user.id).access_lvl]
     ex_user = models.ExtendedUser.objects.get(user=request.user)
-    return render(request, 'verification/index.html', {'page_title': 'Home', 'u_data': user_access, 'ex_user': ex_user})
+    if request.POST:
+        if request.POST['person']:
+            result = models.VerificationItem.objects.filter(person__person__fio__icontains = request.POST['person'])
+            
+        else:
+            result = models.VerificationItem.objects.filter(organization__organization__full_name__icontains = request.POST['person'])
+        print(result)
+    return render(request, 'verification/find_item_result.html', {'page_title': 'Поиск заявок', 'u_data': user_access, 'ex_user': ex_user, 'result': result})
+

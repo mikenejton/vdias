@@ -19,6 +19,7 @@ class ExtendedUser(models.Model):
 
 # Базовые модели
 class Person(models.Model):
+    fio = models.CharField('ФИО', max_length=500)
     last_name = models.CharField('Фамилия', max_length=300)
     first_name = models.CharField('Имя', max_length=300)
     patronymic = models.CharField('Отчетство', max_length=300, blank=True, null=True)
@@ -36,10 +37,11 @@ class Person(models.Model):
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
+        self.fio = ' '.join(filter(None, [self.last_name, self.first_name, self.patronymic]))
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return '{} {} {}'.format(self.last_name, self.first_name, self.patronymic)
+        return self.fio
 
 class Organization(models.Model):
     org_form = models.CharField('Орг форма', max_length = 100)
