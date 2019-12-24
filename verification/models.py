@@ -37,7 +37,7 @@ class Person(models.Model):
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
-        self.fio = ' '.join(filter(None, [self.last_name, self.first_name, self.patronymic]))
+        self.fio = ' '.join(filter(None, [self.last_name, self.first_name, self.patronymic])).upper()
         super().save(*args, **kwargs)
     
     def __str__(self):
@@ -93,6 +93,7 @@ class VerificationItem(models.Model):
     person = models.ForeignKey(PersonWithRole, on_delete=models.CASCADE, blank = True, null = True)
     organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank = True, null = True)
     dias_status = models.CharField('Статус проверки', max_length = 300)
+
     to_fix = models.BooleanField('На доработке', default=False)
     fixed = models.BooleanField('Доработано', default=False)
     dias_comment = models.TextField('Комментарий ДИАС', blank=True, null=True)

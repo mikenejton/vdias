@@ -29,7 +29,6 @@ def index(request):
     return render(request, 'verification/index.html', {'page_title': 'Home', 'u_data': user_access, 'ex_user': ex_user})
 
 def find_vitem(request):
-    print(request.POST)
     user_access = [models.ExtendedUser.objects.get(id=request.user.id).user_role.role_name, models.ExtendedUser.objects.get(id=request.user.id).access_lvl]
     ex_user = models.ExtendedUser.objects.get(user=request.user)
     if request.POST:
