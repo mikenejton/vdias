@@ -92,8 +92,8 @@ class PersonWithRole(models.Model):
 class VerificationItem(models.Model):
     person = models.ForeignKey(PersonWithRole, on_delete=models.CASCADE, blank = True, null = True)
     organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank = True, null = True)
+    is_filled = models.BooleanField('Заявка заполнена', default=False)
     dias_status = models.CharField('Статус проверки', max_length = 300)
-
     to_fix = models.BooleanField('На доработке', default=False)
     fixed = models.BooleanField('Доработано', default=False)
     dias_comment = models.TextField('Комментарий ДИАС', blank=True, null=True)
@@ -122,7 +122,9 @@ class VerificationItem(models.Model):
 
 # Хранилище документов
 class DocStorage(models.Model):
-    model_id = models.CharField('ID', max_length = 50) #model_id формируется из названия модели и "_" id записи модели, прим.: VerificationItem_31, PersonWithRole_227
+
+    model_id = models.CharField('ID', max_length = 50)
+    model_name = models.CharField('Модель', max_length = 200)
     doc_type = models.CharField('Тип документа', max_length = 300)
     doc_name = models.CharField('Имя документа', max_length = 300)
     file_name = models.CharField('FileName', max_length = 700)

@@ -44,16 +44,21 @@ def create_item(request):
     user_access = [models.ExtendedUser.objects.get(id=request.user.id).user_role.role_name, models.ExtendedUser.objects.get(id=request.user.id).access_lvl]
     ex_user = models.ExtendedUser.objects.get(user=request.user)
     if request.method == 'GET':
+        
         return render(request, 'verification/create_item.html', {'page_title': 'Создание заявки', 'ex_user': ex_user})
+
     elif request.POST['item_type'] == 'Агент':        
+        
         return redirect('create-agent')
 
     elif request.POST['item_type'] == 'Партнер':
-        
+
         return redirect('index')
+
     elif request.POST['item_type'] == 'Штатный сотрудник':
         
         return redirect('index')
+
     elif request.POST['item_type'] == 'Контрагент':
         
         return redirect('index')
@@ -91,3 +96,18 @@ def agent_form(request):
         elif request.user.extendeduser.user_role.role_lvl < 3: # уровень роли сотрудников АиС и Админа - 2 и 1 соответственно
             agent_organization = models.OrganizationWithRole.objects.all()
         return render(request, 'verification/agent_form.html', {'page_title': 'Создание агента', 'form': form, 'org_list': agent_organization})
+
+@login_required
+def scan_upload(request, vitem_id):
+    if request.method == 'GET':
+        vitem = models.VerificationItem.objects.get(id = vitem_id)
+        if vitem.person:
+            model_name = 'PersonWithRole'
+            model_id = vitem.person.id
+        else:
+            model_name = 'OrganizationWithRole'
+            model_id = vitem.organization.id
+        pass
+        # return render('verification/scan_upload_form.html', 'page_title': 'Загрузка документов', 'model_name': model_name, 'model_id': model_id, 'vitem_id': vitem_id)
+    else:
+        pass
