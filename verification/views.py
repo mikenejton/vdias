@@ -28,16 +28,18 @@ def index(request):
     ex_user = models.ExtendedUser.objects.get(user=request.user)
     return render(request, 'verification/index.html', {'page_title': 'Home', 'u_data': user_access, 'ex_user': ex_user})
 
+@login_required
 def find_vitem(request):
     user_access = [models.ExtendedUser.objects.get(id=request.user.id).user_role.role_name, models.ExtendedUser.objects.get(id=request.user.id).access_lvl]
     ex_user = models.ExtendedUser.objects.get(user=request.user)
     if request.POST:
         if request.POST['person']:
-            result = models.VerificationItem.objects.filter(person__person__fio__icontains = request.POST['person'])
+            result = models.VerificationItem.objects.filter(person__person__fio__icontains = request.POST['person'].upper())
         else:
-            result = models.VerificationItem.objects.filter(organization__organization__full_name__icontains = request.POST['person'])
+            result = models.VerificationItem.objects.filter(organization__organization__full_name__icontains = request.POST['person'].upper())
     return render(request, 'verification/find_item_result.html', {'page_title': 'Поиск заявок', 'u_data': user_access, 'ex_user': ex_user, 'result': result})
 
+@login_required
 def create_item(request):
     user_access = [models.ExtendedUser.objects.get(id=request.user.id).user_role.role_name, models.ExtendedUser.objects.get(id=request.user.id).access_lvl]
     ex_user = models.ExtendedUser.objects.get(user=request.user)
@@ -56,11 +58,11 @@ def create_item(request):
         
         return redirect('index')
 
+@login_required
 def agent_form(request):
     if request.method == 'POST':
         form = forms.PersonForm(data=request.POST)
         print(request.POST)
-        
         if form.is_valid():
             created_person = form.save()
             agent_role = models.PersonWithRole()
@@ -68,7 +70,7 @@ def agent_form(request):
             agent_role.person_role = 'Агент'
             agent_role.author = models.ExtendedUser.objects.get(id = request.user.id)
             if 'related_organization' in request.POST != None:
-                agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization']).organization
+                agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
             agent_role.save()
             vi = models.VerificationItem()
             vi.person = agent_role
@@ -76,6 +78,7 @@ def agent_form(request):
             vi.author = models.ExtendedUser.objects.get(id = request.user.id)
             vi.save()
             return redirect('index')
+            # редирект на заполнение сканов к агенту
         else:
             print(form.errors)
             return redirect('index')
