@@ -44,7 +44,7 @@ def create_item(request):
     user_access = [models.ExtendedUser.objects.get(id=request.user.id).user_role.role_name, models.ExtendedUser.objects.get(id=request.user.id).access_lvl]
     ex_user = models.ExtendedUser.objects.get(user=request.user)
     if request.method == 'GET':
-        return render(request, 'verification/create_item.html', {'page_title': 'Home', 'ex_user': ex_user})
+        return render(request, 'verification/create_item.html', {'page_title': 'Создание заявки', 'ex_user': ex_user})
     elif request.POST['item_type'] == 'Агент':        
         return redirect('create-agent')
 
@@ -88,6 +88,6 @@ def agent_form(request):
             agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинАгент')
         elif request.user.extendeduser.user_role.role_name == 'FinBroker':
             agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинБрокер')
-        elif request.user.extendeduser.user_role.role_lvl < 4:
+        elif request.user.extendeduser.user_role.role_lvl < 3: # уровень роли сотрудников АиС и Админа - 2 и 1 соответственно
             agent_organization = models.OrganizationWithRole.objects.all()
-        return render(request, 'verification/agent_form.html', {'form': form, 'org_list': agent_organization})
+        return render(request, 'verification/agent_form.html', {'page_title': 'Создание агента', 'form': form, 'org_list': agent_organization})
