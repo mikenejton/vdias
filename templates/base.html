@@ -16,9 +16,9 @@
         <div class="user_box">
             {% if user.is_authenticated %}
                 Здравствуйте, {{ user.last_name }} {{ user.first_name}}
-                <a href="{% url 'logout' %}">Выйти</a>
+                | <a class="link" href="{% url 'logout' %}">Выйти</a>
             {% else %}
-                <a href="{% url 'login' %}">Войти</a>
+                | <a class="link" href="{% url 'login' %}">Войти</a>
             {% endif %}
         </div>
     </header>

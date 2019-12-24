@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<div id="app">
+<div class="mb-card card_centered">
     <form action="create-item" method="POST">
-        {% csrf_token %}
-        Выберите объект верификации
+    {% csrf_token %}
+    <div class="mb-card_header">Выберите тип верификации</div>
+    <div class="mb-card_body">
         <select name="item_type" v-model='itemType'>
         {% if user.extendeduser.user_role.role_name != "HR" %}
             <option>Партнер</option>
@@ -14,18 +15,10 @@
         {% endif %}
             <option>Контрагент</option>
         </select>
+    </div>
+    <div class="mb-card_footer">
         <button type="submit">Далее</button>
+    </div>
     </form>
 </div>
-
-<script>
-var vm = new Vue({
-    el: '#app',
-    delimiters: ['{[', ']}'],
-    data:{
-        itemType: ''
-
-    }
-})
-</script>
 {% endblock %}
