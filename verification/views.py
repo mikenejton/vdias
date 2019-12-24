@@ -59,26 +59,33 @@ def create_item(request):
 
 def agent_form(request):
     if request.method == 'POST':
-        print(request.POST)
         form = forms.PersonForm(data=request.POST)
+        print(request.POST)
+        
         if form.is_valid():
             created_person = form.save()
             agent_role = models.PersonWithRole()
             agent_role.person = created_person
             agent_role.person_role = 'Агент'
             agent_role.author = models.ExtendedUser.objects.get(id = request.user.id)
+            if 'related_organization' in request.POST != None:
+                agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization']).organization
             agent_role.save()
-            print(agent_role)
             vi = models.VerificationItem()
             vi.person = agent_role
             vi.dias_status = 'Новая'
             vi.author = models.ExtendedUser.objects.get(id = request.user.id)
             vi.save()
-            print(vi)
             return redirect('index')
         else:
             print(form.errors)
             return redirect('index')
     else:
         form = forms.PersonForm
-        return render(request, 'verification/agent_form.html', {'form': form})
+        if request.user.extendeduser.user_role.role_name == 'FinAgent':
+            agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинАгент')
+        elif request.user.extendeduser.user_role.role_name == 'FinBroker':
+            agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинБрокер')
+        elif request.user.extendeduser.user_role.role_lvl < 4:
+            agent_organization = models.OrganizationWithRole.objects.all()
+        return render(request, 'verification/agent_form.html', {'form': form, 'org_list': agent_organization})

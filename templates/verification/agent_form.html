@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="mb-card card_centered" id="app">
-    <form action="new-agent" method="post">
+    <form action="agent" method="post">
     {% csrf_token %}
     <div class="mb-card_header">Новый агент</div>
     <div class="mb-card_body card_body-form">
@@ -17,16 +17,23 @@
         <div class="card_body-form_column">
             
             <input class="form_input" type="text" name="phone_number" placeholder="Телефон" maxlength="11" required>
-            <input class="form_input" type="email" name="email" placeholder="Email">
+            <input class="form_input" type="email" name="email" placeholder="Email">            
             <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" required>
             <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="(this.type='text')" name="pass_date" placeholder="Дата выдачи" required>
             <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" required>
             <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" required>
+            
             <textarea class="form_input wide_textarea" type="text" name="adr_fact" placeholder="Адрес проживания"></textarea> 
         </div>
         <input type="hidden" name="author" value="{{request.user.id}}">
     </div>
     <div class="mb-card_footer">
+        <select name="related_organization" class="form_input">
+            <option value="0" selected disabled>Организация</option>
+            {% for org in org_list %}
+                <option value="{{ org.organization.id}}">{{org.organization.full_name}}</option>
+            {% endfor %}
+        </select>
         <button type="submit">Сохранить</button>
     </div>
     </form>

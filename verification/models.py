@@ -64,19 +64,6 @@ class Organization(models.Model):
 # -----------------------------------------------------------
 
 # Модели для верификации
-class PersonWithRole(models.Model):
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    person_role = models.CharField('Роль', max_length=300)
-    verificated = models.BooleanField('Верифицирован', default=False)
-    releated_organization = models.ForeignKey(Organization, on_delete=models.PROTECT, blank=True, null=True)
-    created = models.DateTimeField('Дата создания', auto_now_add=True)
-    author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return str(self.person)
-
 class OrganizationWithRole(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     organization_role = models.CharField('Роль', max_length=300)
@@ -87,7 +74,20 @@ class OrganizationWithRole(models.Model):
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return str(self.organization)
+        return '{}, {}'.format(self.organization.full_name, self.organization_role)
+
+class PersonWithRole(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    person_role = models.CharField('Роль', max_length=300)
+    verificated = models.BooleanField('Верифицирован', default=False)
+    related_organization = models.ForeignKey(OrganizationWithRole, on_delete=models.PROTECT, blank=True, null=True)
+    created = models.DateTimeField('Дата создания', auto_now_add=True)
+    author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return str(self.person)
 
 class VerificationItem(models.Model):
     person = models.ForeignKey(PersonWithRole, on_delete=models.CASCADE, blank = True, null = True)
