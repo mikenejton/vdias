@@ -69,6 +69,12 @@ def create_item(request):
 
 @login_required
 def agent_form(request):
+    if request.user.extendeduser.user_role.role_name == 'FinAgent':
+        agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинАгент')
+    elif request.user.extendeduser.user_role.role_name == 'FinBroker':
+        agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинБрокер')
+    elif request.user.extendeduser.user_role.role_lvl < 3: # уровень роли сотрудников АиС и Админа - 2 и 1 соответственно
+        agent_organization = models.OrganizationWithRole.objects.all()
     if request.method == 'POST':
         form = forms.PersonForm(data=request.POST)
         print(request.POST)
@@ -87,18 +93,10 @@ def agent_form(request):
             vi.author = models.ExtendedUser.objects.get(id = request.user.id)
             vi.save()
             return redirect(reverse('scan_upload', args=[vi.id]))
-        else:
-            print(form.errors)
-            return redirect('create-agent')
     else:
-        form = forms.PersonForm
-        if request.user.extendeduser.user_role.role_name == 'FinAgent':
-            agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинАгент')
-        elif request.user.extendeduser.user_role.role_name == 'FinBroker':
-            agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинБрокер')
-        elif request.user.extendeduser.user_role.role_lvl < 3: # уровень роли сотрудников АиС и Админа - 2 и 1 соответственно
-            agent_organization = models.OrganizationWithRole.objects.all()
-        return render(request, 'verification/agent_form.html', {'page_title': 'Создание агента', 'form': form, 'org_list': agent_organization})
+        form = forms.PersonForm()
+    print(form.errors)
+    return render(request, 'verification/agent_form.html', {'page_title': 'Создание агента', 'form': form, 'org_list': agent_organization})
 
 @login_required
 def scan_upload(request, vitem_id=None):
