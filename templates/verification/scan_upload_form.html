@@ -1,4 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="mb-card">
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+    <div class="mb-card_header">{{ obj_name }}</div>
+    <div class="mb-card_body">
+        <input type="hidden" name="model_id" value="{{ model_id }}">
+        <input type="hidden" name="model_name" value="{{ model_name }}">
+        <input type="text" name="doc_type" class="form_input" placeholder="Тип документа">
+        <input type="text" name="doc_name" class="form_input" placeholder="Имя документа">
+        <input type="file" class="form_input" name='user_file'>
+    </div>
+    <div class="mb-card_footer">
+        <div class="mb-card_footer_left"></div>
+        <button type="submit" class="btn btn-primary btn-sm">Загрузить</button>
+    </div>
+    </form>
+</div>
 
+<div style="margin-top: 2rem;">
+    {% if scan_q %}
+    <table>
+        <thead>
+            <th>ID объекта</th>
+            <th>Тип документа</th>
+            <th>Имя документа</th>
+            <th>Имя файл</th>
+            <th>Просмотр</th>
+        </thead>
+    {% for item in scan_q %}
+        <tr>
+            <td>{{item.model_id}}</td>
+            <td>{{item.doc_type}}</td>
+            <td>{{item.doc_name}}</td>
+            <td>{{item.file_name}}</td>
+            <td><a class="link" href="{{ item.file_path }}">Открыть</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+    
+    {% else %}
+        <p class="error_txt">No scans found</p>
+    {% endif %}
+</div>
 {% endblock %}

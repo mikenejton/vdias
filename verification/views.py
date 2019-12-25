@@ -1,9 +1,11 @@
+import os
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import default_storage
+from django.conf import settings
 
 from . import models
 from . import forms
-
 
 # Логирование действий пользователя
 def update_logger(model_name, pk, action, username, new_set=False, old_set=''):
@@ -98,16 +100,29 @@ def agent_form(request):
         return render(request, 'verification/agent_form.html', {'page_title': 'Создание агента', 'form': form, 'org_list': agent_organization})
 
 @login_required
-def scan_upload(request, vitem_id):
+def scan_upload(request, vitem_id=None):
     if request.method == 'GET':
-        vitem = models.VerificationItem.objects.get(id = vitem_id)
-        if vitem.person:
-            model_name = 'PersonWithRole'
-            model_id = vitem.person.id
+        vitem = models.VerificationItem.objects.filter(id = vitem_id)
+        if len(vitem) > 0:
+            if vitem[0].person:
+                model_name = 'PersonWithRole'
+                obj_name = vitem[0].person.person.fio
+                model_id = vitem[0].person.id
+            else:
+                model_name = 'OrganizationWithRole'
+                obj_name = vitem[0].organization.organization.full_name
+                model_id = vitem[0].organization.id
+            print(model_name)
+            print(model_id)
+            scan_q = models.DocStorage.objects.filter(model_id = int(model_id), model_name = model_name)
+            print(scan_q)
         else:
-            model_name = 'OrganizationWithRole'
-            model_id = vitem.organization.id
-        pass
-        # return render('verification/scan_upload_form.html', 'page_title': 'Загрузка документов', 'model_name': model_name, 'model_id': model_id, 'vitem_id': vitem_id)
+            return render(request, 'verification/404.html')
+        return render(request, 'verification/scan_upload_form.html', {'page_title': 'Загрузка документов', 'model_name': model_name, 'model_id': model_id, 'obj_name': obj_name, 'vitem_id': vitem_id, 'scan_q': scan_q})
     else:
+        print(request.FILES)
+        f_path = os.path.join(settings.MEDIA_ROOT, request.FILES['user_file'].name)
+        path = default_storage.save(f_path, request.FILES['user_file'])
+        print('{} \n {}'.format(path, default_storage.path(path)))
         pass
+        

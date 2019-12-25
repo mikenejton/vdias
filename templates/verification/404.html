@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p class="error_txt"><a href="{% url 'index' %}" class="link">На главную</a></p>
+<p class="error_txt">
+    {% if err_txt %}
+        {{ err_txt }}
+    {% else %}
+        Запрашиваемая страница не найдена
+    {% endif %}
+</p>
+    
+{% endblock %}

@@ -8,6 +8,7 @@ body{
     grid-template-columns: min-content 1fr;
     grid-template-rows: minmax(1px, 5%) 1fr;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
 }
 .error_txt{
     font-size: 14px;
@@ -32,12 +33,13 @@ button, input, select, textarea{
 button{
     display: flex;
     padding: 0.3rem 1rem;
-    background: #1867c0;
+    background: #859fb5;
+    border-radius: 0.2rem;
     cursor: pointer;
     color: #fff;
 }
-button:hover{background: #1866c0cc;}
-button:active{background: #175eaf;}
+button:hover{background: #859fb59c;}
+button:active{background: #657788;}
 
 input, select, textarea{
     border-bottom: 1px solid #ced4da;
@@ -45,7 +47,7 @@ input, select, textarea{
 }
 
 input:focus, select:focus, textarea:focus{
-    border-bottom: 1px solid #1866c0b4;
+    border-bottom: 1px solid #303b4498;
 }
 .wide_textarea{
     min-width: 250px;
@@ -58,7 +60,7 @@ header{
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: #1867c0;
+    background: #303b44;
     color: #fff;
     padding: 5px 15px;
     box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
@@ -81,19 +83,26 @@ aside.sidebar{
     color: #212529;
 }
 .sibar-menu_item:hover{
-    background: #1867c0;
+    background: #859fb5;
     color: #fff;
 }
 .sibar-menu_item.active{
-    background: #1867c0;
+    background: #859fb5;
     color: #fff;
-}
+    box-shadow: inset 0px -4px 6px -5px #3b3b3b;
 
-.mainbox{
+}
+.main-fixed-box{
     grid-area: mainbox;
     padding: 1rem;
+    display: block;
+    overflow-y: auto;
+}
+.mainbox{
     display: flex;
     flex-direction: column;
+    padding-bottom: 15px;
+    
 }
 .component_wrapper{
     display: grid;
@@ -115,7 +124,7 @@ aside.sidebar{
     display: flex;
     min-height: 20px;
     border-bottom: 1px solid #ced4da;
-    background: #1867c0;
+    background: #303b44;
     color: #fff;
     align-items: center;
     padding: 0.3rem;
@@ -152,3 +161,16 @@ aside.sidebar{
 .form_input-group{
     display: flex;
 }
+
+/* simple table styles */
+table {width: 100%; text-align: center; border-bottom: 2px solid #dfdfdf; border-collapse: separate; border-spacing: 0px;}
+table thead tr {color: #fff; font-weight: bold; background: #303b44;}
+table tr td {border-right: 1px solid #dfdfdf;}
+table tr td:last-child {border-right: 0px;}
+table tbody tr:nth-child(1n) {background: #f6f6f6;}
+table tbody tr:nth-child(2n) {background: #e6e6e6;}
+table tbody tr:hover {background: #303b445e; transition-duration: 0.6s;}
+th, td{
+    padding: 5px;
+}
+/*  */

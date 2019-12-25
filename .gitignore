@@ -3,6 +3,7 @@
 *.pyc
 __pycache__/
 migrations/
+uploaded_files/
 .env
 db.sqlite3
 DevPlan.txt
