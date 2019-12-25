@@ -10,3 +10,8 @@ class PersonWithRoleForm(ModelForm):
     class Meta:
         model = models.PersonWithRole
         fields = '__all__'
+
+class DocStorageForm(ModelForm):
+    class Meta:
+        model = models.DocStorage
+        fields = ('model_id', 'model_name', 'doc_type', 'scan_file', 'author')

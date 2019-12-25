@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
 
 # User's extends
 class UserRole(models.Model):
@@ -121,24 +122,33 @@ class VerificationItem(models.Model):
 # -----------------------------------------------------------
 
 # Хранилище документов
+def doc_path_maker(instance, filename):
+    timestamp = datetime.strftime(datetime.now(), '%d%m%Y_%H%M%S')
+    if instance.model_name == 'PersonWithRole':
+        obj_name = PersonWithRole.objects.get(id = instance.model_id).person.fio
+    else:
+        obj_name = OrganizationWithRole.objects.get(id = instance.model_id).full_name
+    f_name = ''.join([instance.doc_type.replace(' ', '_'), '_', timestamp, '.', filename.split('.')[-1]])
+    return '{}/{}_{}/{}'.format(instance.model_name, obj_name, instance.model_id, f_name)
 class DocStorage(models.Model):
 
-    model_id = models.CharField('ID', max_length = 50)
+    model_id = models.CharField('ID модели', max_length = 50)
     model_name = models.CharField('Модель', max_length = 200)
     doc_type = models.CharField('Тип документа', max_length = 300)
-    doc_name = models.CharField('Имя документа', max_length = 300)
-    file_name = models.CharField('FileName', max_length = 700)
-    file_path = models.CharField('FilePath', max_length = 700)
+    file_name = models.CharField('Имя файла', max_length = 300, blank=True)
+    scan_file = models.FileField(upload_to=doc_path_maker, verbose_name='Путь к файлу')
     scan = models.BooleanField('Скан', default=False)
     original = models.BooleanField('Оригинал', default=False)
     accepted = models.BooleanField('Проверен', default=False)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
+        timestamp = datetime.strftime(datetime.now(), '%d%m%Y_%H%M%S')
+        self.file_name = ''.join([self.doc_type.replace(' ', '_'), '_', timestamp, '.', self.scan_file.name.split('.')[-1]])
         super().save(*args, **kwargs)        
     
     def __str__(self):
-        return '{} {} {}'.format(self.model_id, self.doc_type, self.doc_name)
+        return '{} {} {}'.format(self.model_id, self.model_name, self.doc_type)
 
 # -----------------------------------------------------------
 

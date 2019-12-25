@@ -5,16 +5,32 @@
         {% csrf_token %}
     <div class="mb-card_header">{{ obj_name }}</div>
     <div class="mb-card_body">
+        <input type="hidden" name="obj_name" value="{{ obj_name }}">
         <input type="hidden" name="model_id" value="{{ model_id }}">
         <input type="hidden" name="model_name" value="{{ model_name }}">
-        <input type="text" name="doc_type" class="form_input" placeholder="Тип документа">
-        <input type="text" name="doc_name" class="form_input" placeholder="Имя документа">
-        <input type="file" class="form_input" name='user_file'>
+        <input type="hidden" name="author" value="{{ request.user.id }}">
+        <div class="input_wrapper">
+            <select name="doc_type" {% if scan_q|length < 3 %}required{% endif %}>
+                <option value="None" disabled selected>Тип документа</option>
+                {% for d_type in doc_types %}
+                    <option value="{{ d_type }}">{{ d_type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input_wrapper">
+
+            <input type="file" class="form_input" name="scan_file" accept="image/*,.pdf" {% if scan_q|length < 3 %}required{% endif %}>
+        </div>
+        <div class="input_wrapper" style="align-items: flex-end;">
+            <button type="submit" class="btn_std" name="btn_upload">Загрузить</button>
+        </div>
     </div>
+    {%if scan_q|length >= 3 %}
     <div class="mb-card_footer">
         <div class="mb-card_footer_left"></div>
-        <button type="submit" class="btn btn-primary btn-sm">Загрузить</button>
+            <button class="btn_prim" name="btn_save">Сохранить</button>
     </div>
+    {% endif %}
     </form>
 </div>
 
@@ -24,17 +40,17 @@
         <thead>
             <th>ID объекта</th>
             <th>Тип документа</th>
-            <th>Имя документа</th>
-            <th>Имя файл</th>
-            <th>Просмотр</th>
+            <th>Файл</th>
+            <th>Загружен</th>
+            <th>Автор</th>
         </thead>
     {% for item in scan_q %}
         <tr>
             <td>{{item.model_id}}</td>
             <td>{{item.doc_type}}</td>
-            <td>{{item.doc_name}}</td>
-            <td>{{item.file_name}}</td>
-            <td><a class="link" href="{{ item.file_path }}">Открыть</a></td>
+            <td><a class="link" target="_blank" href="{{ item.scan_file.url }}">{{ item.file_name }}</a></td>
+            <td>{{item.created}}</td>
+            <td>{{item.author.user.last_name}}</td>
         </tr>
     {% endfor %}
     </table>

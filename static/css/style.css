@@ -9,6 +9,7 @@ body{
     grid-template-rows: minmax(1px, 5%) 1fr;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
+    color: #212529;
 }
 .error_txt{
     font-size: 14px;
@@ -33,13 +34,21 @@ button, input, select, textarea{
 button{
     display: flex;
     padding: 0.3rem 1rem;
-    background: #859fb5;
+    background: none;
     border-radius: 0.2rem;
     cursor: pointer;
-    color: #fff;
+    color: #212529;
 }
 button:hover{background: #859fb59c;}
 button:active{background: #657788;}
+.btn_std{
+    background: #859fb5;
+    color: #fff;
+}
+.btn_prim{
+    background: #3b7fbb;
+    color: #fff;
+}
 
 input, select, textarea{
     border-bottom: 1px solid #ced4da;

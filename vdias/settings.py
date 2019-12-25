@@ -125,4 +125,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-MEDIA_ROOT = os.path.join(BASE_DIR, 'uploaded_files')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'file_storage')
+MEDIA_URL = '/file_storage/'

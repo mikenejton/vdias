@@ -1,8 +1,10 @@
 import os
+from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 from django.conf import settings
+from django.urls import reverse
 
 from . import models
 from . import forms
@@ -84,11 +86,10 @@ def agent_form(request):
             vi.dias_status = 'Новая'
             vi.author = models.ExtendedUser.objects.get(id = request.user.id)
             vi.save()
-            return redirect('index')
-            # редирект на заполнение сканов к агенту
+            return redirect(reverse('scan_upload', args=[vi.id]))
         else:
             print(form.errors)
-            return redirect('index')
+            return redirect('create-agent')
     else:
         form = forms.PersonForm
         if request.user.extendeduser.user_role.role_name == 'FinAgent':
@@ -106,23 +107,34 @@ def scan_upload(request, vitem_id=None):
         if len(vitem) > 0:
             if vitem[0].person:
                 model_name = 'PersonWithRole'
-                obj_name = vitem[0].person.person.fio
                 model_id = vitem[0].person.id
+                obj_name = vitem[0].person.person.fio
+                doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Иной документ']
             else:
                 model_name = 'OrganizationWithRole'
-                obj_name = vitem[0].organization.organization.full_name
                 model_id = vitem[0].organization.id
-            print(model_name)
-            print(model_id)
+                obj_name = vitem[0].organization.organization.full_name
+                doc_types = ['Устав', 'Свидетельство о гос.рег', 'Постановка на налоговый учет', 'Анкета', 'Иной документ']
             scan_q = models.DocStorage.objects.filter(model_id = int(model_id), model_name = model_name)
-            print(scan_q)
         else:
             return render(request, 'verification/404.html')
-        return render(request, 'verification/scan_upload_form.html', {'page_title': 'Загрузка документов', 'model_name': model_name, 'model_id': model_id, 'obj_name': obj_name, 'vitem_id': vitem_id, 'scan_q': scan_q})
+        form = forms.DocStorageForm()
+        return render(request, 'verification/scan_upload_form.html', {'page_title': 'Загрузка документов', 'model_name': model_name, 'model_id': model_id, 'obj_name': obj_name, 'vitem_id': vitem_id, 'scan_q': scan_q, 'doc_types': doc_types})
     else:
-        print(request.FILES)
-        f_path = os.path.join(settings.MEDIA_ROOT, request.FILES['user_file'].name)
-        path = default_storage.save(f_path, request.FILES['user_file'])
-        print('{} \n {}'.format(path, default_storage.path(path)))
-        pass
-        
+        print(request.POST)
+        print('btn_upload' in request.POST)
+        print('btn_save' in request.POST)
+        if 'btn_upload' in request.POST:
+            if request.FILES:
+                form = forms.DocStorageForm(request.POST, request.FILES)
+                if form.is_valid():
+                    form.save()
+                else:
+                    print(form.errors)
+            return redirect(reverse('scan_upload', args=[vitem_id]))
+
+        elif 'btn_save' in request.POST:
+            vi = models.VerificationItem.objects.get(id = vitem_id)
+            vi.is_filled = True
+            vi.save()
+            return redirect('index')
