@@ -3,6 +3,14 @@ from django.apps import apps
 from .models import ExtendedUser
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.sessions.models import Session
+
+class SessionAdmin(admin.ModelAdmin):
+    def _session_data(self, obj):
+        return obj.get_decoded()
+    list_display = ['session_key', '_session_data', 'expire_date']
+admin.site.register(Session, SessionAdmin)
+
 
 def auto_register(model):
     #Get all fields from model, but exclude autocreated reverse relations

@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if result|length == 0 %}
+    <p class="error_txt">Результаты не найдены</p>
+{% else %}
 <table>
     <thead>
         <tr>
@@ -25,8 +28,7 @@
             <td>{{ item.created }}</td>
             <td>{{ item.author.user.last_name }} {{ item.author.user.first_name }}</td>
         </tr>
-    {% empty %}
-        <p>Результаты не найдены</p>
     {% endfor %}
 </table>
+{% endif %}
 {% endblock %}

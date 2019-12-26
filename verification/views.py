@@ -40,7 +40,7 @@ def find_vitem(request):
         if request.POST['person']:
             result = models.VerificationItem.objects.filter(person__person__fio__icontains = request.POST['person'].upper())
         else:
-            result = models.VerificationItem.objects.filter(organization__organization__full_name__icontains = request.POST['person'].upper())
+            result = models.VerificationItem.objects.filter(organization__organization__full_name__icontains = request.POST['organization'].upper())
     return render(request, 'verification/find_item_result.html', {'page_title': 'Поиск заявок', 'u_data': user_access, 'ex_user': ex_user, 'result': result})
 
 @login_required
