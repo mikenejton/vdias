@@ -11,7 +11,39 @@ from . import forms
 
 @login_required
 def vitem_form(request, vitem_id=None):
-    pass
+    if vitem_id:
+        vitem = models.VerificationItem.objects.get(id=vitem_id)
+        if request.method == 'GET':
+            context = {}
+            context['vitem'] = vitem
+            if vitem.person:
+                context['person'] = vitem.person
+            else:
+                context['organization'] = vitem.organization
+            if request.method == 'POST':
+                pass
+            else:
+                context['form'] = forms.VerificationItemForm(instance=vitem)
+            return render(request, 'verification/forms/vitem_form.html', context)
+        else:
+            if 'btn_save' in request.POST:
+                pass
+            elif 'btn_to_fix' in request.POST:
+                vitem.to_fix = True
+                vitem.fixed = False
+                vitem.dias_status = 'На доработке'
+                vitem.save()
+            elif 'btn_fixed' in request.POST:
+                vitem.to_fix = False
+                vitem.fixed = True
+                vitem.dias_status = 'Доработано'
+                vitem.save()
+            elif 'btn_take_to' in request.POST:
+                vitem.case_officer = request.user.extendeduser
+                vitem.save()
+            return redirect(reverse('vitem', args=[vitem_id]))
+    else:
+        return render(request, 'verification/404.html')
 
 
 @login_required
@@ -24,14 +56,13 @@ def agent_form(request):
         agent_organization = models.OrganizationWithRole.objects.all()
     if request.method == 'POST':
         form = forms.PersonForm(data=request.POST)
-        print(request.POST)
         if form.is_valid():
             created_person = form.save()
             agent_role = models.PersonWithRole()
             agent_role.person = created_person
             agent_role.person_role = 'Агент'
             agent_role.author = models.ExtendedUser.objects.get(id = request.user.id)
-            if 'related_organization' in request.POST != None:
+            if 'related_organization' in request.POST:
                 agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
             agent_role.save()
             vi = models.VerificationItem()
@@ -66,16 +97,11 @@ def scan_upload(request, vitem_id=None):
         form = forms.DocStorageForm()
         return render(request, 'verification/forms/scan_upload_form.html', {'page_title': 'Загрузка документов', 'model_name': model_name, 'model_id': model_id, 'obj_name': obj_name, 'vitem_id': vitem_id, 'scan_q': scan_q, 'doc_types': doc_types})
     else:
-        print(request.POST)
-        print('btn_upload' in request.POST)
-        print('btn_save' in request.POST)
         if 'btn_upload' in request.POST:
             if request.FILES:
                 form = forms.DocStorageForm(request.POST, request.FILES)
                 if form.is_valid():
                     form.save()
-                else:
-                    print(form.errors)
             return redirect(reverse('scan_upload', args=[vitem_id]))
 
         elif 'btn_save' in request.POST:

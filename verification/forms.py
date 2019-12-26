@@ -19,4 +19,4 @@ class DocStorageForm(ModelForm):
 class VerificationItemForm(ModelForm):
     class Meta:
         model = models.VerificationItem
-        fields = '__all__'
+        fields = ('dias_status', 'to_fix', 'fixed', 'dias_comment', 'case_officer')

@@ -15,7 +15,7 @@ class ExtendedUser(models.Model):
     user_role = models.ForeignKey(UserRole, on_delete=models.PROTECT)
     access_lvl = models.IntegerField('Уровень доступа')
     def __str__(self):
-        return self.user.username
+        return ' '.join(filter(None, [self.user.last_name, self.user.first_name]))
 # -----------------------------------------------------------
 
 # Базовые модели

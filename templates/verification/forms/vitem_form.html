@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="{% url 'vitem' vitem.id %}" method="POST">
+{% csrf_token %}
+<div class="component_wrapper">
+    <div class="mb-card" id="app">
+        <div class="mb-card_header">Заявка на верификацию ({% firstof person.person_role organization.organization_role %})</div>
+        <div class="mb-card_body card_body-form">
+        {% if person %}
+            <div class="card_body-form_column">
+                <div class="input_wrapper grid_row">ФИО: <p class="vitem_form_fields">{{ person.person.fio }}</p></div>
+                <div class="input_wrapper grid_row">Дата рождения: <p class="vitem_form_fields">{{ person.person.dob }}</p></div>
+                <div class="input_wrapper grid_row">Место рождения: <p class="vitem_form_fields">{{ person.person.pob }}</p></div>
+                <div class="input_wrapper grid_row">СНИЛС: <p class="vitem_form_fields">{{ person.person.sneals }}</p></div>
+                <div class="input_wrapper grid_row">Телефон: <p class="vitem_form_fields">{{ person.person.phone_number }}</p></div>
+                <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ person.person.email }}</p></div>
+                <div class="input_wrapper grid_row">Адрес регистрации: <p class="vitem_form_fields">{{ person.person.adr_reg }}</p></div>
+            </div>
+            <div class="card_body-form_column">
+                <div class="input_wrapper grid_row">Паспорт: <p class="vitem_form_fields">{{ person.person.pass_sn }}</p></div>
+                <div class="input_wrapper grid_row">Дата выдачи: <p class="vitem_form_fields">{{ person.person.pass_date }}</p></div>
+                <div class="input_wrapper grid_row">Кем выдан: <p class="vitem_form_fields">{{ person.person.pass_org }}</p></div>
+                <div class="input_wrapper grid_row">Код подразделения: <p class="vitem_form_fields">{{ person.person.pass_code }}</p></div>
+                <div class="input_wrapper grid_row">Дата создания: <p class="vitem_form_fields">{{ person.person.created }}</p></div>
+                <div class="input_wrapper grid_row">Автор: <p class="vitem_form_fields">{{ person.person.author.user.last_name }} {{ person.person.author.user.first_name }}</p></div>
+                <div class="input_wrapper grid_row">Адрес проживания: <p class="vitem_form_fields">{{ person.person.adr_fact }}</p></div>
+            </div>
+        {% else %}
+
+        {% endif %}
+        </div>
+        {% if user.extendeduser.user_role.role_lvl <= 3 %}
+        <div class="mb-card_body_comment">
+            <div class="mb-card_footer">
+                <div class="mb-card_footer_left">
+                    {%if form.case_officer.value %}
+                        Исполнитель: {{vitem.case_officer}}
+                    {% else %}
+                        <button type="submit" class="btn_suc" name="btn_take_to">Принять в работу</button>
+                    {% endif %}
+                </div>
+
+                <div class="input_wrapper">Статус: </div>
+                
+                <div class="input_wrapper">
+                    <select name="dias_status" {% if user.id != form.case_officer.value %} disabled {% endif %}>
+                        <option value="Новая" {% if form.dias_status.value == 'Новая' %} selected {% endif %}>Новая</option>
+                        <option value="В работе" {% if form.dias_status.value == 'В работе'  %} selected {% endif %}>В работе</option>
+                        <option value="На доработке" {% if form.dias_status.value == "На доработке"  %} selected {% endif %}>На доработке</option>
+                        <option value="Доработано" {% if form.dias_status.value == "Доработано"  %} selected {% endif %}>Доработано</option>
+                        <option value="Одобрено" {% if form.dias_status.value == "Одобрено"  %} selected {% endif %}>Одобрено</option>
+                        <option value="Одобрено, особый контроль" {% if form.dias_status.value == "Одобрено, особый контроль"  %} selected {% endif %}>Одобрено, особый контроль</option>
+                        <option value="Отказ" {% if form.dias_status.value == "Отказ"  %} selected {% endif %}>Отказ</option>
+                    </select>
+                </div>
+            </div>
+            <textarea name="dias_comment" placeholder="Комментарий ДИАС"></textarea>
+        </div>
+        {% endif %}
+        {% if form.errors %}
+        <div class="mb-card_errors">
+            {% for field in form %}
+                {% if field.errors %}
+                <p class="error_txt">{{ field.label }}: <i>{{ field.errors }}</i></p>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if form.case_officer.value == user.id %}
+        <div class="mb-card_footer">
+            <div class="mb-card_footer_left">
+                <div class="input_wrapper">
+                    <textarea name="fix_comment" rows="2" placeholder="Комментарий по доработке"></textarea>
+                </div>
+            </div>
+            {% if form.dias_status.value in 'Новая, В работе, На доработке, Доработано' %}
+                {% if form.to_fix.value == False %}
+                <div class="input_wrapper"><button type="submit" class="btn_warn" name="btn_to_fix">На доработку</button></div>
+                {% else %}
+                <div class="input_wrapper"><button type="submit" class="btn_suc" name="btn_fixed">Доработано</button></div>
+                {% endif %}
+            {% endif %}
+            <div class="input_wrapper"><button type="submit" class="btn_prim" name="btn_save">Сохранить</button></div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="mb-card" id="app">
+        <div class="mb-card_header"></div>
+        <div class="mb-card_body"></div>
+        <div class="mb-card_footer">
+            <div class="mb-card_footer_left">
+                <div class="input_wrapper">
+                    <input type="text" name="chat_message">
+                </div>
+            </div>
+            <button type="submit" name="btn_add_comment">Отправить</button>
+        </div>
+    </div>
+</div>
+</form>
+<script>
+</script>
+{% endblock %}
