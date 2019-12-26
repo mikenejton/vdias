@@ -18,12 +18,12 @@ def vitem_form(request, vitem_id=None):
             context['vitem'] = vitem
             if vitem.person:
                 context['person'] = vitem.person
+                scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
             else:
                 context['organization'] = vitem.organization
-            if request.method == 'POST':
-                pass
-            else:
-                context['form'] = forms.VerificationItemForm(instance=vitem)
+                scan_q = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
+            context['scan_q'] = scan_q
+            context['form'] = forms.VerificationItemForm(instance=vitem)
             return render(request, 'verification/forms/vitem_form.html', context)
         else:
             if 'btn_save' in request.POST:

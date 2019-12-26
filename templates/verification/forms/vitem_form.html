@@ -84,17 +84,41 @@
         </div>
         {% endif %}
     </div>
-    <div class="mb-card" id="app">
-        <div class="mb-card_header"></div>
+    <div class="mb-card" id="app" style="width: 400px;">
+        <div class="mb-card_header">Чат заявки</div>
         <div class="mb-card_body"></div>
         <div class="mb-card_footer">
             <div class="mb-card_footer_left">
                 <div class="input_wrapper">
-                    <input type="text" name="chat_message">
+                    <input type="text" name="chat_message" placeholder="Введите сообщение">
                 </div>
             </div>
             <button type="submit" name="btn_add_comment">Отправить</button>
         </div>
+    </div>
+    <div class="mb-card" id="app">
+        {% if scan_q %}
+        <table>
+            <thead>
+                <th>ID объекта</th>
+                <th>Тип документа</th>
+                <th>Файл</th>
+                <th>Загружен</th>
+                <th>Автор</th>
+            </thead>
+        {% for item in scan_q %}
+            <tr>
+                <td>{{item.model_id}}</td>
+                <td>{{item.doc_type}}</td>
+                <td><a class="link" target="_blank" href="{{ item.scan_file.url }}">{{ item.file_name }}</a></td>
+                <td>{{item.created}}</td>
+                <td>{{item.author.user.last_name}} {{item.author.user.first_name}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        {% else %}
+            <p class="error_txt">No scans found</p>
+        {% endif %}
     </div>
 </div>
 </form>
