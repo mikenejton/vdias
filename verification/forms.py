@@ -15,3 +15,8 @@ class DocStorageForm(ModelForm):
     class Meta:
         model = models.DocStorage
         fields = ('model_id', 'model_name', 'doc_type', 'scan_file', 'author')
+
+class VerificationItemForm(ModelForm):
+    class Meta:
+        model = models.VerificationItem
+        fields = '__all__'
