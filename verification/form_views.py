@@ -12,38 +12,40 @@ from . import forms
 @login_required
 def vitem_form(request, vitem_id=None):
     if vitem_id:
-        vitem = models.VerificationItem.objects.get(id=vitem_id)
-        if request.method == 'GET':
-            context = {}
-            context['vitem'] = vitem
-            if vitem.person:
-                context['person'] = vitem.person
-                scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
+        vitem_qs = models.VerificationItem.objects.filter(id=vitem_id)
+        if len(vitem_qs):
+            vitem = vitem_qs[0]
+            if request.method == 'GET':
+                context = {}
+                context['vitem'] = vitem
+                if vitem.person:
+                    context['person'] = vitem.person
+                    scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
+                else:
+                    context['organization'] = vitem.organization
+                    scan_q = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
+                context['scan_q'] = scan_q
+                context['form'] = forms.VerificationItemForm(instance=vitem)
+                return render(request, 'verification/forms/vitem_form.html', context)
             else:
-                context['organization'] = vitem.organization
-                scan_q = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
-            context['scan_q'] = scan_q
-            context['form'] = forms.VerificationItemForm(instance=vitem)
-            return render(request, 'verification/forms/vitem_form.html', context)
-        else:
-            if 'btn_save' in request.POST:
-                pass
-            elif 'btn_to_fix' in request.POST:
-                vitem.to_fix = True
-                vitem.fixed = False
-                vitem.dias_status = 'На доработке'
-                vitem.save()
-            elif 'btn_fixed' in request.POST:
-                vitem.to_fix = False
-                vitem.fixed = True
-                vitem.dias_status = 'Доработано'
-                vitem.save()
-            elif 'btn_take_to' in request.POST:
-                vitem.case_officer = request.user.extendeduser
-                vitem.save()
-            return redirect(reverse('vitem', args=[vitem_id]))
-    else:
-        return render(request, 'verification/404.html')
+                if 'btn_save' in request.POST:
+                    pass
+                elif 'btn_to_fix' in request.POST:
+                    vitem.to_fix = True
+                    vitem.fixed = False
+                    vitem.dias_status = 'На доработке'
+                    vitem.save()
+                elif 'btn_fixed' in request.POST:
+                    vitem.to_fix = False
+                    vitem.fixed = True
+                    vitem.dias_status = 'Доработано'
+                    vitem.save()
+                elif 'btn_take_to' in request.POST:
+                    vitem.case_officer = request.user.extendeduser
+                    vitem.save()
+                return redirect(reverse('vitem', args=[vitem_id]))
+    
+    return render(request, 'verification/404.html')
 
 
 @login_required
