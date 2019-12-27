@@ -136,8 +136,8 @@ def doc_path_maker(instance, filename):
         obj_name = OrganizationWithRole.objects.get(id = instance.model_id).full_name
     f_name = ''.join([instance.doc_type.replace(' ', '_'), '_', timestamp, '.', filename.split('.')[-1]])
     return '{}/{}_{}/{}'.format(instance.model_name, obj_name, instance.model_id, f_name)
-class DocStorage(models.Model):
 
+class DocStorage(models.Model):
     model_id = models.CharField('ID модели', max_length = 50)
     model_name = models.CharField('Модель', max_length = 200)
     doc_type = models.CharField('Тип документа', max_length = 300)
