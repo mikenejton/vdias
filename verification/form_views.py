@@ -18,6 +18,7 @@ def vitem_form(request, vitem_id=None):
             if request.method == 'GET':
                 context = {}
                 context['vitem'] = vitem
+                context['page_title'] = 'Заявка'
                 if vitem.person:
                     context['person'] = vitem.person
                     scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')

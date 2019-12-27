@@ -115,9 +115,6 @@ aside.sidebar{
     
 }
 .component_wrapper{
-    /* display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-gap: 1rem; */
     display: flex;
     flex-wrap: wrap;
 }
@@ -156,6 +153,19 @@ aside.sidebar{
     flex-direction: column;
     padding: 0.8rem 0.3rem;
 }
+.card_body-form{
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 1rem;
+    min-width: max-content;
+}
+.card_body-form_column{
+    display: flex;
+    flex-direction: column;
+}
+.mb-card_body.char_view{
+    overflow-y: auto;
+}
 .mb-card_body_comment{
     display: flex;
     flex-direction: column;
@@ -177,17 +187,7 @@ aside.sidebar{
 .mb-card_footer_left{
     width: 100%;
 }
-.card_body-form{
-    display: grid;
-    grid-template-columns: auto auto;
-    grid-gap: 1rem;
-    min-width: max-content;
 
-}
-.card_body-form_column{
-    display: flex;
-    flex-direction: column;
-}
 .form_input{
     margin: 0.3rem 0.2rem;
 }
@@ -203,16 +203,108 @@ aside.sidebar{
 }
 .vitem_form_fields{
     max-width: 250px;
+    font-style: italic;
 }
 /* simple table styles */
-table {width: 100%; text-align: center; border-bottom: 2px solid #dfdfdf; border-collapse: separate; border-spacing: 0px;}
+table {width: 100%; text-align: center; border-bottom: 2px solid #ced4da; border-collapse: separate; border-spacing: 0px;}
 table thead tr {color: #fff; background: #303b44;}
-table tr td {border-right: 1px solid #dfdfdf;}
+table tr td {border-right: 1px solid #ced4da;}
 table tr td:last-child {border-right: 0px;}
 table tbody tr:nth-child(1n) {background: #f6f6f6;}
 table tbody tr:nth-child(2n) {background: #e6e6e6;}
 table tbody tr:hover {background: #303b445e; transition-duration: 0.2s;}
 th, td{
     padding: 5px 10px;
+}
+/*  */
+
+/* grid card vitem */
+.scrolling_wrapper{
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
+    align-items: flex-start;
+    justify-content: stretch;
+}
+.gcard_vitem-view{
+    display: grid;
+    grid-template-areas: 
+        "form-header form-header"
+        "itemform chatbox"
+        "form-table chatbox";
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 1fr minmax(20%, max-content);
+    grid-gap: 0.3rem;
+    max-height: 100%;
+    width: 100%;
+    border: 1px solid #ced4da;
+    border-bottom: none;
+    
+}
+.gcard_vitem-view_header{
+    grid-area: form-header;
+    display: flex;
+    background: #303b44;
+    color: #fff;
+    min-height: 20px;
+    align-items: center;
+    padding: 0.3rem;
+}
+
+.gcard_vitem-view_itemform{
+    grid-area: itemform;
+    overflow-y: auto;
+}
+.itemform_controls{
+    display: flex;
+    flex-direction: column;
+    padding: 0.8rem 0.3rem;
+    border-top: 1px solid #ced4da;
+}
+.itemform_controls_row{
+    display: flex;
+    align-items: center;
+}
+.itemform_controls_row_btns{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+.growing_block{
+    flex: 1;
+}
+
+
+.gcard_vitem-view_table{
+    grid-area: form-table;
+    overflow-y: auto;
+}
+.gcard_vitem_chatbox{
+    grid-area: chatbox;
+    max-height: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+.chatbox_chat-window{
+    overflow-y: auto;
+    height: 100%;
+}
+.chatbox_chat-message{
+    height: 55px;
+}
+
+.chatbox_input_area{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    border-top: 1px solid #ced4da;
+}
+.txt_wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 0.2rem;
 }
 /*  */
