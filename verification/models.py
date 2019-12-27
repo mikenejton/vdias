@@ -119,6 +119,12 @@ class VerificationItem(models.Model):
             caption = 'No verification item..'
         return caption
 
+class VitemChat(models.Model):
+    vitem = models.ForeignKey(VerificationItem, on_delete=models.CASCADE)
+    msg = models.TextField('Сообщение')
+    author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='MsgAuthor', verbose_name='Пользователь')
+    created = models.DateTimeField('Дата создания', auto_now_add=True)
+
 # -----------------------------------------------------------
 
 # Хранилище документов
@@ -152,12 +158,12 @@ class DocStorage(models.Model):
 
 # -----------------------------------------------------------
 
-# Уведомления пользователя
+# Уведомления пользователя - непонятно, нужно ли
 class UserNotification(models.Model):
     user = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Пользователь')
     msg_type = models.CharField('Тип уведомления', max_length=300)
     msg = models.TextField('Уведомление')
-    msg_author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='MsgAuthor', verbose_name='Пользователь')
+    msg_author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='NotifyAuthor', verbose_name='Пользователь')
     created = models.DateTimeField('Дата создания', auto_now_add=True)
 # -----------------------------------------------------------
 

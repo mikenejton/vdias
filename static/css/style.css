@@ -5,7 +5,7 @@ body{
     grid-template-areas:
         "header header"
         "sidebar mainbox";
-    grid-template-columns: min-content 1fr;
+    grid-template-columns: max-content 1fr;
     grid-template-rows: minmax(1px, 5%) 1fr;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
@@ -105,7 +105,8 @@ aside.sidebar{
 .main-fixed-box{
     grid-area: mainbox;
     padding: 1rem;
-    display: block;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
 }
 .mainbox{
@@ -290,11 +291,36 @@ th, td{
 .chatbox_chat-window{
     overflow-y: auto;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 .chatbox_chat-message{
-    height: 55px;
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    padding: 0.5rem 0.2rem;
+    width: 80%;
+    margin-bottom: 0.3rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.3rem;
 }
-
+.from-msg{
+    align-items: flex-end;
+    align-self: flex-end;
+    background: #dcedfc8a;
+}
+.to-msg{
+    align-items: flex-start;
+    align-self: flex-start;
+    background: #b5ddff8a;
+}
+.msg-header, .msg-footer{
+    font-style: italic;
+    font-size: 10px;
+}
+.msg-body{
+    
+}
 .chatbox_input_area{
     display: flex;
     flex-direction: column;

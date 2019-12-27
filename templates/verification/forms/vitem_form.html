@@ -89,11 +89,42 @@
         </div>
         <div class="gcard_vitem_chatbox">
             <div class="chatbox_chat-window">
-                <div class="chatbox_chat-message">Msg1</div>
-                <div class="chatbox_chat-message">Msg2</div>
-                <div class="chatbox_chat-message">Msg3</div>
-                <div class="chatbox_chat-message">Msg3</div>
-                <div class="chatbox_chat-message">Msg3</div>
+                {% for msg in msgs %}
+                    <div class="chatbox_chat-message {% if msg.author.user.id == user.id %} from-msg {% else %} to-msg {% endif %}">
+                        <p class="msg-header">{{ msg.created }}</p>
+                        <p class="msg-body">{{ msg.msg }}</p>
+                        <p class="msg-footer">{{ msg.author }}</p>
+                    </div>
+                {% endfor %}
+                {% for msg in msgs %}
+                    <div class="chatbox_chat-message {% if msg.author.user.id == user.id %} from-msg {% else %} to-msg {% endif %}">
+                        <p class="msg-header">{{ msg.created }}</p>
+                        <p class="msg-body">{{ msg.msg }}</p>
+                        <p class="msg-footer">{{ msg.author }}</p>
+                    </div>
+                {% endfor %}
+                {% for msg in msgs %}
+                    <div class="chatbox_chat-message {% if msg.author.user.id == user.id %} from-msg {% else %} to-msg {% endif %}">
+                        <p class="msg-header">{{ msg.created }}</p>
+                        <p class="msg-body">{{ msg.msg }}</p>
+                        <p class="msg-footer">{{ msg.author }}</p>
+                    </div>
+                {% endfor %}
+                {% for msg in msgs %}
+                    <div class="chatbox_chat-message {% if msg.author.user.id == user.id %} from-msg {% else %} to-msg {% endif %}">
+                        <p class="msg-header">{{ msg.created }}</p>
+                        <p class="msg-body">{{ msg.msg }}</p>
+                        <p class="msg-footer">{{ msg.author }}</p>
+                    </div>
+                {% endfor %}
+                {% for msg in msgs %}
+                    <div class="chatbox_chat-message {% if msg.author.user.id == user.id %} from-msg {% else %} to-msg {% endif %}">
+                        <p class="msg-header">{{ msg.created }}</p>
+                        <p class="msg-body">{{ msg.msg }}</p>
+                        <p class="msg-footer">{{ msg.author }}</p>
+                    </div>
+                {% endfor %}
+                <div style="padding: 0.5rem;"></div>
             </div>
             <div class="chatbox_input_area">
                 <div class="txt_wrapper">

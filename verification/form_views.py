@@ -19,6 +19,8 @@ def vitem_form(request, vitem_id=None):
                 context = {}
                 context['vitem'] = vitem
                 context['page_title'] = 'Заявка'
+                msgs = models.VitemChat.objects.filter(vitem = vitem)
+                context['msgs'] = msgs
                 if vitem.person:
                     context['person'] = vitem.person
                     scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
@@ -44,6 +46,13 @@ def vitem_form(request, vitem_id=None):
                 elif 'btn_take_to' in request.POST:
                     vitem.case_officer = request.user.extendeduser
                     vitem.save()
+                elif 'btn_add_comment' in request.POST and len(request.POST['chat_message']) > 0:                    
+                    new_msg = models.VitemChat()
+                    new_msg.vitem = vitem
+                    new_msg.msg = request.POST['chat_message']
+                    new_msg.author = request.user.extendeduser
+                    new_msg.save()
+
                 return redirect(reverse('vitem', args=[vitem_id]))
     
     return render(request, 'verification/404.html')
