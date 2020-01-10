@@ -17,6 +17,7 @@
                     <div class="input_wrapper grid_row">СНИЛС: <p class="vitem_form_fields">{{ person.person.sneals }}</p></div>
                     <div class="input_wrapper grid_row">Телефон: <p class="vitem_form_fields">{{ person.person.phone_number }}</p></div>
                     <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ person.person.email }}</p></div>
+                    <div class="input_wrapper grid_row">Организация: <p class="vitem_form_fields">{{ person.related_organization }}</p></div>
                     <div class="input_wrapper grid_row">Адрес регистрации: <p class="vitem_form_fields">{{ person.person.adr_reg }}</p></div>
                 </div>
                 <div class="card_body-form_column">
@@ -38,7 +39,9 @@
                     {%if form.case_officer.value %}
                         Исполнитель: {{vitem.case_officer}}
                     {% else %}
+                        {% if user.extendeduser.user_role.role_lvl < 3 %}
                         <button type="submit" class="btn_suc" name="btn_take_to">Принять в работу</button>
+                        {% endif %}
                     {% endif %}
                     <div class="growing_block"></div>
                     <div class="input_wrapper"><p>Статус:
@@ -66,16 +69,20 @@
                 </div>
                 {% endif %}
                 {% if form.case_officer.value == user.id %}
+                {% if user.extendeduser.user_role.role_lvl < 3 %}
                 <div class="itemform_controls_row">
                     <div class="txt_wrapper">
                         <textarea name="dias_comment" placeholder="Комментарий ДИАС"></textarea>
                     </div>
                 </div>
+                {% endif %}
                 <div class="itemform_controls_row">
                     <div class="itemform_controls_row_btns">
                         {% if form.dias_status.value in 'Новая, В работе, На доработке, Доработано' %}
                             {% if form.to_fix.value == False %}
+                                {% if user.extendeduser.user_role.role_lvl < 3 %}
                             <div class="input_wrapper"><button type="submit" class="btn_warn" name="btn_to_fix">На доработку</button></div>
+                                {% endif %}
                             {% else %}
                             <div class="input_wrapper"><button type="submit" class="btn_suc" name="btn_fixed">Доработано</button></div>
                             {% endif %}

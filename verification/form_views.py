@@ -11,59 +11,64 @@ from . import forms
 
 @login_required
 def vitem_form(request, vitem_id=None):
+    context = {}
     if vitem_id:
         vitem_qs = models.VerificationItem.objects.filter(id=vitem_id)
         if len(vitem_qs):
             vitem = vitem_qs[0]
-            if request.method == 'GET':
-                context = {}
-                context['vitem'] = vitem
-                context['page_title'] = 'Заявка'
-                msgs = models.VitemChat.objects.filter(vitem = vitem)
-                context['msgs'] = msgs
-                if vitem.person:
-                    context['person'] = vitem.person
-                    scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
+            print(vitem.author)
+            if request.user.extendeduser.user_role.role_lvl <= 3 or vitem.author.user_role == request.user.extendeduser.user_role:
+                if request.method == 'GET':
+                    context['vitem'] = vitem
+                    context['page_title'] = 'Заявка'
+                    msgs = models.VitemChat.objects.filter(vitem = vitem).order_by('-created')
+                    context['msgs'] = msgs
+                    if vitem.person:
+                        context['person'] = vitem.person
+                        scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
+                    else:
+                        context['organization'] = vitem.organization
+                        scan_q = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
+                    context['scan_q'] = scan_q
+                    context['form'] = forms.VerificationItemForm(instance=vitem)
+                    return render(request, 'verification/forms/vitem_form.html', context)
                 else:
-                    context['organization'] = vitem.organization
-                    scan_q = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
-                context['scan_q'] = scan_q
-                context['form'] = forms.VerificationItemForm(instance=vitem)
-                return render(request, 'verification/forms/vitem_form.html', context)
-            else:
-                if 'btn_save' in request.POST:
-                    pass
-                elif 'btn_to_fix' in request.POST:
-                    vitem.to_fix = True
-                    vitem.fixed = False
-                    vitem.dias_status = 'На доработке'
-                    vitem.save()
-                elif 'btn_fixed' in request.POST:
-                    vitem.to_fix = False
-                    vitem.fixed = True
-                    vitem.dias_status = 'Доработано'
-                    vitem.save()
-                elif 'btn_take_to' in request.POST:
-                    vitem.case_officer = request.user.extendeduser
-                    vitem.save()
-                elif 'btn_add_comment' in request.POST and len(request.POST['chat_message']) > 0:                    
-                    new_msg = models.VitemChat()
-                    new_msg.vitem = vitem
-                    new_msg.msg = request.POST['chat_message']
-                    new_msg.author = request.user.extendeduser
-                    new_msg.save()
+                    if 'btn_save' in request.POST:
+                        vitem.dias_status = request.POST['dias_status']
+                        vitem.save()
+                    elif 'btn_to_fix' in request.POST:
+                        vitem.to_fix = True
+                        vitem.fixed = False
+                        vitem.dias_status = 'На доработке'
+                        vitem.save()
+                    elif 'btn_fixed' in request.POST:
+                        vitem.to_fix = False
+                        vitem.fixed = True
+                        vitem.dias_status = 'Доработано'
+                        vitem.save()
+                    elif 'btn_take_to' in request.POST:
+                        vitem.case_officer = request.user.extendeduser
+                        vitem.save()
+                    elif 'btn_add_comment' in request.POST and len(request.POST['chat_message']) > 0:                    
+                        new_msg = models.VitemChat()
+                        new_msg.vitem = vitem
+                        new_msg.msg = request.POST['chat_message']
+                        new_msg.author = request.user.extendeduser
+                        new_msg.save()
 
-                return redirect(reverse('vitem', args=[vitem_id]))
+                    return redirect(reverse('vitem', args=[vitem_id]))
+            else:
+                context['err_txt'] = 'У вас недостаточно прав на просмотр данной страницы'
     
-    return render(request, 'verification/404.html')
+    return render(request, 'verification/404.html', context)
 
 
 @login_required
 def agent_form(request):
     if request.user.extendeduser.user_role.role_name == 'FinAgent':
-        agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинАгент')
+        agent_organization = models.OrganizationWithRole.objects.filter(organization_role = 'ФинАгент')
     elif request.user.extendeduser.user_role.role_name == 'FinBroker':
-        agent_organization = models.OrganizationWithRole.objects.filter(organization_role == 'ФинБрокер')
+        agent_organization = models.OrganizationWithRole.objects.filter(organization_role = 'ФинБрокер')
     elif request.user.extendeduser.user_role.role_lvl < 3: # уровень роли сотрудников АиС и Админа - 2 и 1 соответственно
         agent_organization = models.OrganizationWithRole.objects.all()
     if request.method == 'POST':
