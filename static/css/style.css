@@ -239,7 +239,6 @@ th, td{
     max-height: 100%;
     width: 100%;
     border: 1px solid #ced4da;
-    border-bottom: none;
     
 }
 .gcard_vitem-view_header{
@@ -299,7 +298,7 @@ th, td{
     flex-direction: column;
     font-size: 12px;
     padding: 0.5rem 0.2rem;
-    width: 80%;
+    max-width: 80%;
     margin-bottom: 0.3rem;
     border: 1px solid #ced4da;
     border-radius: 0.3rem;
@@ -307,7 +306,7 @@ th, td{
 .from-msg{
     align-items: flex-end;
     align-self: flex-end;
-    background: #dcedfc8a;
+    background: #f4faff8a;
 }
 .to-msg{
     align-items: flex-start;
@@ -317,6 +316,7 @@ th, td{
 .msg-header, .msg-footer{
     font-style: italic;
     font-size: 10px;
+    color: #6d6d6d;
 }
 .msg-body{
     

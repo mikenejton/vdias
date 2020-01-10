@@ -1,0 +1,23 @@
+{% extends "verification/forms/vitem_form.html" %}
+
+{% block form %}
+<div class="card_body-form_column">
+    <div class="input_wrapper grid_row">ФИО: <p class="vitem_form_fields">{{ person.person.fio }}</p></div>
+    <div class="input_wrapper grid_row">Дата рождения: <p class="vitem_form_fields">{{ person.person.dob }}</p></div>
+    <div class="input_wrapper grid_row">Место рождения: <p class="vitem_form_fields">{{ person.person.pob }}</p></div>
+    <div class="input_wrapper grid_row">СНИЛС: <p class="vitem_form_fields">{{ person.person.sneals }}</p></div>
+    <div class="input_wrapper grid_row">Телефон: <p class="vitem_form_fields">{{ person.person.phone_number }}</p></div>
+    <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ person.person.email }}</p></div>
+    <div class="input_wrapper grid_row">Организация: <p class="vitem_form_fields">{{ person.related_organization }}</p></div>
+    <div class="input_wrapper grid_row">Адрес регистрации: <p class="vitem_form_fields">{{ person.person.adr_reg }}</p></div>
+</div>
+<div class="card_body-form_column">
+    <div class="input_wrapper grid_row">Паспорт: <p class="vitem_form_fields">{{ person.person.pass_sn }}</p></div>
+    <div class="input_wrapper grid_row">Дата выдачи: <p class="vitem_form_fields">{{ person.person.pass_date }}</p></div>
+    <div class="input_wrapper grid_row">Кем выдан: <p class="vitem_form_fields">{{ person.person.pass_org }}</p></div>
+    <div class="input_wrapper grid_row">Код подразделения: <p class="vitem_form_fields">{{ person.person.pass_code }}</p></div>
+    <div class="input_wrapper grid_row">Дата создания: <p class="vitem_form_fields">{{ person.person.created }}</p></div>
+    <div class="input_wrapper grid_row">Автор: <p class="vitem_form_fields">{{ person.person.author.user.last_name }} {{ person.person.author.user.first_name }}</p></div>
+    <div class="input_wrapper grid_row">Адрес проживания: <p class="vitem_form_fields">{{ person.person.adr_fact }}</p></div>
+</div>
+{% endblock %}

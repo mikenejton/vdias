@@ -16,7 +16,6 @@ def vitem_form(request, vitem_id=None):
         vitem_qs = models.VerificationItem.objects.filter(id=vitem_id)
         if len(vitem_qs):
             vitem = vitem_qs[0]
-            print(vitem.author)
             if request.user.extendeduser.user_role.role_lvl <= 3 or vitem.author.user_role == request.user.extendeduser.user_role:
                 if request.method == 'GET':
                     context['vitem'] = vitem
@@ -26,12 +25,14 @@ def vitem_form(request, vitem_id=None):
                     if vitem.person:
                         context['person'] = vitem.person
                         scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
+                        form_template = 'verification/forms/vitem_agent.html'
                     else:
                         context['organization'] = vitem.organization
                         scan_q = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
+                        form_template = 'verification/forms/vitem_organization.html'
                     context['scan_q'] = scan_q
                     context['form'] = forms.VerificationItemForm(instance=vitem)
-                    return render(request, 'verification/forms/vitem_form.html', context)
+                    return render(request, form_template, context)
                 else:
                     if 'btn_save' in request.POST:
                         vitem.dias_status = request.POST['dias_status']
@@ -64,7 +65,7 @@ def vitem_form(request, vitem_id=None):
 
 
 @login_required
-def agent_form(request):
+def agent_form(request, agent_id=None):
     if request.user.extendeduser.user_role.role_name == 'FinAgent':
         agent_organization = models.OrganizationWithRole.objects.filter(organization_role = 'ФинАгент')
     elif request.user.extendeduser.user_role.role_name == 'FinBroker':
@@ -89,8 +90,15 @@ def agent_form(request):
             vi.save()
             return redirect(reverse('scan_upload', args=[vi.id]))
     else:
-        form = forms.PersonForm()
-    print(form.errors)
+        if agent_id:
+            person = models.Person.objects.filter(id = agent_id)
+            if len(person) > 0:
+                print(person)
+                form = forms.PersonForm(instance=person[0])
+            else:
+                return render(request, 'verification/404.html')
+        else:
+            form = forms.PersonForm()
     return render(request, 'verification/forms/agent_form.html', {'page_title': 'Создание агента', 'form': form, 'org_list': agent_organization})
 
 @login_required

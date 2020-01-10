@@ -10,6 +10,7 @@ urlpatterns = [
     path('find-vitem', views.find_vitem, name='find-vitem'),
     path('create-item', views.create_item, name='create-item'),
     path('create-item/agent', form_views.agent_form, name='create-agent'),
+    path('create-item/agent/<int:agent_id>', form_views.agent_form, name='create-agent'),
     path('scan-upload/<int:vitem_id>/', form_views.scan_upload, name='scan_upload'),
     path('vitem/<int:vitem_id>/', form_views.vitem_form, name='vitem'),
 ]
