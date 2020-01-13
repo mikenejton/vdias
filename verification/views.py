@@ -57,7 +57,7 @@ def create_item(request):
 
     elif request.POST['item_type'] == 'Штатный сотрудник':
         
-        return redirect('index')
+        return redirect('create-staff')
 
     elif request.POST['item_type'] == 'Контрагент':
         

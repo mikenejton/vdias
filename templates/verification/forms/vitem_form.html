@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <form action="{% url 'vitem' vitem.id %}" method="POST" style="height: 100%;">{% csrf_token %}
-<div class="scrolling_wrapper">
+<div class="scrolling_wrapper" id="app">
     <div class="gcard_vitem-view">
         <div class="gcard_vitem-view_header">
             Заявка на верификацию ({% firstof person.person_role organization.organization_role %})
@@ -60,10 +60,12 @@
                         {% if form.dias_status.value in 'Новая, В работе, На доработке, Доработано' %}
                             {% if form.to_fix.value == False %}
                                 {% if user.extendeduser.user_role.role_lvl < 3 %}
-                            <div class="input_wrapper"><button type="submit" class="btn_warn" name="btn_to_fix">На доработку</button></div>
+                            <button v-show="false" type="submit" name="btn_to_fix" id="btn_to_fix">На доработку</button>
+                            <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="needComment('btn_to_fix')">На доработку</button></div>
                                 {% endif %}
                             {% else %}
-                            <div class="input_wrapper"><button type="submit" class="btn_suc" name="btn_fixed">Доработано</button></div>
+                            <button v-show="false" type="submit" name="btn_fixed" id="btn_fixed">Доработано</button>
+                            <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="needComment('btn_fixed')">Доработано</button></div>
                             {% endif %}
                         {% endif %}
                         <div class="input_wrapper"><button type="submit" class="btn_prim" name="btn_save">Сохранить</button></div>
@@ -88,7 +90,7 @@
                 <div class="txt_wrapper">
                     <textarea name="chat_message" placeholder="Введите сообщение"></textarea>
                 </div>
-                <div class="input_wrapper"><button type="submit" class="btn_std" name="btn_add_comment">Отправить</button></div>
+                <div class="input_wrapper"><button type="submit" class="btn_std" name="btn_add_comment" id="btn_add_comment">Отправить</button></div>
             </div>
         </div>
         <div class="gcard_vitem-view_table">
@@ -116,6 +118,49 @@
         {% endif %}
         </div>
     </div>
+    <div class="modal_form" v-if="showModal">
+        <div class="mb-card" style="background: #fff; margin-top: 30vh;">
+            <div v-model="btnName" v-show="false"></div>
+            <div class="mb-card_header">Укажите причины/комментарий:</div>
+            <div class="mb-card_body">
+                <div class="txt_wrapper"><textarea name="fix_comment" v-model="msgText"></textarea></div>
+            </div>
+            <div class="mb-card_footer">
+                <div class="mb-card_footer_left"></div>
+                <div class="input_wrapper"><button type="button" name  class="btn_prim" v-on:click="sendFromModal()">Отправить</button></div>
+                <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="closeModal()">Закрыть</button></div>
+            </div>
+        </div>
+    </div> 
 </div>
 </form>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        delimiters: ['{', '}'],
+        data: {
+            showModal: false,
+            btnName: '',
+            msgText: '',
+        },
+        methods: {
+            needComment: function(sendBtnName){
+                this.showModal = true;
+                this.btnName = sendBtnName;
+            },
+            sendFromModal: function(){
+                sub_btn = document.getElementById(this.btnName)
+                if (this.msgText.length > 0){
+                    sub_btn.click();
+                }else{
+                    alert("Введите причины/комментарий");
+                };
+            },
+            closeModal: function(){
+                this.showModal = false;
+            },
+        },
+    })
+</script>
 {% endblock %}

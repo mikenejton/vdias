@@ -25,15 +25,16 @@ def vitem_form(request, vitem_id=None):
                     if vitem.person:
                         context['person'] = vitem.person
                         scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
-                        form_template = 'verification/forms/vitem_agent.html'
+                        form_template = 'verification/forms/objects/vitem_agent.html'
                     else:
                         context['organization'] = vitem.organization
                         scan_q = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
-                        form_template = 'verification/forms/vitem_organization.html'
+                        form_template = 'verification/forms/objects/vitem_organization.html'
                     context['scan_q'] = scan_q
                     context['form'] = forms.VerificationItemForm(instance=vitem)
                     return render(request, form_template, context)
                 else:
+                    print(request.POST)
                     if 'btn_save' in request.POST:
                         vitem.dias_status = request.POST['dias_status']
                         vitem.save()
@@ -42,20 +43,18 @@ def vitem_form(request, vitem_id=None):
                         vitem.fixed = False
                         vitem.dias_status = 'На доработке'
                         vitem.save()
+                        newChatMessage(vitem, '{}: {}'.format('На доработку', request.POST['fix_comment']), request.user.extendeduser)
                     elif 'btn_fixed' in request.POST:
                         vitem.to_fix = False
                         vitem.fixed = True
                         vitem.dias_status = 'Доработано'
                         vitem.save()
+                        newChatMessage(vitem, '{}: {}'.format('Доработано', request.POST['fix_comment']), request.user.extendeduser)
                     elif 'btn_take_to' in request.POST:
                         vitem.case_officer = request.user.extendeduser
                         vitem.save()
                     elif 'btn_add_comment' in request.POST and len(request.POST['chat_message']) > 0:                    
-                        new_msg = models.VitemChat()
-                        new_msg.vitem = vitem
-                        new_msg.msg = request.POST['chat_message']
-                        new_msg.author = request.user.extendeduser
-                        new_msg.save()
+                        newChatMessage(vitem, request.POST['chat_message'], request.user.extendeduser)
 
                     return redirect(reverse('vitem', args=[vitem_id]))
             else:
@@ -63,6 +62,12 @@ def vitem_form(request, vitem_id=None):
     
     return render(request, 'verification/404.html', context)
 
+def newChatMessage(vitem, message, author):
+    new_msg = models.VitemChat()
+    new_msg.vitem = vitem
+    new_msg.msg = message
+    new_msg.author = author
+    new_msg.save()
 
 @login_required
 def agent_form(request, agent_id=None):
@@ -72,6 +77,7 @@ def agent_form(request, agent_id=None):
         agent_organization = models.OrganizationWithRole.objects.filter(organization_role = 'ФинБрокер')
     elif request.user.extendeduser.user_role.role_lvl < 3: # уровень роли сотрудников АиС и Админа - 2 и 1 соответственно
         agent_organization = models.OrganizationWithRole.objects.all()
+    
     if request.method == 'POST':
         form = forms.PersonForm(data=request.POST)
         if form.is_valid():
@@ -79,14 +85,14 @@ def agent_form(request, agent_id=None):
             agent_role = models.PersonWithRole()
             agent_role.person = created_person
             agent_role.person_role = 'Агент'
-            agent_role.author = models.ExtendedUser.objects.get(id = request.user.id)
+            agent_role.author = request.user.extendeduser
             if 'related_organization' in request.POST:
                 agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
             agent_role.save()
             vi = models.VerificationItem()
             vi.person = agent_role
             vi.dias_status = 'Новая'
-            vi.author = models.ExtendedUser.objects.get(id = request.user.id)
+            vi.author = request.user.extendeduser
             vi.save()
             return redirect(reverse('scan_upload', args=[vi.id]))
     else:
@@ -99,7 +105,44 @@ def agent_form(request, agent_id=None):
                 return render(request, 'verification/404.html')
         else:
             form = forms.PersonForm()
-    return render(request, 'verification/forms/agent_form.html', {'page_title': 'Создание агента', 'form': form, 'org_list': agent_organization})
+    return render(request, 'verification/forms/objects/agent_form.html', {'page_title': 'Создание агента', 'form': form, 'org_list': agent_organization})
+
+@login_required
+def staff_form(request, staff_id=None):
+    if request.user.extendeduser.user_role == 'HR' or request.user.extendeduser.user_role.role_lvl < 3:
+        staff_organization = models.OrganizationWithRole.objects.filter(organization_role = 'Штатные сотрудники')
+    else:
+        return render(request, 'verification/404.html', {'err_txt': 'У вас недостаточно прав на создание заявки'})
+    if request.method == 'POST':
+        form = forms.PersonForm(data=request.POST)
+        if form.is_valid():
+            created_person = form.save()
+            staff_role = models.PersonWithRole()
+            staff_role.person = created_person
+            staff_role.person_role = 'Штатный сотрудник'
+            staff_role.author = request.user.extendeduser
+            if 'related_organization' in request.POST:
+                staff_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+            staff_role.save()
+            vi = models.VerificationItem()
+            vi.person = staff_role
+            vi.dias_status = 'Новая'
+            vi.author = request.user.extendeduser
+            vi.save()
+            return redirect(reverse('scan_upload', args=[vi.id]))
+    else:
+        if staff_id:
+            person = models.Person.objects.filter(id = agent_id)
+            if len(person) > 0:
+                print(person)
+                form = forms.PersonForm(instance=person[0])
+            else:
+                return render(request, 'verification/404.html')
+        else:
+            form = forms.PersonForm()
+    return render(request, 'verification/forms/objects/staff_form.html', {'page_title': 'Создание штатного сотрудника', 'form': form, 'org_list': staff_organization})
+
+
 
 @login_required
 def scan_upload(request, vitem_id=None):
