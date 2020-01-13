@@ -36,7 +36,16 @@ def vitem_form(request, vitem_id=None):
                 else:
                     print(request.POST)
                     if 'btn_save' in request.POST:
-                        vitem.dias_status = request.POST['dias_status']
+                        ff = forms.VerificationItemForm(request.POST)
+                        if ff.is_valid():
+                            for key in ff.fields:
+                                if hasattr(vitem, key):
+                                    if getattr(vitem, key) != ff.cleaned_data[key]:
+                                        setattr(vitem, key, ff.cleaned_data[key])
+                                print('{}: {}'.format(key, ff.cleaned_data[key]))
+                                print(type(ff.cleaned_data[key]))
+                        else:
+                            print(ff.errors)
                         vitem.save()
                     elif 'btn_to_fix' in request.POST:
                         vitem.to_fix = True

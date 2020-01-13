@@ -4,7 +4,7 @@
 <div class="scrolling_wrapper" id="app">
     <div class="gcard_vitem-view">
         <div class="gcard_vitem-view_header">
-            Заявка на верификацию ({% firstof person.person_role organization.organization_role %})
+            Заявка на верификацию&nbsp;<div> ({ vitemType })</div>
         </div>
         <div class="gcard_vitem-view_itemform">
             <div class="mb-card_body card_body-form">
@@ -17,6 +17,7 @@
                 <div class="itemform_controls_row">
                     {%if form.case_officer.value %}
                         Исполнитель: {{vitem.case_officer}}
+                        <input type="hidden" name="case_officer" value="{{form.case_officer.value}}">
                     {% else %}
                         {% if user.extendeduser.user_role.role_lvl < 3 %}
                         <button type="submit" class="btn_suc" name="btn_take_to">Принять в работу</button>
@@ -48,13 +49,6 @@
                 </div>
                 {% endif %}
                 {% if form.case_officer.value == user.id %}
-                {% if user.extendeduser.user_role.role_lvl < 3 %}
-                <div class="itemform_controls_row">
-                    <div class="txt_wrapper">
-                        <textarea name="dias_comment" placeholder="Комментарий ДИАС"></textarea>
-                    </div>
-                </div>
-                {% endif %}
                 <div class="itemform_controls_row">
                     <div class="itemform_controls_row_btns">
                         {% if form.dias_status.value in 'Новая, В работе, На доработке, Доработано' %}
@@ -71,7 +65,54 @@
                         <div class="input_wrapper"><button type="submit" class="btn_prim" name="btn_save">Сохранить</button></div>
                     </div>
                 </div>
-            {% endif %}
+                {% endif %}
+                {% if user.extendeduser.user_role.role_lvl <= 3 %}
+                <div class="mb-card_body card_body-form">
+                    <div class="card_body-form_column">
+                        <div class="itemform_controls_row">
+                            <div class="input_wrapper">{{form.fms_not_ok}}</div>
+                            <div class="input_wrapper"><label for="{{form.fms_not_ok.id_for_label}}">Паспорт недействителен</label></div>
+                        </div>
+                        <div class="itemform_controls_row">
+                            <div class="input_wrapper">{{form.rosfin}}</div>
+                            <div class="input_wrapper"><label for="{{form.rosfin.id_for_label}}">Есть совпадения по данным РосФинМонторинг</label></div>
+                        </div>
+                        <div class="itemform_controls_row">
+                            <div class="input_wrapper">{{form.docs_full}}</div>
+                            <div class="input_wrapper"><label for="{{form.docs_full.id_for_label}}">Загруженные документы проверены</label></div>
+                        </div>
+                        <div class="itemform_controls_row">
+                            <div class="input_wrapper"><input type="checkbox" v-model="isCronos"></div>
+                            <div class="txt_wrapper"><textarea name="cronos" placeholder="Информация по Кронос" :disabled="!isCronos">{{vitem.cronos}}</textarea></div>
+                        </div>
+                        <div class="itemform_controls_row">
+                            <div class="input_wrapper"><input type="checkbox" v-model="isFSSP"></div>
+                            <div class="txt_wrapper"><textarea name="fssp" placeholder="Информация по ФССП" :disabled="!isFSSP">{{vitem.fssp}}</textarea></div>
+                        </div>
+                        <div class="itemform_controls_row" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'">
+                            <div class="input_wrapper"><input type="checkbox" v-model="isConturFocus"></div>
+                            <div class="txt_wrapper"><textarea name="contur_focus" placeholder="Информация по Контур Фокус" :disabled="!isConturFocus">{{vitem.contur_focus}}</textarea></div>
+                        </div>
+                    </div>
+                    <div class="card_body-form_column">
+                        <div class="itemform_controls_row" style="flex: 1;">
+                            <div class="txt_wrapper"><textarea name="dias_comment" placeholder="Комментарий ДИАС">{{vitem.dias_comment}}</textarea></div>
+                        </div>
+                        <div class="itemform_controls_row">
+                            <div class="input_wrapper"><input type="checkbox" v-model="isСourt"></div>
+                            <div class="txt_wrapper"><textarea name="сourt" placeholder="Информация по судам" :disabled="!isСourt">{{vitem.сourt}}</textarea></div>
+                        </div>
+                        <div class="itemform_controls_row">
+                            <div class="input_wrapper"><input type="checkbox" v-model="isBankruptcy"></div>
+                            <div class="txt_wrapper"><textarea name="bankruptcy" placeholder="Информация по банкротсву" :disabled="!isBankruptcy">{{vitem.bankruptcy}}</textarea></div>
+                        </div>
+                        <div class="itemform_controls_row" v-show="vitemType == 'Партнер'">
+                            <div class="input_wrapper"><input type="checkbox" v-model="isAffiliation"></div>
+                            <div class="txt_wrapper"><textarea name="affiliation" placeholder="Аффилированность" :disabled="!isAffiliation">{{vitem.affiliation}}</textarea></div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             <!-- FORM -->
             </div>
         </div>
@@ -143,6 +184,14 @@
             showModal: false,
             btnName: '',
             msgText: '',
+            isCronos: (('{{form.cronos.value}}'.length)? true: false),
+            isFSSP: (('{{form.fssp.value}}'.length)? true: false),
+            isConturFocus: (('{{form.contur_focus.value}}'.length)? true: false),
+            isСourt: (('{{form.сourt.value}}'.length)? true: false),
+            isBankruptcy: (('{{form.bankruptcy.value}}'.length)? true: false),
+            isAffiliation: (('{{form.affiliation.value}}'.length)? true: false),
+            vitemType: '{% firstof person.person_role organization.organization_role %}',
+
         },
         methods: {
             needComment: function(sendBtnName){
