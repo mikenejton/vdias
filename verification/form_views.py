@@ -83,7 +83,7 @@ def newChatMessage(vitem, message, author):
     new_msg.msg = message
     new_msg.author = author
     new_msg.save()
-    subfunc.update_logger('VitemChat', new_msg.id, '', request.user.extendeduser)
+    subfunc.update_logger('VitemChat', new_msg.id, '', author)
 
 @login_required
 def agent_form(request, obj_id=None):
@@ -109,7 +109,8 @@ def agent_form(request, obj_id=None):
                     agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
                     agent_role.save()
                 created_person.save()
-                return redirect('index')
+                vi = models.VerificationItem.objects.get(person__id=agent_role.id)
+                return redirect(reverse('vitem', args=[vi.id]))
             else:
                 subfunc.update_logger('Person', created_person.id, '', request.user.extendeduser)
                 agent_role = models.PersonWithRole()
@@ -166,8 +167,10 @@ def staff_form(request, obj_id=None):
                     staff_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
                     staff_role.save()
                 created_person.save()
-                return redirect('index')
+                vi = models.VerificationItem.objects.get(person__id=staff_role.id)
+                return redirect(reverse('vitem', args=[vi.id]))
             else:
+                created_person = form.save()
                 subfunc.update_logger('Person', created_person.id, '', request.user.extendeduser)
                 staff_role = models.PersonWithRole()
                 staff_role.person = created_person
@@ -200,7 +203,47 @@ def staff_form(request, obj_id=None):
     context['form'] = form
     return render(request, 'verification/forms/objects/person_form.html', context)
 
+@login_required
+def partner_form(request, obj_id=None):
+    context = {}
+    if request.method == 'GET':
+        if obj_id:
+            organization_wr = models.OrganizationWithRole.objects.filter(id = obj_id)
+            if len(organization_wr) > 0:
+                organization = organization_wr[0].organization
+                form = forms.OrganizationForm(instance=organization)
+                context['page_title'] = 'Партнер'
+                context['organization_wr'] = organization_wr[0]
+            else:
+                return render(request, 'verification/404.html')
+        else:
+            form = forms.PersonForm()
+            context['page_title'] = 'Создание партнера'
+            context['form'] = form
+        return render(request, 'verification/forms/objects/organization_form.html', context)
+    else:
+        pass
 
+@login_required
+def counterparty_form(request, obj_id=None):
+    context = {}
+    if request.method == 'GET':
+        if obj_id:
+            organization_wr = models.OrganizationWithRole.objects.filter(id = obj_id)
+            if len(organization_wr) > 0:
+                organization = organization_wr[0].organization
+                form = forms.OrganizationForm(instance=organization)
+                context['page_title'] = 'Контрагент'
+                context['organization_wr'] = organization_wr[0]
+            else:
+                return render(request, 'verification/404.html')
+        else:
+            form = forms.PersonForm()
+            context['page_title'] = 'Создание контрагента'
+            context['form'] = form
+        return render(request, 'verification/forms/objects/organization_form.html', context)
+    else:
+        pass
 
 @login_required
 def scan_upload(request, vitem_id=None):

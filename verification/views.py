@@ -37,7 +37,7 @@ def create_item(request):
 
     elif request.POST['item_type'] == 'Партнер':
 
-        return redirect('index')
+        return redirect('create-partner')
 
     elif request.POST['item_type'] == 'Штатный сотрудник':
         
@@ -45,4 +45,4 @@ def create_item(request):
 
     elif request.POST['item_type'] == 'Контрагент':
         
-        return redirect('index')
+        return redirect('create-counterparty')

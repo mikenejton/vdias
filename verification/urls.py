@@ -15,6 +15,10 @@ urlpatterns = [
     path('create-item/agent/<int:obj_id>', form_views.agent_form, name='create-agent'),
     path('create-item/staff', form_views.staff_form, name='create-staff'),
     path('create-item/staff/<int:obj_id>', form_views.staff_form, name='create-staff'),
+    path('create-item/partner', form_views.partner_form, name='create-partner'),
+    path('create-item/partner/<int:obj_id>', form_views.partner_form, name='create-partner'),
+    path('create-item/counterparty', form_views.counterparty_form, name='create-counterparty'),
+    path('create-item/counterparty/<int:obj_id>', form_views.counterparty_form, name='create-counterparty'),
     
 ]
 

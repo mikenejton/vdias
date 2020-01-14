@@ -73,20 +73,55 @@
                 <div class="mb-card_body card_body-form">
                     <div class="card_body-form_column">
                         <div class="itemform_controls_row">
-                            <div class="input_wrapper">{{form.fms_not_ok}}</div>
-                            <div class="input_wrapper"><label for="{{form.fms_not_ok.id_for_label}}">Паспорт недействителен</label></div>
+                            <legend>Паспорт недействителен:</legend>
+                            <div class="input_wrapper">
+                                <input type="radio" name="fms_not_ok" value="True" id="fms_true" {%if form.fms_not_ok.value == True %} checked {% endif %}>
+                            </div>
+                            <div class="input_wrapper">
+                                <label for="fms_true">Да</label>
+                            </div>
+                            <div class="input_wrapper">
+                                <input type="radio" name="fms_not_ok"  value="False" id="fms_false" {%if form.fms_not_ok.value == False %} checked {% endif %}>
+                            </div>
+                            <div class="input_wrapper">
+                                <label for="fms_false">Нет</label>
+                            </div>
                         </div>
                         <div class="itemform_controls_row">
-                            <div class="input_wrapper">{{form.rosfin}}</div>
-                            <div class="input_wrapper"><label for="{{form.rosfin.id_for_label}}">Есть совпадения по данным РосФинМонторинг</label></div>
+                            <legend>Есть совпадения РосФинМониторинг:</legend>
+                            <div class="input_wrapper">
+                                <input type="radio" name="rosfin" value="True" id="rosfin_true" {%if form.rosfin.value == True %} checked {% endif %}>
+                            </div>
+                            <div class="input_wrapper">
+                                <label for="rosfin_true">Да</label>
+                            </div>
+                            <div class="input_wrapper">
+                                <input type="radio" name="rosfin"  value="False" id="rosfin_false" {%if form.rosfin.value == False %} checked {% endif %}>
+                            </div>
+                            <div class="input_wrapper">
+                                <label for="rosfin_false">Нет</label>
+                            </div>
                         </div>
                         <div class="itemform_controls_row">
-                            <div class="input_wrapper">{{form.docs_full}}</div>
-                            <div class="input_wrapper"><label for="{{form.docs_full.id_for_label}}">Загруженные документы проверены</label></div>
+                            <legend>Документы проверены:</legend>
+                            <div class="input_wrapper">
+                                <input type="radio" name="docs_full" value="True" id="docs_full_true" {%if form.docs_full.value == True %} checked {% endif %}>
+                            </div>
+                            <div class="input_wrapper">
+                                <label for="docs_full_true">Да</label>
+                            </div>
+                            <div class="input_wrapper">
+                                <input type="radio" name="docs_full"  value="False" id="docs_full_false" {%if form.docs_full.value == False %} checked {% endif %}>
+                            </div>
+                            <div class="input_wrapper">
+                                <label for="docs_full_false">Нет</label>
+                            </div>
                         </div>
-                        <div class="itemform_controls_row">
-                            <div class="input_wrapper"><input type="checkbox" v-model="isCronos"></div>
-                            <div class="txt_wrapper"><textarea name="cronos" placeholder="Информация по Кронос" :disabled="!isCronos">{{vitem.cronos}}</textarea></div>
+                        <div class="itemform_controls">
+                            <div class="itemform_controls_row">
+                                <div class="input_wrapper"><input type="checkbox" v-model="isCronos"></div>
+                                <div class="txt_wrapper"><textarea name="cronos" placeholder="Информация по Кронос" :disabled="!isCronos">{{vitem.cronos}}</textarea></div>
+                            </div>
                         </div>
                         <div class="itemform_controls_row">
                             <div class="input_wrapper"><input type="checkbox" v-model="isFSSP"></div>
@@ -109,7 +144,7 @@
                             <div class="input_wrapper"><input type="checkbox" v-model="isBankruptcy"></div>
                             <div class="txt_wrapper"><textarea name="bankruptcy" placeholder="Информация по банкротсву" :disabled="!isBankruptcy">{{vitem.bankruptcy}}</textarea></div>
                         </div>
-                        <div class="itemform_controls_row" v-show="vitemType == 'Партнер'">
+                        <div class="itemform_controls_row" v-show="vitemType == 'Контрагент'">
                             <div class="input_wrapper"><input type="checkbox" v-model="isAffiliation"></div>
                             <div class="txt_wrapper"><textarea name="affiliation" placeholder="Аффилированность" :disabled="!isAffiliation">{{vitem.affiliation}}</textarea></div>
                         </div>

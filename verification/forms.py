@@ -6,11 +6,10 @@ class PersonForm(ModelForm):
         model = models.Person
         fields = '__all__'
         
-class PersonWithRoleForm(ModelForm):
+class OrganizationForm(ModelForm):
     class Meta:
-        model = models.PersonWithRole
+        model = models.Organization
         fields = '__all__'
-
 class DocStorageForm(ModelForm):
     class Meta:
         model = models.DocStorage
@@ -20,3 +19,13 @@ class VerificationItemForm(ModelForm):
     class Meta:
         model = models.VerificationItem
         fields = ('dias_status', 'to_fix', 'fixed', 'dias_comment', 'case_officer', 'cronos', 'fms_not_ok', 'rosfin', 'fssp', 'docs_full', 'bankruptcy', 'сourt', 'contur_focus', 'affiliation')
+
+class PersonWithRoleForm(ModelForm):
+    class Meta:
+        model = models.PersonWithRole
+        fields = '__all__'
+
+class OrganizationWithRoleForm(ModelForm):
+    class Meta:
+        model = models.OrganizationWithRole
+        fields = '__all__'

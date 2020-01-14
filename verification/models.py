@@ -100,7 +100,7 @@ class VerificationItem(models.Model):
     dias_comment = models.TextField('Комментарий ДИАС', blank=True, null=True)
     case_officer = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='CaseOfficer', blank=True, null=True, verbose_name='Исполнитель')
     cronos = models.TextField('Кронос', blank=True, null=True, default='')
-    fms_not_ok = models.BooleanField('ФМС', default=False)
+    fms_not_ok = models.BooleanField('ФМС', blank=True, null=True)
     rosfin = models.BooleanField('Росфинмониторинг', default=False)
     fssp = models.TextField('ФССП', blank=True, null=True, default='')
     docs_full = models.BooleanField('Полнота и качество документов', default=False)
