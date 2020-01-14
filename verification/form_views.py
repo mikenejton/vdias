@@ -28,12 +28,12 @@ def vitem_form(request, vitem_id=None):
                         context['person'] = vitem.person
                         scan_q = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
                         form_template = 'verification/forms/objects/vitem_agent.html'
-                        context['edit_link'] = ['create-agent' if vitem.person.person_role == 'Агент' else 'create-staff', vitem.person.id]
+                        context['edit_link'] = ['detailing-agent' if vitem.person.person_role == 'Агент' else 'detailing-staff', vitem.person.id]
                     else:
                         context['organization'] = vitem.organization
                         scan_q = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
                         form_template = 'verification/forms/objects/vitem_organization.html'
-                        context['edit_link'] = ['create-partner' if vitem.organization.organization_role == 'Партнер' else 'create-counterparty', vitem.organization.id]
+                        context['edit_link'] = ['detailing-partner' if vitem.organization.organization_role == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
                     context['scan_q'] = scan_q
                     context['form'] = forms.VerificationItemForm(instance=vitem)
                     return render(request, form_template, context)
