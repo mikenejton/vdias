@@ -34,7 +34,7 @@ class Person(models.Model):
     pass_org = models.CharField('Кем выдан', max_length=500, blank=True, null=True)
     pass_code = models.CharField('Код подразделения', max_length=7, blank=True, null=True)
     sneals = models.CharField('СНИЛС', max_length = 14, blank=True, null=True, unique=True)
-    phone_number = models.CharField('Телефон', max_length = 11, blank=True, null=True)
+    phone_number = models.CharField('Телефон', max_length = 11, blank=True, null=True, unique=True)
     email = models.EmailField('Email', blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
@@ -46,7 +46,8 @@ class Person(models.Model):
         return self.fio
     
     class Meta:
-        unique_together = [['last_name', 'first_name', 'patronymic']]
+        unique_together = [['last_name', 'first_name', 'patronymic', 'dob']]
+        verbose_name = 'Физ.лицо'
 
 class Organization(models.Model):
     org_form = models.CharField('Орг форма', max_length = 100)
