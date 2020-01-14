@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-card card_centered" id="vuePart">
+    <form action="" method="post">
+    {% csrf_token %}
+    <div class="mb-card_header">{{page_title}}</div>
+    <div class="mb-card_body card_body-form">
+        <div class="card_body-form_column">
+            <input class="form_input" type="text" name="last_name" placeholder="Фамилия" required value={%if form.last_name.value %}{{form.last_name.value}}{%endif%}>
+            <input class="form_input" type="text" name="first_name" placeholder="Имя" required value={%if form.first_name.value %}{{form.first_name.value}}{%endif%}>
+            <input class="form_input" type="text" name="patronymic" placeholder="Отчество" value={%if form.patronymic.value %}{{form.patronymic.value}}{%endif%}>
+            <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" placeholder="Дата рождения" required value={%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}>
+            <input class="form_input" type="text" name="pob" placeholder="Место рождения" value={%if form.pob.value %}{{form.pob.value}}{%endif%}>
+            <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' required>
+            <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" required>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
+        </div>
+        <div class="card_body-form_column">
+            <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'" v-model='phone' required>
+            <input class="form_input" type="email" name="email" placeholder="Email" value={%if form.email.value %}{{form.email.value}}{%endif%}>
+            <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" v-mask="'#### ######'" v-model='pass_sn' required>
+            <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" required value={%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}>
+            <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" required value={%if form.pass_org.value %}{{form.pass_org.value}}{%endif%}>
+            <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" v-mask="'###-###'" v-model='pass_code' required>
+            <textarea class="form_input wide_textarea" type="text" name="adr_fact" placeholder="Адрес проживания">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
+        </div>
+        {%if person_wr %}
+            <input type="hidden" name="id" value="{{person_wr.person.id}}">
+            <input type="hidden" name="author" value="{{person_wr.person.author.id}}">
+        {% else %}
+            <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
+        {% endif %}
+    </div>
+    {% if form.errors %}
+    <div class="mb-card_errors">
+        {% for field in form %}
+            {% if field.errors %}
+            <p class="error_txt">{{ field.label }}: <i>{{ field.errors }}</i></p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <div class="mb-card_footer">
+        <select name="related_organization" class="form_input" required>
+                <option value="0" selected disabled>Организация</option>
+            {% for org in org_list %}
+                <option value="{{ org.organization.id}}" {% if person_wr.related_organization.id == org.organization.id  %} selected {% endif %}>{{org.organization.full_name}}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn_prim">Сохранить</button>
+    </div>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js"></script>
+
+<script>
+    Vue.use(VueMask.VueMaskPlugin);
+    var app = new Vue({
+        el: '#vuePart',
+        delimiters: ['[{', '}]'],
+        data: {
+            sneals: '{{form.sneals.value}}',
+            phone: '{{form.phone_number.value}}',
+            pass_sn: '{{form.pass_sn.value}}',
+            pass_code: '{{form.pass_code.value}}',
+        },
+    });
+    
+</script>
+{% endblock %}

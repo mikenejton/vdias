@@ -42,6 +42,9 @@ button{
     color: #212529;
     width: max-content;
 }
+.white-text{
+    color: #fff;
+}
 /* button:hover{background: #859fb59c;} */
 button:hover{filter: brightness(1.2);}
 button:active{filter: brightness(0.85);}

@@ -12,9 +12,9 @@ urlpatterns = [
     path('vitem/<int:vitem_id>/', form_views.vitem_form, name='vitem'),
     path('create-item', views.create_item, name='create-item'),
     path('create-item/agent', form_views.agent_form, name='create-agent'),
-    path('create-item/agent/<int:agent_id>', form_views.agent_form, name='create-agent'),
+    path('create-item/agent/<int:obj_id>', form_views.agent_form, name='create-agent'),
     path('create-item/staff', form_views.staff_form, name='create-staff'),
-    path('create-item/staff/<int:staff_id>', form_views.staff_form, name='create-staff'),
+    path('create-item/staff/<int:obj_id>', form_views.staff_form, name='create-staff'),
     
 ]
 

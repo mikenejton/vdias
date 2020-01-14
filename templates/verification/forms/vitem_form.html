@@ -4,7 +4,10 @@
 <div class="scrolling_wrapper" id="app">
     <div class="gcard_vitem-view">
         <div class="gcard_vitem-view_header">
-            Заявка на верификацию&nbsp;<div> ({ vitemType })</div>
+            <div class="input_wrapper">
+            Заявка на верификацию&nbsp;({ vitemType })</div>
+            <div style="flex:1;"></div>
+            <div class="input_wrapper"><a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1 %}">Редактировать</a></div>
         </div>
         <div class="gcard_vitem-view_itemform">
             <div class="mb-card_body card_body-form">
