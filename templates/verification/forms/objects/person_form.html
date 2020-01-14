@@ -32,9 +32,14 @@
     </div>
     {% if form.errors %}
     <div class="mb-card_errors">
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+                <p class="error_txt"><i>{{ error }}</i></p>
+            </div>
+        {% endfor %}
         {% for field in form %}
             {% if field.errors %}
-            <p class="error_txt">{{ field.label }}: <i>{{ field.errors }}</i></p>
+            <p class="error_txt">{{ field.label }}: {%for error in field.errors%}<i>{{ error }}</i>{% endfor %}</p>
             {% endif %}
         {% endfor %}
     {% endif %}

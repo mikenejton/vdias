@@ -20,8 +20,8 @@
     {% for item in result %}
         <tr>
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}"># {{ item.id}}</a></td>
-            <td>{{ item.person.person }}</td>
-            <td>{{ item.organization.organization }}</td>
+            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{{ item.person.person }}</a></td>
+            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{{ item.organization.organization }}</a></td>
             <td>{{ item.dias_status }}</td>
             <td>{{ item.to_fix }}</td>
             <td>{{ item.case_officer.user.last_name }} {{ item.case_officer.user.last_name }}</td>

@@ -1,11 +1,25 @@
 from django.forms import ModelForm
+from django.core.exceptions import ValidationError
+from datetime import datetime
 from . import models
 
 class PersonForm(ModelForm):
     class Meta:
         model = models.Person
         fields = '__all__'
+    def clean(self):
+        cleaned_data=super(PersonForm, self).clean()
+        print(type(cleaned_data.get('dob')))
+        date_diff = datetime.now().date() - cleaned_data.get('dob')
+        if round(date_diff.days/365.25, 0)  < 18:
+            raise ValidationError({'dob': 'Возраст менее 18-ти лет!'})
+        elif round(date_diff.days/365.25, 0)  > 99:
+            raise ValidationError({'dob': 'Возраст более 99-ти лет!'})
         
+
+
+
+
 class OrganizationForm(ModelForm):
     class Meta:
         model = models.Organization

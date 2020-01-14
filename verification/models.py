@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.urls import reverse
 
 # User's extends
 class UserRole(models.Model):
@@ -28,11 +29,11 @@ class Person(models.Model):
     pob = models.CharField('Место рождения', max_length=300, blank=True, null=True)
     adr_reg = models.CharField('Адрес регистрации', max_length=500, blank=True, null=True)
     adr_fact = models.CharField('Адрес проживания', max_length=500, blank=True, null=True)
-    pass_sn = models.CharField('Серия-номер паспорта', max_length=11, blank=True, null=True)
+    pass_sn = models.CharField('Серия-номер паспорта', max_length=11, blank=True, null=True, unique=True)
     pass_date = models.DateField('Дата выдачи', blank=True, null=True)
     pass_org = models.CharField('Кем выдан', max_length=500, blank=True, null=True)
     pass_code = models.CharField('Код подразделения', max_length=7, blank=True, null=True)
-    sneals = models.CharField('СНИЛС', max_length = 14, blank=True, null=True)
+    sneals = models.CharField('СНИЛС', max_length = 14, blank=True, null=True, unique=True)
     phone_number = models.CharField('Телефон', max_length = 11, blank=True, null=True)
     email = models.EmailField('Email', blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
@@ -43,6 +44,9 @@ class Person(models.Model):
     
     def __str__(self):
         return self.fio
+    
+    class Meta:
+        unique_together = [['last_name', 'first_name', 'patronymic']]
 
 class Organization(models.Model):
     org_form = models.CharField('Орг форма', max_length = 100)
@@ -101,9 +105,9 @@ class VerificationItem(models.Model):
     case_officer = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='CaseOfficer', blank=True, null=True, verbose_name='Исполнитель')
     cronos = models.TextField('Кронос', blank=True, null=True, default='')
     fms_not_ok = models.BooleanField('ФМС', blank=True, null=True)
-    rosfin = models.BooleanField('Росфинмониторинг', default=False)
+    rosfin = models.BooleanField('Росфинмониторинг', blank=True, null=True)
     fssp = models.TextField('ФССП', blank=True, null=True, default='')
-    docs_full = models.BooleanField('Полнота и качество документов', default=False)
+    docs_full = models.BooleanField('Полнота и качество документов', blank=True, null=True)
     bankruptcy = models.TextField('Сайт по банкротству', blank=True, null=True, default='')
     сourt = models.TextField('Суды', blank=True, null=True, default='')
     contur_focus = models.TextField('Контур-Фокус', blank=True, null=True, default='')

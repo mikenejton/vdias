@@ -112,6 +112,7 @@ def agent_form(request, obj_id=None):
                 vi = models.VerificationItem.objects.get(person__id=agent_role.id)
                 return redirect(reverse('vitem', args=[vi.id]))
             else:
+                created_person = form.save()
                 subfunc.update_logger('Person', created_person.id, '', request.user.extendeduser)
                 agent_role = models.PersonWithRole()
                 agent_role.person = created_person
@@ -128,6 +129,9 @@ def agent_form(request, obj_id=None):
                 vi.save()
                 subfunc.update_logger('VerificationItem', vi.id, '', request.user.extendeduser)
                 return redirect(reverse('scan_upload', args=[vi.id]))
+        else:
+            print(form.errors)
+
     else:
         if obj_id:
             person_wr = models.PersonWithRole.objects.filter(id = obj_id)
