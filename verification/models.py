@@ -159,6 +159,7 @@ class DocStorage(models.Model):
     scan = models.BooleanField('Скан', default=False)
     original = models.BooleanField('Оригинал', default=False)
     accepted = models.BooleanField('Проверен', default=False)
+    to_del = models.BooleanField('На удаление', default=False)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):

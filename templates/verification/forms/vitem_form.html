@@ -173,27 +173,35 @@
             </div>
         </div>
         <div class="gcard_vitem-view_table">
-        {% if scan_q %}
+        {% if scan_list %}
+            <div class="input_wrapper">Загруженные сканы</div>
             <table>
                 <thead>
                     <th>ID объекта</th>
                     <th>Тип документа</th>
-                    <th>Файл</th>
                     <th>Загружен</th>
                     <th>Автор</th>
                 </thead>
-                {% for item in scan_q %}
+                {% for item in scan_list %}
                 <tr>
                     <td>{{item.model_id}}</td>
-                    <td>{{item.doc_type}}</td>
-                    <td><a class="link" target="_blank" href="{{ item.scan_file.url }}">{{ item.file_name }}</a></td>
+                    <td><a class="link" target="_blank" href="{{ item.scan_file.url }}">{{ item.doc_type }}</a></td>
                     <td>{{item.created}}</td>
                     <td>{{item.author.user.last_name}} {{item.author.user.first_name}}</td>
                 </tr>
                 {% endfor %}
+                {% if deleted_scan_list %}
+                    <tr class="sep-tr"><td>Удаленные сканы</td></tr>
+                    {% for item in deleted_scan_list %}
+                    <tr>
+                        <td>{{item.model_id}}</td>
+                        <td><a class="link" target="_blank" href="{{ item.scan_file.url }}">{{ item.doc_type }}</a></td>
+                        <td>{{item.created}}</td>
+                        <td>{{item.author.user.last_name}} {{item.author.user.first_name}}</td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
             </table>
-        {% else %}
-            <p class="error_txt">No scans found</p>
         {% endif %}
         </div>
     </div>

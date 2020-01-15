@@ -4,31 +4,99 @@
     <form action="" method="post">
     {% csrf_token %}
     <div class="mb-card_header">{{page_title}}</div>
-    <div class="mb-card_body card_body-form">
-        <div class="card_body-form_column">
-            <input class="form_input" type="text" name="last_name" placeholder="Фамилия" required value={%if form.last_name.value %}{{form.last_name.value}}{%endif%}>
-            <input class="form_input" type="text" name="first_name" placeholder="Имя" required value={%if form.first_name.value %}{{form.first_name.value}}{%endif%}>
-            <input class="form_input" type="text" name="patronymic" placeholder="Отчество" value={%if form.patronymic.value %}{{form.patronymic.value}}{%endif%}>
-            <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" placeholder="Дата рождения" required value={%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}>
-            <input class="form_input" type="text" name="pob" placeholder="Место рождения" value={%if form.pob.value %}{{form.pob.value}}{%endif%}>
-            <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' required minlength="14">
-            <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" required>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
+    <div class="multitab-form">
+        <div class="multitab-form_buttons">
+            <a class="sibar-menu_item" v-bind:class="{ active: currentTab=='Object'}" @click="changeTab('Object')">Агент</a>
+            <a class="sibar-menu_item" v-bind:class="{ active: currentTab=='Scan'}" @click="changeTab('Scan')">Сканы</a>
+        </div>  
+        <div class="mb-card_body card_body-form" v-show="currentTab=='Object'">
+            <div class="card_body-form_column">
+                <input class="form_input" type="text" name="last_name" placeholder="Фамилия" required value={%if form.last_name.value %}{{form.last_name.value}}{%endif%}>
+                <input class="form_input" type="text" name="first_name" placeholder="Имя" required value={%if form.first_name.value %}{{form.first_name.value}}{%endif%}>
+                <input class="form_input" type="text" name="patronymic" placeholder="Отчество" value={%if form.patronymic.value %}{{form.patronymic.value}}{%endif%}>
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" placeholder="Дата рождения" required value={%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}>
+                <input class="form_input" type="text" name="pob" placeholder="Место рождения" value={%if form.pob.value %}{{form.pob.value}}{%endif%}>
+                <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' required minlength="14">
+                <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" required>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
+            </div>
+            <div class="card_body-form_column">
+                <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'" v-model='phone' required minlength="11">
+                <input class="form_input" type="email" name="email" placeholder="Email" value={%if form.email.value %}{{form.email.value}}{%endif%}>
+                <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" v-mask="'#### ######'" v-model='pass_sn' required minlength="11">
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" required value={%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}>
+                <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" required value={%if form.pass_org.value %}{{form.pass_org.value}}{%endif%}>
+                <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" v-mask="'###-###'" v-model='pass_code' required minlength="7">
+                <textarea class="form_input wide_textarea" type="text" name="adr_fact" placeholder="Адрес проживания">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
+            </div>
+            {%if person_wr %}
+                <input type="hidden" name="id" value="{{person_wr.person.id}}">
+                <input type="hidden" name="author" value="{{person_wr.person.author.id}}">
+            {% else %}
+                <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
+            {% endif %}
         </div>
-        <div class="card_body-form_column">
-            <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'" v-model='phone' required minlength="11">
-            <input class="form_input" type="email" name="email" placeholder="Email" value={%if form.email.value %}{{form.email.value}}{%endif%}>
-            <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" v-mask="'#### ######'" v-model='pass_sn' required minlength="11">
-            <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" required value={%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}>
-            <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" required value={%if form.pass_org.value %}{{form.pass_org.value}}{%endif%}>
-            <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" v-mask="'###-###'" v-model='pass_code' required minlength="7">
-            <textarea class="form_input wide_textarea" type="text" name="adr_fact" placeholder="Адрес проживания">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
+        <div class="mb-card_body" v-show="currentTab=='Scan'">
+            <div class="itemform_controls_row">
+                {% if person_wr %}
+                <div class="input_wrapper">
+                    <select name="doc_type">
+                        <option value="None" disabled selected>Тип документа</option>
+                        {% for d_type in doc_types %}
+                            <option value="{{ d_type }}">{{ d_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input_wrapper">
+                    <input type="file" class="form_input" name="scan_file" accept="image/*,.pdf">
+                </div>
+                <div class="input_wrapper" style="align-items: flex-end;">
+                    <button type="submit" class="btn_std" name="btn_upload" >Загрузить</button>
+                </div>
+                {% else %}
+                    <p class="error_txt">Сначала заполните и сохраните данные физ.лица</p>
+                {% endif %}
+            </div>
+            
+            {% if scan_list %}
+            <div class="input_wrapper">Загруженные сканы</div>
+            <table>
+                <thead>
+                    <td>Тип файла</td>
+                    <td>Загружен</td>
+                    <td>Автор</td>
+                    <td></td>
+                </thead>
+            {% for scan in scan_list %}
+                <tr>
+                    <td><a class="link" target="_blank" href="{{ scan.scan_file.url }}">{{ scan.doc_type }}</a></td>
+                    <td>{{scan.created|date:"d.m.Y h:m:s"}}</td>
+                    <td>{{scan.author.user.last_name}} {{scan.author.user.first_name}}</td>
+                    <td><a href="{% url 'scan-delete' scan_id=scan.id %}" class="link error_txt">Удалить</a></td>
+                </tr>
+            {% endfor %}
+            </table>
+            {%endif%}
+            
+            {% if deleted_scan_list %}
+            <div class="input_wrapper">Удаленные сканы</div>
+            <table>
+                <thead>
+                    <td>Тип файла</td>
+                    <td>Загружен</td>
+                    <td>Автор</td>
+                    <td></td>
+                </thead>
+            {% for deleted_scan in deleted_scan_list %}
+                <tr>
+                    <td><a class="link" target="_blank" href="{{ deleted_scan.scan_file.url }}">{{ deleted_scan.doc_type }}</a></td>
+                    <td>{{deleted_scan.created|date:"d.m.Y h:m:s"}}</td>
+                    <td>{{deleted_scan.author.user.last_name}} {{deleted_scan.author.user.first_name}}</td>
+                    <td><a></a></td>
+                </tr>
+            {% endfor %}
+            </table>
+            {%endif%}
         </div>
-        {%if person_wr %}
-            <input type="hidden" name="id" value="{{person_wr.person.id}}">
-            <input type="hidden" name="author" value="{{person_wr.person.author.id}}">
-        {% else %}
-            <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
-        {% endif %}
     </div>
     {% if form.errors %}
     <div class="mb-card_errors">
@@ -43,7 +111,7 @@
             {% endif %}
         {% endfor %}
     {% endif %}
-    <div class="mb-card_footer">
+    <div class="mb-card_footer" v-show="currentTab=='Object'">
         <select name="related_organization" class="form_input" required>
                 <option value="0" selected disabled>Организация</option>
             {% for org in org_list %}
@@ -66,7 +134,14 @@
             phone: '{{form.phone_number.value}}',
             pass_sn: '{{form.pass_sn.value}}',
             pass_code: '{{form.pass_code.value}}',
+            currentTab: 'Object'
         },
+        methods:{
+            changeTab:function(tabName){
+                console.log(tabName)
+                this.currentTab = tabName;
+            }
+        }
     });
     
 </script>

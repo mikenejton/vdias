@@ -22,6 +22,7 @@ body{
 a{
     text-decoration: none;
     color: #212529;
+    cursor: pointer;
 }
 a.link:hover{
     text-decoration: underline;
@@ -220,6 +221,9 @@ table tbody tr:hover {background: #303b445e; transition-duration: 0.2s;}
 th, td{
     padding: 5px 10px;
 }
+.sep-tr{
+    color: #d63200;
+}
 /*  */
 
 /* grid card vitem */
@@ -277,8 +281,13 @@ th, td{
 .growing_block{
     flex: 1;
 }
-
-
+.multitab-form{
+    display: flex;
+    flex-direction: row;
+}
+.multitab-form_buttons{
+    border-right: 1px solid #ced4da;
+}
 .gcard_vitem-view_table{
     grid-area: form-table;
     overflow-y: auto;
