@@ -221,8 +221,9 @@ table tbody tr:hover {background: #303b445e; transition-duration: 0.2s;}
 th, td{
     padding: 5px 10px;
 }
-.sep-tr{
+.sep-tr, .sep-tr td{
     color: #d63200;
+    background: #fff;
 }
 /*  */
 
