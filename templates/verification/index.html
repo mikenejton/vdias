@@ -20,26 +20,5 @@
             </div>
         </div>
     </form>
-    {% if user.extendeduser.user_role.role_lvl <= 3 %}
-        <div class="mb-card">
-            <div class="mb-card_header">Я - исполнитель</div>
-            <div class="mb-card_body">Всего; В работе; Закрыто</p></div>
-            <div class="mb-card_footer"><div class="mb-card_footer_left"></div><button class="btn_std">Открыть</button></div>
-        </div>
-    {% endif %}
-    <div class="mb-card">
-        <div class="mb-card_header">Мои заявки</div>
-        <div class="mb-card_body">
-            Всего
-            В работе
-            Закрыто
-        </div>
-        <div class="mb-card_footer"><div class="mb-card_footer_left"></div><button class="btn_std">Открыть</button></div>
-    </div>
-    <div class="mb-card">
-        <div class="mb-card_header">Доработки</div>
-        <div class="mb-card_body">На доработке; Доработано</div>
-        <!-- <div class="mb-card_footer"><div class="mb-card_footer_left"></div><button class="btn_std">Открыть</button></div> -->
-    </div>
 </div>
 {% endblock %}

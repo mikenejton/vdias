@@ -1,11 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from . import models
+from . import utils
 
                 
 @login_required
 def index(request):
-    return render(request, 'verification/index.html', {'page_title': 'Home'})
+    context = utils.get_base_context(request.user)
+    context['page_title'] = 'Верификация'
+    print(context)
+    return render(request, 'verification/index.html', context)
 
 @login_required
 def find_vitem(request):

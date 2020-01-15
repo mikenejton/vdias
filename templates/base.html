@@ -27,7 +27,16 @@
             <ul class="sibar-menu">
                 <li><a href="{% url 'index' %}" class="sibar-menu_item {% if request.path == '/' %}active{% endif %}">Главная</a></li>
                 <li><a href="{% url 'create-item' %}" class="sibar-menu_item {% if '/create-item' in request.path %}active{% endif %}">Создать заявку</a></li>
-                {% if user.is_superuser %}
+                <li><a class="sibar-menu_item">Всего заявок: {{stats.q_all.count}}</a></li>
+                <li><a class="sibar-menu_item">Мои заявки: {{stats.q_main.count}}</a></li>
+                {% if user.extendeduser.user_role.role_lvl <= 3 %}
+                <li><a class="sibar-menu_item">Новые: {{stats.q_new.count}}</a></li>
+                {% endif %}
+                <li><a class="sibar-menu_item">В работе: {{stats.q_at_work.count}}</a></li>
+                <li><a class="sibar-menu_item">На доработке: {{stats.q_to_fix.count}}</a></li>
+                <li><a class="sibar-menu_item">Доработано: {{stats.q_fixed.count}}</a></li>
+                <li><a class="sibar-menu_item">Закрыто: {{stats.q_finished.count}}</a></li>
+                {% if user.extendeduser.user_role.role_lvl <= 2 %}
                 <li><a href="/admin" class="sibar-menu_item">Администрирование</a></li>
                 {% endif %}
             </ul>

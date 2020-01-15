@@ -225,6 +225,7 @@ def vitem_form(request, vitem_id=None):
                         newChatMessage(vitem, '{}: {}'.format('Доработано', request.POST['fix_comment']), request.user.extendeduser)
                     elif 'btn_take_to' in request.POST:
                         vitem.case_officer = request.user.extendeduser
+                        vitem.dias_status = 'В работе'
                         utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
                     elif 'btn_add_comment' in request.POST and len(request.POST['chat_message']) > 0:                    
