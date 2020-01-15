@@ -3,6 +3,7 @@
 *.pyc
 __pycache__/
 migrations/
+.vscode/
 file_storage/
 .env
 db.sqlite3
