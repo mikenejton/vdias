@@ -9,7 +9,6 @@ from . import models, forms, utils
 def index(request):
     context = utils.get_base_context(request.user)
     context['page_title'] = 'Верификация'
-    print(context)
     return render(request, 'verification/index.html', context)
 
 @login_required
