@@ -7,7 +7,9 @@
             <div class="input_wrapper">
             Заявка на верификацию&nbsp;({ vitemType })</div>
             <div style="flex:1;"></div>
+            {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 2 %}
             <div class="input_wrapper"><a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1 %}">Редактировать</a></div>
+            {% endif %}
         </div>
         <div class="gcard_vitem-view_itemform">
             <div class="mb-card_body card_body-form">
@@ -22,22 +24,41 @@
                         Исполнитель: {{vitem.case_officer}}
                         <input type="hidden" name="case_officer" value="{{form.case_officer.value}}">
                     {% else %}
-                        {% if user.extendeduser.user_role.role_lvl < 3 %}
+                        {% if user.extendeduser.user_role.role_lvl <= 3 %}
                         <button type="submit" class="btn_suc" name="btn_take_to">Принять в работу</button>
                         {% endif %}
                     {% endif %}
                     <div class="growing_block"></div>
                     <div class="input_wrapper"><p>Статус:
-                        <select name="dias_status" {% if user.id != form.case_officer.value %} disabled {% endif %}>
-                            <option value="Новая" {% if form.dias_status.value == 'Новая' %} selected {% endif %}>Новая</option>
+                        <select name="dias_status" {% if user.id != form.case_officer.value or form.dias_status.value == 'На доработке' %} disabled {% endif %}>
+                            <option value="Новая" {% if form.dias_status.value == 'Новая' %} selected {% endif %} disabled>Новая</option>
                             <option value="В работе" {% if form.dias_status.value == 'В работе'  %} selected {% endif %}>В работе</option>
-                            <option value="На доработке" {% if form.dias_status.value == "На доработке"  %} selected {% endif %}>На доработке</option>
-                            <option value="Доработано" {% if form.dias_status.value == "Доработано"  %} selected {% endif %}>Доработано</option>
+                            <option value="Возможен особый контроль" {% if form.dias_status.value == 'Возможен особый контроль'  %} selected {% endif %}>Возможен особый контроль</option>
+                            <option value="На доработке" {% if form.dias_status.value == "На доработке"  %} selected {% endif %} disabled>На доработке</option>
+                            <option value="Доработано" {% if form.dias_status.value == "Доработано"  %} selected {% endif %} disabled>Доработано</option>
                             <option value="Одобрено" {% if form.dias_status.value == "Одобрено"  %} selected {% endif %}>Одобрено</option>
                             <option value="Одобрено, особый контроль" {% if form.dias_status.value == "Одобрено, особый контроль"  %} selected {% endif %}>Одобрено, особый контроль</option>
                             <option value="Отказ" {% if form.dias_status.value == "Отказ"  %} selected {% endif %}>Отказ</option>
                         </select></p>
                     </div>
+                    {% if form.case_officer.value == user.id %}
+                    <div class="itemform_controls_row">
+                        <div class="itemform_controls_row_btns">
+                            {% if form.dias_status.value in 'Новая, В работе, На доработке, Доработано' %}
+                                {% if vitem.to_fix == False %}
+                                    {% if user.extendeduser.user_role.role_lvl < 3 %}
+                                <button v-show="false" type="submit" name="btn_to_fix" id="btn_to_fix">На доработку</button>
+                                <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="needComment('btn_to_fix')">На доработку</button></div>
+                                    {% endif %}
+                                {% else %}
+                                <button v-show="false" type="submit" name="btn_fixed" id="btn_fixed">Доработано</button>
+                                <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="needComment('btn_fixed')">Доработано</button></div>
+                                {% endif %}
+                            {% endif %}
+                            <div class="input_wrapper"><button type="submit" class="btn_prim" name="btn_save">Сохранить</button></div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
 
                 {% if form.errors %}
@@ -51,103 +72,108 @@
                     </div>
                 </div>
                 {% endif %}
-                {% if form.case_officer.value == user.id %}
-                <div class="itemform_controls_row">
-                    <div class="itemform_controls_row_btns">
-                        {% if form.dias_status.value in 'Новая, В работе, На доработке, Доработано' %}
-                            {% if form.to_fix.value == False %}
-                                {% if user.extendeduser.user_role.role_lvl < 3 %}
-                            <button v-show="false" type="submit" name="btn_to_fix" id="btn_to_fix">На доработку</button>
-                            <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="needComment('btn_to_fix')">На доработку</button></div>
-                                {% endif %}
-                            {% else %}
-                            <button v-show="false" type="submit" name="btn_fixed" id="btn_fixed">Доработано</button>
-                            <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="needComment('btn_fixed')">Доработано</button></div>
-                            {% endif %}
-                        {% endif %}
-                        <div class="input_wrapper"><button type="submit" class="btn_prim" name="btn_save">Сохранить</button></div>
-                    </div>
-                </div>
-                {% endif %}
                 {% if user.extendeduser.user_role.role_lvl <= 3 %}
-                <div class="mb-card_body card_body-form">
+                <div class="mb-card_body card_body-form" style="font-size: 12px">
                     <div class="card_body-form_column">
-                        <div class="itemform_controls_row">
-                            <legend>Паспорт недействителен:</legend>
-                            <div class="input_wrapper">
-                                <input type="radio" name="fms_not_ok" value="True" id="fms_true" {%if form.fms_not_ok.value == True %} checked {% endif %}>
-                            </div>
-                            <div class="input_wrapper">
-                                <label for="fms_true">Да</label>
-                            </div>
-                            <div class="input_wrapper">
-                                <input type="radio" name="fms_not_ok"  value="False" id="fms_false" {%if form.fms_not_ok.value == False %} checked {% endif %}>
-                            </div>
-                            <div class="input_wrapper">
-                                <label for="fms_false">Нет</label>
+                        <div class="itemform_controls_row spb spb-bordered">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Проверка ФМС:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="fms_not_ok" value="Пройдена" id="fms_true" {%if form.fms_not_ok.value == 'Пройдена' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="fms_true">Пройдена</label></div>
+                                <div class="input_wrapper"><input type="radio" name="fms_not_ok" value="Не пройдена" id="fms_false" {%if form.fms_not_ok.value == 'Не пройдена' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="fms_false">Не пройдена</label></div>
                             </div>
                         </div>
-                        <div class="itemform_controls_row">
-                            <legend>Есть совпадения РосФинМониторинг:</legend>
-                            <div class="input_wrapper">
-                                <input type="radio" name="rosfin" value="True" id="rosfin_true" {%if form.rosfin.value == True %} checked {% endif %}>
-                            </div>
-                            <div class="input_wrapper">
-                                <label for="rosfin_true">Да</label>
-                            </div>
-                            <div class="input_wrapper">
-                                <input type="radio" name="rosfin"  value="False" id="rosfin_false" {%if form.rosfin.value == False %} checked {% endif %}>
-                            </div>
-                            <div class="input_wrapper">
-                                <label for="rosfin_false">Нет</label>
+                        <div class="itemform_controls_row spb spb-bordered">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Проверка РосФинМониторинг:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="rosfin" value="Пройдена" id="rosfin_true" {%if form.rosfin.value == 'Пройдена' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="rosfin_true">Пройдена</label></div>
+                                <div class="input_wrapper"><input type="radio" name="rosfin"  value="Не пройдена" id="rosfin_false" {%if form.rosfin.value == 'Не пройдена' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="rosfin_false">Не пройдена</label></div>
                             </div>
                         </div>
-                        <div class="itemform_controls_row">
-                            <legend>Документы проверены:</legend>
-                            <div class="input_wrapper">
-                                <input type="radio" name="docs_full" value="True" id="docs_full_true" {%if form.docs_full.value == True %} checked {% endif %}>
-                            </div>
-                            <div class="input_wrapper">
-                                <label for="docs_full_true">Да</label>
-                            </div>
-                            <div class="input_wrapper">
-                                <input type="radio" name="docs_full"  value="False" id="docs_full_false" {%if form.docs_full.value == False %} checked {% endif %}>
-                            </div>
-                            <div class="input_wrapper">
-                                <label for="docs_full_false">Нет</label>
+                        <div class="itemform_controls_row spb spb-bordered">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Документы проверены:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper gb_input"><input type="radio" name="docs_full" value="Да" id="docs_full_true" {%if form.docs_full.value == 'Да' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="docs_full_true">Да</label></div>
+                                <div class="input_wrapper"><input type="radio" name="docs_full"  value="Нет" id="docs_full_false" {%if form.docs_full.value == 'Нет' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="docs_full_false">Нет</label></div>
                             </div>
                         </div>
-                        <div class="itemform_controls">
-                            <div class="itemform_controls_row">
-                                <div class="input_wrapper"><input type="checkbox" v-model="isCronos"></div>
-                                <div class="txt_wrapper"><textarea name="cronos" placeholder="Информация по Кронос" :disabled="!isCronos">{{vitem.cronos}}</textarea></div>
+                        <div class="itemform_controls_row spb">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Кронос:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="cronos_status" v-model="cronosStatus" value="Нет информации" id="cronos_status_none" {%if form.cronos_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="cronos_status_none">Нет информации</label></div>
+                                <div class="input_wrapper"><input type="radio" name="cronos_status" v-model="cronosStatus" value="Нет негатива" id="cronos_status_ok" {%if form.cronos_status.value == 'Нет негатива' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="cronos_status_ok">Нет негатива</label></div>
+                                <div class="input_wrapper"><input type="radio" name="cronos_status" v-model="cronosStatus" value="Есть негатив" id="cronos_status_not_ok" {%if form.cronos_status.value == 'Есть негатив' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="cronos_status_not_ok">Есть негатив</label></div>
                             </div>
                         </div>
-                        <div class="itemform_controls_row">
-                            <div class="input_wrapper"><input type="checkbox" v-model="isFSSP"></div>
-                            <div class="txt_wrapper"><textarea name="fssp" placeholder="Информация по ФССП" :disabled="!isFSSP">{{vitem.fssp}}</textarea></div>
+                        <div class="txt_wrapper"><textarea name="cronos" placeholder="Информация по Кронос" :disabled="cronosStatus != 'Есть негатив'" :required="cronosStatus == 'Есть негатив'">{{vitem.cronos}}</textarea></div>
+
+                        <div class="itemform_controls_row spb">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">ФССП:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="fssp_status" v-model="fsspStatus" value="Нет информации" id="fssp_status_ok" {%if form.fssp_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="fssp_status_ok">Нет информации</label></div>
+                                <div class="input_wrapper"><input type="radio" name="fssp_status" v-model="fsspStatus" value="Есть информация" id="fssp_status_not_ok" {%if form.fssp_status.value == 'Есть информация' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="fssp_status_not_ok">Есть информация</label></div>
+                            </div>
                         </div>
-                        <div class="itemform_controls_row" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'">
-                            <div class="input_wrapper"><input type="checkbox" v-model="isConturFocus"></div>
-                            <div class="txt_wrapper"><textarea name="contur_focus" placeholder="Информация по Контур Фокус" :disabled="!isConturFocus">{{vitem.contur_focus}}</textarea></div>
+                        <div class="txt_wrapper"><textarea name="fssp" placeholder="Информация по ФССП" :disabled="fsspStatus != 'Есть информация'" :required="fsspStatus == 'Есть информация'">{{vitem.fssp}}</textarea></div>
+
+                        <div class="itemform_controls_row spb" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">КонтурФокус:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Нет информации" id="contur_focus_status_ok" {%if form.contur_focus_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="contur_focus_status_ok">Нет информации</label></div>
+                                <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Есть информация" id="contur_focus_status_not_ok" {%if form.contur_focus_status.value == 'Есть информация' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="contur_focus_status_not_ok">Есть информация</label></div>
+                            </div>
                         </div>
+                        <div class="txt_wrapper" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'"><textarea name="contur_focus" placeholder="Информация по Контур Фокус" :disabled="conturFocusStatus != 'Есть информация'" :required="conturFocusStatus == 'Есть информация'">{{vitem.contur_focus}}</textarea></div>
                     </div>
+                    
                     <div class="card_body-form_column">
                         <div class="itemform_controls_row" style="flex: 1;">
                             <div class="txt_wrapper"><textarea name="dias_comment" placeholder="Комментарий ДИАС">{{vitem.dias_comment}}</textarea></div>
                         </div>
-                        <div class="itemform_controls_row">
-                            <div class="input_wrapper"><input type="checkbox" v-model="isСourt"></div>
-                            <div class="txt_wrapper"><textarea name="сourt" placeholder="Информация по судам" :disabled="!isСourt">{{vitem.сourt}}</textarea></div>
+                        <div class="itemform_controls_row spb">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Суды:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="court_status" v-model="courtStatus" value="Нет информации" id="court_status_ok" {%if form.court_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="court_status_ok">Нет информации</label></div>
+                                <div class="input_wrapper"><input type="radio" name="court_status" v-model="courtStatus" value="Есть информация" id="court_status_not_ok" {%if form.court_status.value == 'Есть информация' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="court_status_not_ok">Есть информация</label></div>
+                            </div>
                         </div>
-                        <div class="itemform_controls_row">
-                            <div class="input_wrapper"><input type="checkbox" v-model="isBankruptcy"></div>
-                            <div class="txt_wrapper"><textarea name="bankruptcy" placeholder="Информация по банкротсву" :disabled="!isBankruptcy">{{vitem.bankruptcy}}</textarea></div>
+                        <div class="txt_wrapper"><textarea name="сourt" placeholder="Информация по судам" :disabled="courtStatus != 'Есть информация'" :required="courtStatus == 'Есть информация'">{{vitem.сourt}}</textarea></div>
+
+                        <div class="itemform_controls_row spb">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Информация по банкротсву:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="bankruptcy_status" v-model="bankruptcyStatus" value="Нет информации" id="bankruptcy_status_ok" {%if form.bankruptcy_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="bankruptcy_status_ok">Нет информации</label></div>
+                                <div class="input_wrapper"><input type="radio" name="bankruptcy_status" v-model="bankruptcyStatus" value="Есть информация" id="bankruptcy_status_not_ok" {%if form.bankruptcy_status.value == 'Есть информация' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="bankruptcy_status_not_ok">Есть информация</label></div>
+                            </div>
                         </div>
-                        <div class="itemform_controls_row" v-show="vitemType == 'Контрагент'">
-                            <div class="input_wrapper"><input type="checkbox" v-model="isAffiliation"></div>
-                            <div class="txt_wrapper"><textarea name="affiliation" placeholder="Аффилированность" :disabled="!isAffiliation">{{vitem.affiliation}}</textarea></div>
+                        <div class="txt_wrapper"><textarea name="bankruptcy" placeholder="Информация по банкротсву" :disabled="bankruptcyStatus != 'Есть информация'" :required="bankruptcyStatus == 'Есть информация'">{{vitem.bankruptcy}}</textarea></div>
+                        
+                        <div class="itemform_controls_row spb" v-show="vitemType == 'Контрагент'">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Аффилированность:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="affiliation_status" v-model="affiliationStatus" value="Нет информации" id="affiliation_status_ok" {%if form.affiliation_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="affiliation_status_ok">Нет информации</label></div>
+                                <div class="input_wrapper"><input type="radio" name="affiliation_status" v-model="affiliationStatus" value="Есть информация" id="affiliation_status_not_ok" {%if form.affiliation_status.value == 'Есть информация' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="affiliation_status_not_ok">Есть информация</label></div>
+                            </div>
                         </div>
+                        <div class="txt_wrapper" v-show="vitemType == 'Контрагент'"><textarea name="affiliation" placeholder="Аффилированность" :disabled="affiliationStatus != 'Есть информация'" :required="affiliationStatus == 'Есть информация'">{{vitem.affiliation}}</textarea></div>
                     </div>
                 </div>
                 {% endif %}
@@ -230,14 +256,13 @@
             showModal: false,
             btnName: '',
             msgText: '',
-            isCronos: (('{{form.cronos.value}}'.length)? true: false),
-            isFSSP: (('{{form.fssp.value}}'.length)? true: false),
-            isConturFocus: (('{{form.contur_focus.value}}'.length)? true: false),
-            isСourt: (('{{form.сourt.value}}'.length)? true: false),
-            isBankruptcy: (('{{form.bankruptcy.value}}'.length)? true: false),
-            isAffiliation: (('{{form.affiliation.value}}'.length)? true: false),
+            cronosStatus: '{{form.cronos_status.value}}',
+            fsspStatus: '{{form.fssp_status.value}}',
+            conturFocusStatus: '{{form.contur_focus_status.value}}',
+            courtStatus: '{{form.сourt.value}}',
+            bankruptcyStatus: '{{form.bankruptcy.value}}',
+            affiliationStatus: '{{form.affiliation.value}}',
             vitemType: '{% firstof person.person_role organization.organization_role %}',
-
         },
         methods: {
             needComment: function(sendBtnName){

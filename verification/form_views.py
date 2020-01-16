@@ -90,7 +90,6 @@ def staff_form(request, obj_id=None):
             form = forms.PersonForm(data=request.POST, instance=models.Person.objects.get(id=request.POST['id']))
         else:
             form = forms.PersonForm(data=request.POST)
-        
         if form.is_valid():
             if 'id' in request.POST:
                 created_person = form.save(commit=False)

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from . import models
-from . import utils
+from django.db.models import Q
+from . import models, forms, utils
+
 
                 
 @login_required
@@ -13,6 +14,7 @@ def index(request):
 
 @login_required
 def find_vitem(request):
+    context = utils.get_base_context(request.user)
     if request.POST:
         if request.POST['person']:
             result = models.VerificationItem.objects.filter(person__person__fio__icontains = request.POST['person'].upper())
@@ -20,7 +22,11 @@ def find_vitem(request):
             result = models.VerificationItem.objects.filter(organization__organization__full_name__icontains = request.POST['organization'].upper())
         if request.user.extendeduser.user_role.role_lvl > 3:
             result = result.filter(author__user_role = request.user.extendeduser.user_role)
-    return render(request, 'verification/forms/find_item_result.html', {'page_title': 'Поиск заявок', 'result': result})
+        elif request.user.extendeduser.user_role.role_lvl == 3:
+            result = result.exclude(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент'))
+        context['result'] = result
+    context['page_title'] = 'Поиск заявки'
+    return render(request, 'verification/forms/find_item_result.html', context)
 
 @login_required
 def create_item(request):
@@ -40,8 +46,16 @@ def create_item(request):
         return redirect('create-counterparty')
 
     
+def scan_upload(request):
+        if request.FILES:
+            form = forms.DocStorageForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+
 def scan_delete(request, scan_id=None):
     current_scan = models.DocStorage.objects.get(id=scan_id)
     current_scan.to_del = True
     current_scan.save()
     return redirect(request.META.get('HTTP_REFERER'))
+

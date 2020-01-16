@@ -273,11 +273,24 @@ th, td{
     display: flex;
     align-items: center;
 }
+.itemform_controls_row.spb{
+    justify-content: space-between;
+}
+.spb-bordered{
+    border-bottom: 1px solid #ced4da;
+}
 .itemform_controls_row_btns{
     display: flex;
     align-items: center;
     justify-content: flex-end;
     width: 100%;
+}
+.itemform_controls_row_item{
+    display: flex;
+    align-items: center;
+}
+.vitem_dias-legend{
+    font-weight: bold;
 }
 .growing_block{
     flex: 1;

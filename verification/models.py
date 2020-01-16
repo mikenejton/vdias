@@ -103,15 +103,24 @@ class VerificationItem(models.Model):
     fixed = models.BooleanField('Доработано', default=False)
     dias_comment = models.TextField('Комментарий ДИАС', blank=True, null=True)
     case_officer = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='CaseOfficer', blank=True, null=True, verbose_name='Исполнитель')
-    cronos = models.TextField('Кронос', blank=True, null=True, default='')
-    fms_not_ok = models.BooleanField('ФМС', blank=True, null=True)
-    rosfin = models.BooleanField('Росфинмониторинг', blank=True, null=True)
+    
+    fms_not_ok = models.CharField('ФМС', max_length = 300, blank=True, null=True, default='')
+    rosfin = models.CharField('Росфинмониторинг', max_length = 300, blank=True, null=True, default='')
+    docs_full = models.CharField('Полнота и качество документов', max_length = 300, blank=True, null=True, default='')
+    
+    cronos_status = models.CharField('Кронос статус', max_length = 300, blank=True, null=True)
+    cronos = models.TextField('Кронос комментарий', blank=True, null=True, default='')
+    fssp_status = models.CharField('ФССП статус', max_length = 300, blank=True, null=True, default='')
     fssp = models.TextField('ФССП', blank=True, null=True, default='')
-    docs_full = models.BooleanField('Полнота и качество документов', blank=True, null=True)
+    bankruptcy_status = models.CharField('Сайт по банкротству статус', max_length = 300, blank=True, null=True, default='')
     bankruptcy = models.TextField('Сайт по банкротству', blank=True, null=True, default='')
+    сourt_status = models.CharField('Суды статус', max_length = 300, blank=True, null=True, default='')
     сourt = models.TextField('Суды', blank=True, null=True, default='')
+    contur_focus_status = models.CharField('Контур-Фокус статус', max_length = 300, blank=True, null=True, default='')
     contur_focus = models.TextField('Контур-Фокус', blank=True, null=True, default='')
+    affiliation_status = models.CharField('Проверка на аффилированность статус', max_length = 300, blank=True, null=True, default='')
     affiliation = models.TextField('Проверка на аффилированность', blank=True, null=True, default='')
+
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
