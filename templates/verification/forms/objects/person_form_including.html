@@ -1,0 +1,80 @@
+{% block person_form %}
+    <div class="multitab-form_buttons">
+        <a class="sibar-menu_item" v-bind:class="{ active: currentPersTab=='Person'}" @click="changePersTab('Person')">Физ.лицо</a>
+        <a class="sibar-menu_item" v-bind:class="{ active: currentPersTab=='personScan'}" @click="changePersTab('personScan')">Сканы</a>
+    </div>
+    <form action="" method="post" id="personForm" v-show="currentPersTab=='Person'">
+        {% csrf_token %}
+        <div class="mb-card_body card_body-form">
+            <div class="card_body-form_column">
+                <input class="form_input" type="text" name="last_name" placeholder="Фамилия" required value={%if form.last_name.value %}{{form.last_name.value}}{%endif%}>
+                <input class="form_input" type="text" name="first_name" placeholder="Имя" required value={%if form.first_name.value %}{{form.first_name.value}}{%endif%}>
+                <input class="form_input" type="text" name="patronymic" placeholder="Отчество" value={%if form.patronymic.value %}{{form.patronymic.value}}{%endif%}>
+                <input class="form_input" type="text" name="prev_fio" placeholder="Предыдущие ФИО" value={%if form.prev_fio.value %}{{form.prev_fio.value}}{%endif%}>
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" placeholder="Дата рождения" required value={%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}>
+                <input class="form_input" type="text" name="pob" placeholder="Место рождения" value={%if form.pob.value %}{{form.pob.value}}{%endif%}>
+                <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' required minlength="14">
+                <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" required>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
+            </div>
+            <div class="card_body-form_column">
+                <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'" v-model='phone' required minlength="11">
+                <input class="form_input" type="email" name="email" placeholder="Email" value={%if form.email.value %}{{form.email.value}}{%endif%}>
+                <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" v-mask="'#### ######'" v-model='pass_sn' required minlength="11">
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" required value={%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}>
+                <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" required value={%if form.pass_org.value %}{{form.pass_org.value}}{%endif%}>
+                <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" v-mask="'###-###'" v-model='pass_code' required minlength="7">
+                <textarea class="form_input wide_textarea" type="text" name="adr_fact" placeholder="Адрес проживания">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
+            </div>
+            {%if person_wr %}
+                <input type="hidden" name="id" value="{{person_wr.person.id}}">
+                <input type="hidden" name="author" value="{{person_wr.person.author.id}}">
+            {% else %}
+                <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
+            {% endif %}
+            {%if organization_wr %}
+                <input type="hidden" name="id" value="{{organization_wr.organization.id}}">
+                <input type="hidden" name="author" value="{{organization_wr.organization.author.id}}">
+                <input type="hidden" name="person_role" value="[{currentOrgTab}]">
+            {% endif %}
+        </div>
+
+        {% if form.errors %}
+        <div class="mb-card_errors">
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <p class="error_txt"><i>{{ error }}</i></p>
+                </div>
+            {% endfor %}
+            {% for field in form %}
+                {% if field.errors %}
+                <p class="error_txt">{{ field.label }}: {%for error in field.errors%}<i>{{ error }}</i>{% endfor %}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="mb-card_footer" v-show="currentPersTab=='Person'">
+            {% if organization_wr %}
+                <input type="hidden" name="related_organization" value="{{organization_wr.organization.id}}">
+            {% else %}
+            <select name="related_organization" class="form_input" required>
+                    <option value="0" selected disabled>Организация</option>
+                {% for org in org_list %}
+                    <option value="{{ org.organization.id}}" {% if person_wr.related_organization.id == org.organization.id  %} selected {% endif %}>{{org.organization.full_name}}</option>
+                {% endfor %}
+            </select>
+            {%endif%}
+            <button type="submit" class="btn_prim" name="personFormSave" form="personForm">Сохранить</button>
+        </div>
+
+    </form>
+    <div v-show="currentPersTab=='personScan'">
+        {% if person_wr %}
+            {% include "verification/forms/objects/scan_form.html" %}
+        {% else %}
+            <div class="input_wrapper">
+                <p class="error_txt">Сначала заполните и сохраните данные физ.лица</p>
+            </div>
+        {% endif %}
+    </div>
+    
+{% endblock %}

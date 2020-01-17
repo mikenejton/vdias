@@ -5,7 +5,8 @@ from . import views, form_views
 
 urlpatterns = [
     path('', views.index, name = 'index'),
-    path('find-vitem', views.find_vitem, name='find-vitem'),
+    path('find-vitem', views.vitem_list, name='find-vitem'),
+    path('vitem-list/<str:param>', views.vitem_list, name='vitem-list'),
     path('scan/upload', views.scan_upload, name='scan-upload'),
     path('scan/delete/<int:scan_id>/', views.scan_delete, name='scan-delete'),
     path('vitem/<int:vitem_id>/', form_views.vitem_form, name='vitem'),

@@ -1,0 +1,63 @@
+<form action="{% url 'scan-upload' %}" id="scanForm" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-card_body">
+        <div class="itemform_controls_row">
+            {%if vitem_id%}
+            <input type="hidden" name="vitem" value="{{vitem_id}}">
+            {%endif%}
+            <div class="input_wrapper">
+                {% if person_wr %}
+                <input type="hidden" name="model_id" value="{{person_wr.id}}">
+                <input type="hidden" name="model_name" value="PersonWithRole">
+                {% else %}
+                <input type="hidden" name="model_id" value="{{organization_wr.id}}">
+                <input type="hidden" name="model_name" value="OrganizationWithRole">
+                {%endif%}
+                <input type="hidden" name="author" value="{{user.extendeduser.id}}">
+                <select name="doc_type" required>
+                    <option value="Тип документа" disabled selected>Тип документа</option>
+                    {% for d_type in doc_types %}
+                        <option value="{{ d_type }}">{{ d_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input_wrapper">
+                <input type="file" class="form_input" name="scan_file" accept="image/*,.pdf" required>
+            </div>
+            <div class="input_wrapper" style="align-items: flex-end;">
+                <button type="submit" form="scanForm" class="btn_suc" name="btn_scan_upload" >Загрузить</button>
+            </div>
+        </div>
+        
+        {% if scan_list %}
+        <div class="input_wrapper">Загруженные сканы</div>
+        <table>
+            <thead>
+                <td>Тип файла</td>
+                <td>Загружен</td>
+                <td>Автор</td>
+                <td></td>
+            </thead>
+        {% for scan in scan_list %}
+            <tr>
+                <td><a class="link" target="_blank" href="{{ scan.scan_file.url }}">{{ scan.doc_type }}</a></td>
+                <td>{{scan.created|date:"d.m.Y h:m:s"}}</td>
+                <td>{{scan.author.user.last_name}} {{scan.author.user.first_name}}</td>
+                <td><a href="{% url 'scan-delete' scan_id=scan.id %}" class="link error_txt" >Удалить</a></td>
+            </tr>
+        {% endfor %}
+        {% if deleted_scan_list %}
+            <tr class="sep-tr"><td>Удаленные сканы</td></tr>
+            {% for deleted_scan in deleted_scan_list %}
+                <tr>
+                    <td><a class="link" target="_blank" href="{{ deleted_scan.scan_file.url }}">{{ deleted_scan.doc_type }}</a></td>
+                    <td>{{deleted_scan.created|date:"d.m.Y h:m:s"}}</td>
+                    <td>{{deleted_scan.author.user.last_name}} {{deleted_scan.author.user.first_name}}</td>
+                    <td><a></a></td>
+                </tr>
+            {% endfor %}
+        {%endif%}
+        </table>
+        {%endif%}
+    </div>
+</form>

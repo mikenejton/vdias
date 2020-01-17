@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-card card_centered" id="vuePart">
+    <div class="mb-card_header">
+        {%if object_title %}
+        <div class="input_wrapper">
+            {{ object_title }}
+        </div>
+        <div style="flex:1;"></div>
+        <div class="input_wrapper"><a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Открыть заявку</a></div>
+        {% else %}
+        <div class="input_wrapper">
+            {{ page_title }}
+        </div>
+        {%endif%}
+    </div>
+    <div class="multitab-form">
+        {% block object_form %}
+        {% endblock %}
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js"></script>
+
+<script>
+    Vue.use(VueMask.VueMaskPlugin);
+    var app = new Vue({
+        el: '#vuePart',
+        delimiters: ['[{', '}]'],
+        data: {
+            sneals: '{{form.sneals.value}}',
+            phone: '{{form.phone_number.value}}',
+            pass_sn: '{{form.pass_sn.value}}',
+            pass_code: '{{form.pass_code.value}}',
+            inn: '{{form.inn.value}}',
+            ogrn: '{{form.ogrn.value}}',
+            currentOrgTab: 'Organization',
+            currentPersTab: 'Person',
+            scanFile: '',
+            scanType: 'Тип документа',
+
+
+        },
+        methods:{
+            changePersTab:function(tabName){
+                this.currentPersTab = tabName;
+            },
+            changeOrgTab:function(tabName){
+                this.currentOrgTab = tabName;
+            }
+        }
+    });
+    
+</script>
+{% endblock %}

@@ -16,75 +16,145 @@ def newChatMessage(vitem, message, author):
 
 @login_required
 def agent_form(request, obj_id=None):
-    context = utils.get_base_context(request.user)
-    context['doc_types'] = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Иной документ']
-    if request.user.extendeduser.user_role.role_lvl < 3: # уровень роли сотрудников АиС и Админа - 2 и 1 соответственно
-        agent_organization = models.OrganizationWithRole.objects.all()
-    else:
-        agent_organization = models.OrganizationWithRole.objects.filter(organization_role = request.user.extendeduser.user_role.role_name)
-    context['org_list'] = agent_organization
-    if request.method == 'POST':
-        if 'id' in request.POST:
-            form = forms.PersonForm(data=request.POST, instance=models.Person.objects.get(id=request.POST['id']))
-        else:
-            form = forms.PersonForm(data=request.POST)
-        if form.is_valid():
-            if 'id' in request.POST:
-                created_person = form.save(commit=False)
-                utils.update_logger('Person', created_person.id, 'Обновление записи', request.user.extendeduser, created_person)
-                agent_role = models.PersonWithRole.objects.get(person_id = request.POST['id'])
-                if agent_role.related_organization.id != request.POST['related_organization']:
-                    agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
-                    agent_role.save()
-                created_person.save()
-                vi = models.VerificationItem.objects.get(person__id=agent_role.id)
-                return redirect(reverse('vitem', args=[vi.id]))
-            else:
-                created_person = form.save()
-                utils.update_logger('Person', created_person.id, '', request.user.extendeduser)
-                agent_role = models.PersonWithRole()
-                agent_role.person = created_person
-                agent_role.person_role = 'Агент'
-                agent_role.author = request.user.extendeduser
-                if 'related_organization' in request.POST:
-                    agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
-                agent_role.save()
-                utils.update_logger('PersonWithRole', agent_role.id, '', request.user.extendeduser)
-                vi = models.VerificationItem()
-                vi.person = agent_role
-                vi.dias_status = 'Новая'
-                vi.author = request.user.extendeduser
-                vi.save()
-                utils.update_logger('VerificationItem', vi.id, '', request.user.extendeduser)
-                return redirect(reverse('vitem', args=[vi.id]))
-    else:
-        if obj_id:
-            person_wr = models.PersonWithRole.objects.filter(id = obj_id)
-            context['scan_list'] = models.DocStorage.objects.filter(model_id = obj_id, model_name = 'PersonWithRole', to_del = False)
-            if request.user.extendeduser.user_role.role_lvl <= 3:
-                context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = obj_id, model_name = 'PersonWithRole', to_del = True)
-            if len(person_wr) > 0:
-                person = person_wr[0].person
-                form = forms.PersonForm(instance=person)
-                context['page_title'] = 'Агент'
-                context['person_wr'] = person_wr[0]
-            else:
-                return render(request, 'verification/404.html')
-        else:
-            form = forms.PersonForm()
-            context['page_title'] = 'Новый агент'
-    context['form'] = form
-    return render(request, 'verification/forms/objects/person_form.html', context)
+    result = person_form(request, obj_id, 'Создание агент', 'Агент', request.user.extendeduser.user_role.role_name)
+    # return render(result[0], result[1], result[2])
+    return result
+    # context = utils.get_base_context(request.user)
+    # context['doc_types'] = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Иной документ']
+    # if request.user.extendeduser.user_role.role_lvl < 3: # уровень роли сотрудников АиС и Админа - 2 и 1 соответственно
+    #     agent_organization = models.OrganizationWithRole.objects.all()
+    # else:
+    #     agent_organization = models.OrganizationWithRole.objects.filter(organization_role = request.user.extendeduser.user_role.role_name)
+    # context['org_list'] = agent_organization
+    # if request.method == 'POST':
+    #     if 'id' in request.POST:
+    #         form = forms.PersonForm(data=request.POST, instance=models.Person.objects.get(id=request.POST['id']))
+    #     else:
+    #         form = forms.PersonForm(data=request.POST)
+    #     if form.is_valid():
+    #         if 'id' in request.POST:
+    #             created_person = form.save(commit=False)
+    #             utils.update_logger('Person', created_person.id, 'Обновление записи', request.user.extendeduser, created_person)
+    #             agent_role = models.PersonWithRole.objects.get(person_id = request.POST['id'])
+    #             if agent_role.related_organization.id != request.POST['related_organization']:
+    #                 agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+    #                 agent_role.save()
+    #             created_person.save()
+    #             vi = models.VerificationItem.objects.get(person__id=agent_role.id)
+    #             return redirect(reverse('vitem', args=[vi.id]))
+    #         else:
+    #             created_person = form.save()
+    #             utils.update_logger('Person', created_person.id, '', request.user.extendeduser)
+    #             agent_role = models.PersonWithRole()
+    #             agent_role.person = created_person
+    #             agent_role.person_role = 'Агент'
+    #             agent_role.author = request.user.extendeduser
+    #             if 'related_organization' in request.POST:
+    #                 agent_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+    #             agent_role.save()
+    #             utils.update_logger('PersonWithRole', agent_role.id, '', request.user.extendeduser)
+    #             vi = models.VerificationItem()
+    #             vi.person = agent_role
+    #             vi.dias_status = 'Новая'
+    #             vi.author = request.user.extendeduser
+    #             vi.save()
+    #             utils.update_logger('VerificationItem', vi.id, '', request.user.extendeduser)
+    #             return redirect(reverse('vitem', args=[vi.id]))
+    # else:
+    #     if obj_id:
+    #         person_wr = models.PersonWithRole.objects.filter(id = obj_id)
+    #         context['scan_list'] = models.DocStorage.objects.filter(model_id = obj_id, model_name = 'PersonWithRole', to_del = False)
+    #         context['vitem_id'] = models.VerificationItem.objects.filter(person__id = obj_id)[0].id
+    #         if request.user.extendeduser.user_role.role_lvl <= 3:
+    #             context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = obj_id, model_name = 'PersonWithRole', to_del = True)
+    #         if len(person_wr) > 0:
+    #             person = person_wr[0].person
+    #             form = forms.PersonForm(instance=person)
+    #             context['page_title'] = 'Агент'
+    #             context['person_wr'] = person_wr[0]
+    #             context['object_title'] = f"{context['person_wr'].person.fio} {context['page_title']}"
+    #         else:
+    #             return render(request, 'verification/404.html')
+    #     else:
+    #         form = forms.PersonForm()
+    #         context['page_title'] = 'Новый агент'
+    # context['form'] = form
+    # return render(request, 'verification/forms/objects/person_form.html', context)
+
 
 @login_required
 def staff_form(request, obj_id=None):
+    result = person_form(request, obj_id, 'Создание штатного сотрудника', 'Штатного сотрудник', 'Штатные сотрудники')
+    # if len(result) > 1:
+    #     return render(result[0], result[1], result[2])
+    # else:
+    return result
+    # context = utils.get_base_context(request.user)
+    # context['doc_types'] = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Иной документ']
+    # if request.user.extendeduser.user_role == 'HR' or request.user.extendeduser.user_role.role_lvl < 3:
+    #     staff_organization = models.OrganizationWithRole.objects.filter(organization_role = 'Штатные сотрудники')
+    #     context['org_list'] = staff_organization
+    # else:
+    #     return render(request, 'verification/404.html', {'err_txt': 'У вас недостаточно прав на создание заявки'})
+    # if request.method == 'POST':
+    #     if 'id' in request.POST:
+    #         form = forms.PersonForm(data=request.POST, instance=models.Person.objects.get(id=request.POST['id']))
+    #     else:
+    #         form = forms.PersonForm(data=request.POST)
+    #     if form.is_valid():
+    #         if 'id' in request.POST:
+    #             created_person = form.save(commit=False)
+    #             utils.update_logger('Person', created_person.id, 'Обновление записи', request.user.extendeduser, created_person)
+    #             staff_role = models.PersonWithRole.objects.get(person_id = request.POST['id'])
+    #             if staff_role.related_organization.id != request.POST['related_organization']:
+    #                 staff_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+    #                 staff_role.save()
+    #             created_person.save()
+    #             vi = models.VerificationItem.objects.get(person__id=staff_role.id)
+    #             return redirect(reverse('vitem', args=[vi.id]))
+    #         else:
+    #             created_person = form.save()
+    #             utils.update_logger('Person', created_person.id, '', request.user.extendeduser)
+    #             staff_role = models.PersonWithRole()
+    #             staff_role.person = created_person
+    #             staff_role.person_role = 'Штатный сотрудник'
+    #             staff_role.author = request.user.extendeduser
+    #             if 'related_organization' in request.POST:
+    #                 staff_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+    #             staff_role.save()
+    #             utils.update_logger('PersonWithRole', staff_role.id, '', request.user.extendeduser)
+    #             vi = models.VerificationItem()
+    #             vi.person = staff_role
+    #             vi.dias_status = ''
+    #             vi.author = request.user.extendeduser
+    #             vi.save()
+    #             utils.update_logger('VerificationItem', vi.id, '', request.user.extendeduser)
+    #             return redirect(reverse('vitem', args=[vi.id]))
+    # else:
+    #     if obj_id:
+    #         person_wr = models.PersonWithRole.objects.filter(id = obj_id)
+    #         context['scan_list'] = models.DocStorage.objects.filter(model_id = obj_id, model_name = 'PersonWithRole', to_del = False)
+    #         context['vitem_id'] = models.VerificationItem.objects.filter(person__id = obj_id)[0].id
+    #         if request.user.extendeduser.user_role.role_lvl <= 3:
+    #             context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = obj_id, model_name = 'PersonWithRole', to_del = True)
+    #         if len(person_wr) > 0:
+    #             person = person_wr[0].person
+    #             form = forms.PersonForm(instance=person)
+    #             context['page_title'] = 'Штатный сотрудник'
+    #             context['person_wr'] = person_wr[0]
+    #             context['object_title'] = f"{context['person_wr'].person.fio}"
+    #         else:
+    #             return render(request, 'verification/404.html')
+    #     else:
+    #         form = forms.PersonForm()
+    #         context['page_title'] = 'Создание штатного сотрудника'
+    # context['form'] = form
+    # return render(request, 'verification/forms/objects/person_form.html', context)
+
+def person_form(request, obj_id, create_title, update_title, organization_query_role):
     context = utils.get_base_context(request.user)
     context['doc_types'] = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Иной документ']
-    if request.user.extendeduser.user_role == 'HR' or request.user.extendeduser.user_role.role_lvl < 3:
-        staff_organization = models.OrganizationWithRole.objects.filter(organization_role = 'Штатные сотрудники')
-        context['org_list'] = staff_organization
-    else:
-        return render(request, 'verification/404.html', {'err_txt': 'У вас недостаточно прав на создание заявки'})
+    person_organization = models.OrganizationWithRole.objects.all()
     if request.method == 'POST':
         if 'id' in request.POST:
             form = forms.PersonForm(data=request.POST, instance=models.Person.objects.get(id=request.POST['id']))
@@ -94,49 +164,63 @@ def staff_form(request, obj_id=None):
             if 'id' in request.POST:
                 created_person = form.save(commit=False)
                 utils.update_logger('Person', created_person.id, 'Обновление записи', request.user.extendeduser, created_person)
-                staff_role = models.PersonWithRole.objects.get(person_id = request.POST['id'])
-                if staff_role.related_organization.id != request.POST['related_organization']:
-                    staff_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
-                    staff_role.save()
+                person_wr = models.PersonWithRole.objects.get(person_id = request.POST['id'])
+                if person_wr.related_organization.id != request.POST['related_organization']:
+                    person_wr.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+                    person_wr.save()
                 created_person.save()
-                vi = models.VerificationItem.objects.get(person__id=staff_role.id)
-                return redirect(reverse('vitem', args=[vi.id]))
+                vi = models.VerificationItem.objects.get(person__id=person_wr.id)
+                return redirect(reverse('detailing-agent', args=[person_wr.id]))
             else:
                 created_person = form.save()
                 utils.update_logger('Person', created_person.id, '', request.user.extendeduser)
-                staff_role = models.PersonWithRole()
-                staff_role.person = created_person
-                staff_role.person_role = 'Штатный сотрудник'
-                staff_role.author = request.user.extendeduser
+                new_person_wr = models.PersonWithRole()
+                new_person_wr.person = created_person
+                new_person_wr.person_role = update_title
+                new_person_wr.author = request.user.extendeduser
                 if 'related_organization' in request.POST:
-                    staff_role.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
-                staff_role.save()
-                utils.update_logger('PersonWithRole', staff_role.id, '', request.user.extendeduser)
+                    new_person_wr.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+                new_person_wr.save()
+                utils.update_logger('PersonWithRole', new_person_wr.id, '', request.user.extendeduser)
                 vi = models.VerificationItem()
-                vi.person = staff_role
+                vi.person = new_person_wr
                 vi.dias_status = ''
                 vi.author = request.user.extendeduser
                 vi.save()
                 utils.update_logger('VerificationItem', vi.id, '', request.user.extendeduser)
-                return redirect(reverse('vitem', args=[vi.id]))
+                return redirect(reverse('detailing-agent', args=[new_person_wr.id]))
     else:
         if obj_id:
             person_wr = models.PersonWithRole.objects.filter(id = obj_id)
+            person_organization = person_organization.filter(id = person_wr[0].related_organization.id)
             context['scan_list'] = models.DocStorage.objects.filter(model_id = obj_id, model_name = 'PersonWithRole', to_del = False)
+            context['vitem_id'] = models.VerificationItem.objects.filter(person__id = obj_id)[0].id
             if request.user.extendeduser.user_role.role_lvl <= 3:
                 context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = obj_id, model_name = 'PersonWithRole', to_del = True)
             if len(person_wr) > 0:
                 person = person_wr[0].person
                 form = forms.PersonForm(instance=person)
-                context['page_title'] = 'Штатный сотрудник'
+                context['page_title'] = update_title
                 context['person_wr'] = person_wr[0]
+                context['object_title'] = f"{context['person_wr'].person.fio}"
             else:
-                return render(request, 'verification/404.html')
+                return render(request, 'verification/404.html', context)
         else:
+            if request.user.extendeduser.user_role == 'HR':
+                person_organization = person_organization.filter(organization_role = 'Штатные сотрудники')
+            elif request.user.extendeduser.user_role.role_lvl > 3:
+                person_organization = person_organization.filter(organization_role = organization_query_role)
+            
             form = forms.PersonForm()
-            context['page_title'] = 'Создание штатного сотрудника'
+            context['page_title'] = create_title
     context['form'] = form
+    if request.user.extendeduser.user_role == 'HR':
+        person_organization = person_organization.filter(organization_role = 'Штатные сотрудники')
+    elif request.user.extendeduser.user_role.role_lvl > 3:
+        person_organization = person_organization.filter(organization_role = organization_query_role)
+    context['org_list'] = person_organization
     return render(request, 'verification/forms/objects/person_form.html', context)
+
 
 @login_required
 def partner_form(request, obj_id=None):
@@ -150,6 +234,8 @@ def counterparty_form(request, obj_id=None):
 
 def organization_form(request, obj_id, create_title, update_title):
     context = utils.get_base_context(request.user)
+    context['vitem_id'] = models.VerificationItem.objects.filter(organization__id = obj_id)[0].id
+    context['doc_types'] = ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Иной документ']
     if request.method == 'GET':
         if obj_id:
             organization_wr = models.OrganizationWithRole.objects.filter(id = obj_id)
@@ -158,10 +244,11 @@ def organization_form(request, obj_id, create_title, update_title):
                 form = forms.OrganizationForm(instance=organization)
                 context['page_title'] = update_title
                 context['organization_wr'] = organization_wr[0]
+                context['object_title'] = f"{context['organization_wr'].organization.full_name} ({context['page_title']})"
             else:
                 return [request, 'verification/404.html', context]
         else:
-            form = forms.PersonForm()
+            form = forms.OrganizationForm()
             context['page_title'] = create_title
             context['form'] = form
         return [request, 'verification/forms/objects/organization_form.html', context]
@@ -185,12 +272,12 @@ def vitem_form(request, vitem_id=None):
                     if vitem.person:
                         context['person'] = vitem.person
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
-                        form_template = 'verification/forms/objects/vitem_agent.html'
+                        form_template = 'verification/forms/objects/vitem_agent_form.html'
                         context['edit_link'] = ['detailing-agent' if vitem.person.person_role == 'Агент' else 'detailing-staff', vitem.person.id]
                     else:
                         context['organization'] = vitem.organization
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
-                        form_template = 'verification/forms/objects/vitem_organization.html'
+                        form_template = 'verification/forms/objects/vitem_organization_form.html'
                         context['edit_link'] = ['detailing-partner' if vitem.organization.organization_role == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
                     context['scan_list'] = scan_list.filter(to_del = False)
                     if request.user.extendeduser.user_role.role_lvl <= 3:

@@ -24,6 +24,7 @@ class Person(models.Model):
     last_name = models.CharField('Фамилия', max_length=300)
     first_name = models.CharField('Имя', max_length=300)
     patronymic = models.CharField('Отчетство', max_length=300, blank=True, null=True)
+    prev_fio = models.CharField('ФИО', max_length=500, blank=True)
     dob = models.DateField('Дата рождения', blank=True, null=True)
     pob = models.CharField('Место рождения', max_length=300, blank=True, null=True)
     adr_reg = models.CharField('Адрес регистрации', max_length=500, blank=True, null=True)
@@ -47,6 +48,7 @@ class Person(models.Model):
     class Meta:
         unique_together = [['last_name', 'first_name', 'patronymic', 'dob']]
         verbose_name = 'Физ.лицо'
+        verbose_name_plural = 'Физ.лица'
 
 class Organization(models.Model):
     org_form = models.CharField('Орг форма', max_length = 100)
@@ -65,6 +67,9 @@ class Organization(models.Model):
     
     def __str__(self):
         return '{}, ИНН {}'.format(self.full_name, self.inn)
+    class Meta:
+        verbose_name = 'Организация'
+        verbose_name_plural = 'Организации'
 
 # -----------------------------------------------------------
 
@@ -120,6 +125,8 @@ class VerificationItem(models.Model):
     contur_focus = models.TextField('Контур-Фокус', blank=True, null=True, default='')
     affiliation_status = models.CharField('Проверка на аффилированность статус', max_length = 300, blank=True, null=True, default='')
     affiliation = models.TextField('Проверка на аффилированность', blank=True, null=True, default='')
+    soc_status = models.CharField('Соцсети', max_length = 300, blank=True, null=True, default='')
+    soc = models.TextField('Соцсети', blank=True, null=True, default='')
 
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
@@ -140,6 +147,9 @@ class VerificationItem(models.Model):
         else:
             caption = 'No verification item..'
         return caption
+    class Meta:
+        verbose_name = 'Заявка на верификацию'
+        verbose_name_plural = 'Заявки на верификацию'
 
 class VitemChat(models.Model):
     vitem = models.ForeignKey(VerificationItem, on_delete=models.CASCADE)
@@ -174,10 +184,14 @@ class DocStorage(models.Model):
     def save(self, *args, **kwargs):
         timestamp = datetime.strftime(datetime.now(), '%d%m%Y_%H%M%S')
         self.file_name = ''.join([self.doc_type.replace(' ', '_'), '_', timestamp, '.', self.scan_file.name.split('.')[-1]])
-        super().save(*args, **kwargs)        
+        super().save(*args, **kwargs)
+        return self.id
     
     def __str__(self):
         return '{} {} {}'.format(self.model_id, self.model_name, self.doc_type)
+    class Meta:
+        verbose_name = 'Скан'
+        verbose_name_plural = 'Сканы'    
 
 # -----------------------------------------------------------
 

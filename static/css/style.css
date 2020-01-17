@@ -65,6 +65,7 @@ input:focus, select:focus, textarea:focus{
 }
 .wide_textarea{
     min-width: 250px;
+    flex: 1;
 }
 .input_wrapper{margin: 0.3rem 0.2rem;display: flex;flex-direction: column;}
 
