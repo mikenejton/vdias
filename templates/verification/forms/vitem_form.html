@@ -141,9 +141,8 @@
                     </div>
                     
                     <div class="card_body-form_column">
-                        <div class="itemform_controls_row" style="flex: 1;">
-                            <div class="txt_wrapper"><textarea name="dias_comment" placeholder="Комментарий ДИАС">{{vitem.dias_comment}}</textarea></div>
-                        </div>
+                        
+                        <div class="txt_wrapper" style="flex: 1;"><textarea name="dias_comment" placeholder="Комментарий ДИАС" class="form_input wide_textarea">{{vitem.dias_comment}}</textarea></div>
                         <div class="itemform_controls_row spb">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Суды:</legend></div>
                             <div class="itemform_controls_row_item">
@@ -264,7 +263,7 @@
             courtStatus: '{{form.сourt.value}}',
             bankruptcyStatus: '{{form.bankruptcy.value}}',
             affiliationStatus: '{{form.affiliation.value}}',
-            vitemType: '{% firstof person.person_role organization.organization_role %}',
+            vitemType: '{% firstof pwr.person_role owr.organization_type %}',
         },
         methods: {
             needComment: function(sendBtnName){

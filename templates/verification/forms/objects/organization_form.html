@@ -68,9 +68,11 @@
         <div class="itemform_controls_row_item">
             <legend>Ген.директор:</legend>
         </div>&nbsp;
-        {%if ceo %}
+        {%if ceo|first %}
         <div class="itemform_controls_row_item">
-            <a href="{% url 'detailing-ceo' owr_id=owr.id pwr_id=ceo.id %}" class="link">{{ceo.person.fio}}</a>
+            {% for pwr in ceo %}
+            <a href="{% url 'detailing-ceo' owr_id=owr.id pwr_id=pwr.id %}" class="link">{{pwr.person.fio}}</a>
+            {%endfor%}
         </div>
         {% else %}
         <div class="itemform_controls_row_item">

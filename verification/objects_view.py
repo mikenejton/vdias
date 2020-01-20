@@ -6,6 +6,38 @@ from . import models
 from . import forms
 from . import utils
 
+def owr_call(request, owr_id, create_title, update_title):
+    context = get_owr_context(request, owr_id, create_title, update_title)
+    if request.method == 'POST':
+        pass
+    return render(request, 'verification/forms/common/organization_form_common.html', context)
+
+def get_owr_context(request, owr_id, create_title, update_title):
+    context = utils.get_base_context(request.user)
+    context['vitem_id'] = models.VerificationItem.objects.filter(organization__id = owr_id)[0].id
+    context['doc_types'] = ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Иной документ']
+    if owr_id:
+        owr = models.OrganizationWithRole.objects.filter(id = owr_id)
+        if len(owr) > 0:
+            organization = owr[0].organization
+            form = forms.OrganizationForm(instance=organization)
+            context['page_title'] = update_title
+            context['owr'] = owr[0]
+            context['object_title'] = f"{context['owr'].organization.full_name} ({context['page_title']})"
+            context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Ген. директор')
+            context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Бенефициар')
+            context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
+            if request.user.extendeduser.user_role.role_lvl <= 3:
+                context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
+        else:
+            return render(request, 'verification/404.html', context)
+    else:
+        form = forms.OrganizationForm()
+        context['page_title'] = create_title
+    context['form'] = form
+    return context
+
+
 def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context = get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type)
     if request.method == 'POST':
@@ -34,8 +66,6 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                 pwr.save()
                 context['pwr'] = pwr
                 utils.update_logger('PersonWithRole', context['pwr'].id, '', request.user.extendeduser)
-            
-
             if pwr_role == 'Агент':
                 view_name = 'detailing-agent'
             elif pwr_role == 'Штатный сотрудник':
@@ -51,7 +81,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
             print(x for x in target_id)
             return redirect(reverse(view_name, args=[x for x in target_id]))
     
-    if pwr_role in ['Ген. директор', 'Бенефициар']:
+    if pwr_role in ['Ген. директор', 'Бенефициар'] and pwr_id:
         pwr_is_filled = True
         scan_list = models.DocStorage.objects.filter(model_name = 'Person', model_id = context['pwr'].person.id).exclude(to_del = True)
         print(scan_list)
