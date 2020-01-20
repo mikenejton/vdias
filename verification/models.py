@@ -19,6 +19,45 @@ class ExtendedUser(models.Model):
 # -----------------------------------------------------------
 
 # Базовые модели
+class Organization(models.Model):
+    org_form = models.CharField('Орг форма', max_length = 100)
+    full_name = models.CharField('Название', max_length = 500)
+    adr_reg = models.CharField('Юридический адрес', max_length=500, blank=True, null=True)
+    adr_fact = models.CharField('Фактический адрес', max_length=500, blank=True, null=True)
+    inn = models.CharField('ИНН', max_length = 12, blank=True, null=True)
+    ogrn = models.CharField('ОГРН', max_length = 15, blank=True, null=True)
+    phone_number = models.CharField('Телефон', max_length = 11, blank=True, null=True)
+    email = models.EmailField('Email', blank=True, null=True)
+    created = models.DateTimeField('Дата создания', auto_now_add=True)
+    author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        return self.id
+    
+    def __str__(self):
+        return '{}, ИНН {}'.format(self.full_name, self.inn)
+    class Meta:
+        verbose_name = 'Организация'
+        verbose_name_plural = 'Организации'
+
+class OrganizationWithRole(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization_role = models.CharField('Роль', max_length=300)
+    organization_type = models.CharField('Тип', max_length=300, blank=True, null=True)
+    verificated = models.BooleanField('Верифицировано', default=False)
+    created = models.DateTimeField('Дата создания', auto_now_add=True)
+    author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        return self.id
+    
+    def __str__(self):
+        return '{}, {}'.format(self.organization.full_name, self.organization_role)
+
+    class Meta:
+        verbose_name = 'Роль организации'
+        verbose_name_plural = 'Роли организаций'
+
 class Person(models.Model):
     fio = models.CharField('ФИО', max_length=500, blank=True)
     last_name = models.CharField('Фамилия', max_length=300)
@@ -41,6 +80,7 @@ class Person(models.Model):
     def save(self, *args, **kwargs):
         self.fio = ' '.join(filter(None, [self.last_name, self.first_name, self.patronymic])).upper()
         super().save(*args, **kwargs)
+        return self.id
     
     def __str__(self):
         return self.fio
@@ -49,42 +89,6 @@ class Person(models.Model):
         unique_together = [['last_name', 'first_name', 'patronymic', 'dob']]
         verbose_name = 'Физ.лицо'
         verbose_name_plural = 'Физ.лица'
-
-class Organization(models.Model):
-    org_form = models.CharField('Орг форма', max_length = 100)
-    full_name = models.CharField('Название', max_length = 500)
-    ceo = models.ForeignKey(Person, on_delete=models.PROTECT, blank=True, null=True, verbose_name='Ген.директор')
-    adr_reg = models.CharField('Юридический адрес', max_length=500, blank=True, null=True)
-    adr_fact = models.CharField('Фактический адрес', max_length=500, blank=True, null=True)
-    inn = models.CharField('ИНН', max_length = 12, blank=True, null=True)
-    ogrn = models.CharField('ОГРН', max_length = 15, blank=True, null=True)
-    phone_number = models.CharField('Телефон', max_length = 11, blank=True, null=True)
-    email = models.EmailField('Email', blank=True, null=True)
-    created = models.DateTimeField('Дата создания', auto_now_add=True)
-    author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-    
-    def __str__(self):
-        return '{}, ИНН {}'.format(self.full_name, self.inn)
-    class Meta:
-        verbose_name = 'Организация'
-        verbose_name_plural = 'Организации'
-
-# -----------------------------------------------------------
-
-# Модели для верификации
-class OrganizationWithRole(models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    organization_role = models.CharField('Роль', max_length=300)
-    verificated = models.BooleanField('Верифицировано', default=False)
-    created = models.DateTimeField('Дата создания', auto_now_add=True)
-    author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-    
-    def __str__(self):
-        return '{}, {}'.format(self.organization.full_name, self.organization_role)
 
 class PersonWithRole(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -95,9 +99,14 @@ class PersonWithRole(models.Model):
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        return self.id
 
     def __str__(self):
         return str(self.person)
+
+    class Meta:
+        verbose_name = 'Роль физ.лица'
+        verbose_name_plural = 'Роли физ.лиц'
 
 class VerificationItem(models.Model):
     person = models.ForeignKey(PersonWithRole, on_delete=models.CASCADE, blank = True, null = True)
@@ -157,15 +166,19 @@ class VitemChat(models.Model):
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='MsgAuthor', verbose_name='Пользователь')
     created = models.DateTimeField('Дата создания', auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        return self.id
+
 # -----------------------------------------------------------
 
 # Хранилище документов
 def doc_path_maker(instance, filename):
     timestamp = datetime.strftime(datetime.now(), '%d%m%Y_%H%M%S')
-    if instance.model_name == 'PersonWithRole':
-        obj_name = PersonWithRole.objects.get(id = instance.model_id).person.fio
+    if instance.model_name == 'Person':
+        obj_name = Person.objects.get(id = instance.model_id).fio
     else:
-        obj_name = OrganizationWithRole.objects.get(id = instance.model_id).full_name
+        obj_name = Organization.objects.get(id = instance.model_id).full_name
     f_name = ''.join([instance.doc_type.replace(' ', '_'), '_', timestamp, '.', filename.split('.')[-1]])
     return '{}/{}_{}/{}'.format(instance.model_name, obj_name, instance.model_id, f_name)
 

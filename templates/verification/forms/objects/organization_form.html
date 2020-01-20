@@ -1,89 +1,112 @@
-{% extends "verification/forms/objects/object_form.html" %}
-
-{% block object_form %}
-    <div class="multitab-form_buttons">
-        <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='Organization'}" @click="changeOrgTab('Organization')">Организация</a>
-        <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='CEO'}" @click="changeOrgTab('CEO')">Ген.директор</a>
-        <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='Beneficiar'}" @click="changeOrgTab('Beneficiar')">Бенефициары</a>
-        <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='orgScan'}" @click="changeOrgTab('orgScan')">Сканы</a>
-    </div>
-    <form action="" method="post" id="organizationForm" v-show="currentOrgTab=='Organization'">
-        {% csrf_token %}
-        <div class="mb-card_body card_body-form">
-            <div class="card_body-form_column">
-                <select name="org_form" required>
-                    <option value="Организационная форма" disabled selected>Организационная форма</option>
-                    <option value="ИП">ИП</option>
-                    <option value="АО">АО</option>
-                    <option value="ООО">ООО</option>
-                    <option value="ОАО">ОАО</option>
-                    <option value="ПАО">ПАО</option>
-                </select>
-                <input class="form_input" type="text" name="full_name" placeholder="Название" required value={%if form.full_name.value %}{{form.full_name.value}}{%endif%}>
-                <input class="form_input" type="text" name="inn" placeholder="ИНН" v-model="inn" v-mask="'############'" pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов">
-                <input class="form_input" type="text" name="ogrn" placeholder="ОГРН" v-model="ogrn" v-mask="'###############'" pattern=".{0}|.{13,15}" title="ОГРН должен содержать от 13 до 15 символов">
-                <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'" v-model='phone'>
-                <input class="form_input" type="email" name="email" placeholder="Email" value={%if form.email.value %}{{form.email.value}}{%endif%}>
-            </div>
-            <div class="card_body-form_column">
-                <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" required>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
-                <textarea class="form_input wide_textarea" type="text" name="adr_fact" placeholder="Фактический адрес">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
-            </div>
-            {%if organization_wr %}
-                <input type="hidden" name="id" value="{{organization_wr.organization.id}}">
-                <input type="hidden" name="author" value="{{organization_wr.organization.author.id}}">
-            {% else %}
-                <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
-            {% endif %}
+{% block organization_form %}
+<div class="multitab-form_buttons">
+    <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='Organization'}"
+        @click="changeOrgTab('Organization')">Организация</a>
+    <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='Staff'}"
+        @click="changeOrgTab('Staff')">Состав</a>
+    <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='orgScan'}"
+        @click="changeOrgTab('orgScan')">Сканы</a>
+</div>
+<form action="" method="post" id="organizationForm" v-show="currentOrgTab=='Organization'">
+    {% csrf_token %}
+    <div class="mb-card_body card_body-form">
+        <div class="card_body-form_column">
+            <select name="org_form" required>
+                <option value="Организационная форма" disabled selected>Организационная форма</option>
+                <option value="ИП">ИП</option>
+                <option value="АО">АО</option>
+                <option value="ООО">ООО</option>
+                <option value="ОАО">ОАО</option>
+                <option value="ПАО">ПАО</option>
+            </select>
+            <input class="form_input" type="text" name="full_name" placeholder="Название" required
+                value={%if form.full_name.value %}{{form.full_name.value}}{%endif%}>
+            <input class="form_input" type="text" name="inn" placeholder="ИНН" v-model="inn" v-mask="'############'"
+                pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов">
+            <input class="form_input" type="text" name="ogrn" placeholder="ОГРН" v-model="ogrn"
+                v-mask="'###############'" pattern=".{0}|.{13,15}" title="ОГРН должен содержать от 13 до 15 символов">
+            <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'"
+                v-model='phone'>
+            <input class="form_input" type="email" name="email" placeholder="Email"
+                value={%if form.email.value %}{{form.email.value}}{%endif%}>
         </div>
-        {% if form.errors %}
-        <div class="mb-card_errors">
-            {% for error in form.non_field_errors %}
-                <div class="alert alert-danger">
-                    <p class="error_txt"><i>{{ error }}</i></p>
-                </div>
-            {% endfor %}
-            {% for field in form %}
-                {% if field.errors %}
-                <p class="error_txt">{{ field.label }}: {%for error in field.errors%}<i>{{ error }}</i>{% endfor %}</p>
-                {% endif %}
-            {% endfor %}
+        <div class="card_body-form_column">
+            <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации"
+                required>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
+            <textarea class="form_input wide_textarea" type="text" name="adr_fact"
+                placeholder="Фактический адрес">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
         </div>
+        {%if organization_wr %}
+        <input type="hidden" name="id" value="{{organization_wr.id}}">
+        <input type="hidden" name="author" value="{{organization_wr.organization.author.id}}">
+        {% else %}
+        <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
         {% endif %}
-        <div class="mb-card_footer" v-show="currentOrgTab=='Organization'">
-            <div class="mb-card_footer_left"></div>
-            <button type="submit" class="btn_prim" name="organizationFormSave" form="organizationForm">Сохранить</button>
+    </div>
+    {% if form.errors %}
+    <div class="mb-card_errors">
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <p class="error_txt"><i>{{ error }}</i></p>
         </div>
-    </form>
-    <div v-show="currentOrgTab=='CEO'" style="display: flex;">
-        {%if organization_wr %}
-            {% if form.ceo %}
-                
-            {% else %}
-                {% include "verification/forms/objects/person_form_including.html" %}
-            {% endif %}
-        {% else %}
-            {% include "verification/forms/objects/person_form_including.html" %}
+        {% endfor %}
+        {% for field in form %}
+        {% if field.errors %}
+        <p class="error_txt">{{ field.label }}: {%for error in field.errors%}<i>{{ error }}</i>{% endfor %}</p>
         {% endif %}
+        {% endfor %}
     </div>
-    <div v-show="currentOrgTab=='Beneficiar'">
-        {%if organization_wr %}
-            {% if form.ceo %}
+    {% endif %}
+    <div class="mb-card_footer" v-show="currentOrgTab=='Organization'">
+        <div class="mb-card_footer_left"></div>
+        <button type="submit" class="btn_prim" name="organizationFormSave" form="organizationForm">Сохранить</button>
+    </div>
+</form>
+<div v-show="currentOrgTab=='Staff'" class="mb-card_body card_body-form_column">
+    {% if owr %}
+    <div class="itemform_controls_row spb spb-bordered" style="padding: 1rem 0;">
+        <div class="itemform_controls_row_item">
+            <legend>Ген.директор:</legend>
+        </div>&nbsp;
+        {%if ceo %}
+        <div class="itemform_controls_row_item">
+            <a href="{% url 'detailing-ceo' owr_id=owr.id pwr_id=ceo.id %}" class="link">{{ceo.person.fio}}</a>
+        </div>
+        {% else %}
+        <div class="itemform_controls_row_item">
+            <a href="{% url 'create-ceo' owr_id=owr.id %}" class="link color_link">Создать</a>
+        </div>
+        {%endif%}
+    </div>
+    <div class="itemform_controls_row spb spb-bordered" style="padding: 0.5rem 0;">
+        <div class="itemform_controls_row_item">
+            <legend>Бенефициары:</legend>
+        </div>
+        <div class="itemform_controls_row_item">
+            <a href="{% url 'create-ben' owr_id=owr.id %}" class="link color_link">Добавить</a>
+        </div>
+    </div>
+    {% for ben in bens %}
+    <div class="itemform_controls_row spb" style="padding-top: 0.3rem;">
+        <div></div>
+        <a href="{% url 'detailing-ben' owr_id=owr.id pwr_id=ben.id %}" class="link">{{ben.person.fio}}</a>
+    </div>
+    {%endfor%}
 
-            {% else %}
+    {% else %}
+    <div class="input_wrapper">
+        <p class="error_txt">Сначала заполните и сохраните данные организации</p>
+    </div>
+    {%endif%}
+</div>
+<div v-show="currentOrgTab=='orgScan'">
+    {%if owr %}
+    {% include "verification/forms/common/scan_form.html" %}
+    {% else %}
+    <div class="input_wrapper">
+        <p class="error_txt">Сначала заполните и сохраните данные организации</p>
+    </div>
+    {% endif %}
+</div>
 
-            {% endif %}
-        {% else %}
-            
-        {% endif %}
-    </div>
-    <div v-show="currentOrgTab=='orgScan'">
-        {%if organization_wr %}
-            {% include "verification/forms/objects/scan_form.html" %}
-        {% else %}
-            <div class="input_wrapper">
-                <p class="error_txt">Сначала заполните и сохраните данные организации</p>
-            </div>
-        {% endif %}
-    </div>
 {% endblock %}

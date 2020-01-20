@@ -7,12 +7,18 @@
         <div class="input_wrapper">
             {{ object_title }}
         </div>
-        <div style="flex:1;"></div>
-        <div class="input_wrapper"><a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Открыть заявку</a></div>
         {% else %}
         <div class="input_wrapper">
             {{ page_title }}
         </div>
+        {%endif%}
+        <div style="flex:1;"></div>
+        {%if vitem_is_filled and vitem_id %}
+        <div class="input_wrapper"><a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Открыть заявку</a></div>
+        {% elif owr_href %}
+        <div class="input_wrapper"><a class="link white-text" href="{% url owr_href.view obj_id=owr_href.view_id %}">Вернуться к организации</a></div>
+        {% else %}
+        <div class="input_wrapper">Заявка не заполнена</div>
         {%endif%}
     </div>
     <div class="multitab-form">

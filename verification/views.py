@@ -72,7 +72,10 @@ def scan_upload(request):
         form = forms.DocStorageForm(request.POST, request.FILES)
         if form.is_valid():
             new_scan = form.save()
+            print(new_scan)
             required_scan_checking(new_scan)
+        else:
+            print(form.errors)
     return redirect(request.META.get('HTTP_REFERER'))
 
 
@@ -84,21 +87,21 @@ def scan_delete(request, scan_id=None):
     return redirect(request.META.get('HTTP_REFERER'))
 
 def required_scan_checking(scan):
-    
         scan_list = models.DocStorage.objects.filter(model_name = scan.model_name, model_id = scan.model_id).exclude(to_del = True)
-        if scan.model_name == 'PersonWithRole':
-            vitem = models.VerificationItem.objects.filter(person__id = scan.model_id)[0]
+        if scan.model_name == 'Person':
+            vitem = models.VerificationItem.objects.filter(person__person__id = scan.model_id)
             doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета']
-        elif scan.model_name == 'OrganizationWithRole':
-            vitem = models.VerificationItem.objects.filter(organization__id = scan.model_id)[0]
+        elif scan.model_name == 'Organization':
+            vitem = models.VerificationItem.objects.filter(organization__organization__id = scan.model_id)
             doc_types = ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
         vitem_is_filled = True
         dias_status = 'Новая'
-        for doc_type in doc_types:
-            if scan_list.filter(doc_type = doc_type).count() == 0:
-                vitem_is_filled = False
-                dias_status = ''
-        vitem.is_filled = vitem_is_filled
-        if vitem.dias_status == 'Новая' or vitem.dias_status == '':
-            vitem.dias_status = dias_status
-        vitem.save()
+        if len(vitem):
+            for doc_type in doc_types:
+                if scan_list.filter(doc_type = doc_type).count() == 0:
+                    vitem_is_filled = False
+                    dias_status = ''
+            vitem.is_filled = vitem_is_filled
+            if vitem.dias_status == 'Новая' or vitem.dias_status == '':
+                vitem.dias_status = dias_status
+            vitem.save()

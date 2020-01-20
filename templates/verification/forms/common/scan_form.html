@@ -6,12 +6,12 @@
             <input type="hidden" name="vitem" value="{{vitem_id}}">
             {%endif%}
             <div class="input_wrapper">
-                {% if person_wr %}
-                <input type="hidden" name="model_id" value="{{person_wr.id}}">
-                <input type="hidden" name="model_name" value="PersonWithRole">
+                {% if pwr %}
+                <input type="hidden" name="model_id" value="{{pwr.person.id}}">
+                <input type="hidden" name="model_name" value="Person">
                 {% else %}
-                <input type="hidden" name="model_id" value="{{organization_wr.id}}">
-                <input type="hidden" name="model_name" value="OrganizationWithRole">
+                <input type="hidden" name="model_id" value="{{owr.organization.id}}">
+                <input type="hidden" name="model_name" value="Organization">
                 {%endif%}
                 <input type="hidden" name="author" value="{{user.extendeduser.id}}">
                 <select name="doc_type" required>
@@ -28,9 +28,7 @@
                 <button type="submit" form="scanForm" class="btn_suc" name="btn_scan_upload" >Загрузить</button>
             </div>
         </div>
-        
-        {% if scan_list %}
-        <div class="input_wrapper">Загруженные сканы</div>
+        {% if scan_list or deleted_scan_list%}
         <table>
             <thead>
                 <td>Тип файла</td>
@@ -38,6 +36,7 @@
                 <td>Автор</td>
                 <td></td>
             </thead>
+            {% if scan_list %}<tr class="sep-tr"><td class="uploaded">Загруженные сканы</td></tr>{%endif%}
         {% for scan in scan_list %}
             <tr>
                 <td><a class="link" target="_blank" href="{{ scan.scan_file.url }}">{{ scan.doc_type }}</a></td>
@@ -47,7 +46,7 @@
             </tr>
         {% endfor %}
         {% if deleted_scan_list %}
-            <tr class="sep-tr"><td>Удаленные сканы</td></tr>
+            <tr class="sep-tr"><td class="deleted">Удаленные сканы</td></tr>
             {% for deleted_scan in deleted_scan_list %}
                 <tr>
                     <td><a class="link" target="_blank" href="{{ deleted_scan.scan_file.url }}">{{ deleted_scan.doc_type }}</a></td>
