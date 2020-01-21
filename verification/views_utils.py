@@ -9,7 +9,7 @@ class UserStats:
 def get_base_context(user):
     context = {}
     stats = UserStats()
-    stats.q_all = models.VerificationItem.objects.all()
+    stats.q_all = models.VerificationItem.objects.all().order_by('-created')
     stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True)
     stats.q_mine = stats.q_all.filter(case_officer__user = user)
     stats.q_at_work = stats.q_all.filter(dias_status = 'В работе')
@@ -84,8 +84,6 @@ def newChatMessage(vitem, message, author):
 
 def accessing(item_id, model_name, user):
     item = getattr(models, model_name).objects.filter(id = item_id)
-    print(item)
-    print(model_name)
     if model_name == 'PersonWithRole':
         vitem = models.VerificationItem.objects.filter(person__id = item_id)
     elif model_name == 'VerificationItem':
@@ -114,4 +112,3 @@ def send_mail(email_to, subject, body):
     )
     msg.content_subtype = 'html'
     msg.send()
-    print(msg)

@@ -56,10 +56,8 @@ def scan_upload(request):
         form = forms.DocStorageForm(request.POST, request.FILES)
         if form.is_valid():
             new_scan = form.save()
-            print(new_scan)
             views_utils.required_scan_checking(new_scan)
-        else:
-            print(form.errors)
+
     return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required
