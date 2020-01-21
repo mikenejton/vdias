@@ -4,60 +4,48 @@ from django.urls import reverse
 
 from . import models
 from . import forms
-from . import utils
-from . import objects_view
-
-def newChatMessage(vitem, message, author):
-    new_msg = models.VitemChat()
-    new_msg.vitem = vitem
-    new_msg.msg = message
-    new_msg.author = author
-    new_msg.save()
-    utils.update_logger('VitemChat', new_msg.id, '', author)
+from . import views_utils
+from . import views_sub_func
 
 @login_required
 def agent_form(request, obj_id=None):
-    
-    result = objects_view.pwr_call(request, obj_id, None, 'Агент', request.user.extendeduser.user_role.role_name)
+    result = views_sub_func.pwr_call(request, obj_id, None, 'Агент', request.user.extendeduser.user_role.role_name)
     return result
 
 @login_required
 def staff_form(request, obj_id=None):
-    
-    result = objects_view.pwr_call(request, obj_id, None, 'Штатный сотрудник', 'Штатные сотрудники')
+    result = views_sub_func.pwr_call(request, obj_id, None, 'Штатный сотрудник', 'Штатные сотрудники')
     return result
 
 @login_required
 def ceo_form(request, owr_id=None, pwr_id=None):
-    
-    result = objects_view.pwr_call(request, pwr_id, owr_id, 'Ген. директор', None)
+    result = views_sub_func.pwr_call(request, pwr_id, owr_id, 'Ген. директор', None)
     return result
 
 @login_required
 def ben_form(request, owr_id=None, pwr_id=None):
-    
-    result = objects_view.pwr_call(request, pwr_id, owr_id, 'Бенефициар', None)
+    result = views_sub_func.pwr_call(request, pwr_id, owr_id, 'Бенефициар', None)
     return result
 
 @login_required
 def partner_form(request, obj_id=None):
-    result = objects_view.owr_call(request, obj_id, 'Создание партнера', 'Партнер')
+    result = views_sub_func.owr_call(request, obj_id, 'Создание партнера', 'Партнер')
     return result
 
 @login_required
 def counterparty_form(request, obj_id=None):
-    result = objects_view.owr_call(request, obj_id, 'Создание контрагента', 'Контрагент')
+    result = views_sub_func.owr_call(request, obj_id, 'Создание контрагента', 'Контрагент')
     return result
 
 # VITEM MAIN FORM
 @login_required
 def vitem_form(request, vitem_id=None):
-    context = utils.get_base_context(request.user)
-    if vitem_id:
-        vitem_qs = models.VerificationItem.objects.filter(id=vitem_id)
-        if len(vitem_qs):
-            vitem = vitem_qs[0]
-            if request.user.extendeduser.user_role.role_lvl <= 3 or vitem.author.user_role == request.user.extendeduser.user_role:
+    context = views_utils.get_base_context(request.user)
+    if views_utils.accessing(vitem_id, 'VerificationItem', request.user):
+        if vitem_id:
+            vitem_qs = models.VerificationItem.objects.filter(id=vitem_id)
+            if len(vitem_qs):
+                vitem = vitem_qs[0]
                 if request.method == 'GET':
                     context['vitem'] = vitem
                     context['page_title'] = f'Заявка № {vitem.id}'
@@ -78,7 +66,7 @@ def vitem_form(request, vitem_id=None):
                             context['ceo'] = models.PersonWithRole.objects.get(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
                         except:
                             form_template = 'verification/404.html'
-                            context = {'err_txt':'Что-то пошло не так... Попробуйте позж'}
+                            context = {'err_txt':'Что-то пошло не так... Попробуйте позжe'}
 
                         
                     context['scan_list'] = scan_list.filter(to_del = False)
@@ -94,33 +82,32 @@ def vitem_form(request, vitem_id=None):
                                 if hasattr(vitem, key):
                                     if getattr(vitem, key) != ff.cleaned_data[key]:
                                         setattr(vitem, key, ff.cleaned_data[key])
-                            utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
+                            views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
                         return redirect('index')
                     elif 'btn_to_fix' in request.POST:
                         vitem.to_fix = True
                         vitem.fixed = False
                         vitem.dias_status = 'На доработке'
-                        utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
+                        views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
-                        newChatMessage(vitem, '{}: {}'.format('На доработку', request.POST['fix_comment']), request.user.extendeduser)
+                        views_utils.newChatMessage(vitem, '{}: {}'.format('На доработку', request.POST['fix_comment']), request.user.extendeduser)
                     elif 'btn_fixed' in request.POST:
                         vitem.to_fix = False
                         vitem.fixed = True
                         vitem.dias_status = 'Доработано'
-                        utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
+                        views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
-                        newChatMessage(vitem, '{}: {}'.format('Доработано', request.POST['fix_comment']), request.user.extendeduser)
+                        views_utils.newChatMessage(vitem, '{}: {}'.format('Доработано', request.POST['fix_comment']), request.user.extendeduser)
                     elif 'btn_take_to' in request.POST:
                         vitem.case_officer = request.user.extendeduser
                         vitem.dias_status = 'В работе'
-                        utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
+                        views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
                     elif 'btn_add_comment' in request.POST and len(request.POST['chat_message']) > 0:                    
-                        newChatMessage(vitem, request.POST['chat_message'], request.user.extendeduser)
+                        views_utils.newChatMessage(vitem, request.POST['chat_message'], request.user.extendeduser)
 
                     return redirect(reverse('vitem', args=[vitem_id]))
-            else:
-                context['err_txt'] = 'У вас недостаточно прав на просмотр данной страницы'
-    
-    return render(request, 'verification/404.html', context)
+    else:
+        context['err_txt'] = 'Запрашиваемая страница не существует или у Вас недостаточно прав на ее просмотр'
+        return render(request, 'verification/404.html', context)

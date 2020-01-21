@@ -15,10 +15,6 @@ class PersonForm(ModelForm):
         elif round(date_diff.days/365.25, 0)  > 99:
             raise ValidationError({'dob': 'Возраст более 99-ти лет!'})
         
-
-
-
-
 class OrganizationForm(ModelForm):
     class Meta:
         model = models.Organization

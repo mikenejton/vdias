@@ -1,19 +1,19 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from . import models, forms, utils
+from . import models, forms, views_utils
 
 
                 
 @login_required
 def index(request):
-    context = utils.get_base_context(request.user)
+    context = views_utils.get_base_context(request.user)
     context['page_title'] = 'Верификация'
     return render(request, 'verification/index.html', context)
 
 @login_required
 def find_vitem(request):
-    context = utils.get_base_context(request.user)
+    context = views_utils.get_base_context(request.user)
     if request.POST:
         if request.POST['person']:
             result = models.VerificationItem.objects.filter(person__person__fio__icontains = request.POST['person'].upper())
@@ -28,7 +28,7 @@ def find_vitem(request):
     return render(request, 'verification/forms/vitem_search_result.html', context)
 
 def vitem_list(request, param=None):
-    context = utils.get_base_context(request.user)
+    context = views_utils.get_base_context(request.user)
     context['page_title'] = 'Список заявок'
     result = context['stats'].q_all
     if request.POST:
@@ -50,11 +50,11 @@ def vitem_list(request, param=None):
 @login_required
 def create_item(request):
     if request.method == 'GET':
-        context = utils.get_base_context(request.user)
+        context = views_utils.get_base_context(request.user)
         context['page_title'] = 'Создание заявки'
         return render(request, 'verification/create_item.html', context)
 
-    elif request.POST['item_type'] == 'Агент':        
+    elif request.POST['item_type'] == 'Агент':
         return redirect('create-agent')
 
     elif request.POST['item_type'] == 'Партнер':
@@ -73,7 +73,7 @@ def scan_upload(request):
         if form.is_valid():
             new_scan = form.save()
             print(new_scan)
-            utils.required_scan_checking(new_scan)
+            views_utils.required_scan_checking(new_scan)
         else:
             print(form.errors)
     return redirect(request.META.get('HTTP_REFERER'))
@@ -83,5 +83,5 @@ def scan_delete(request, scan_id=None):
     current_scan = models.DocStorage.objects.get(id=scan_id)
     current_scan.to_del = True
     current_scan.save()
-    utils.required_scan_checking(current_scan)
+    views_utils.required_scan_checking(current_scan)
     return redirect(request.META.get('HTTP_REFERER'))

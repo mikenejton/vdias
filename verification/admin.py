@@ -18,7 +18,6 @@ def auto_register(model, ldl):
     field_list = [f.name for f in model._meta.get_fields() if f.auto_created == False]
     field_list.insert(0, 'id')
     # Dynamically create ModelAdmin class and register it.
-    print(ldl)
     my_admin = type('MyAdmin', (admin.ModelAdmin,), 
                         {'list_display':field_list, 
                         'list_display_links': ldl,

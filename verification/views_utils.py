@@ -65,9 +65,35 @@ def required_scan_checking(scan):
                 if scan_list.filter(doc_type = doc_type).count() == 0:
                     vitem_is_filled = False
                     dias_status = ''
-            vitem.is_filled = vitem_is_filled
-            if vitem.dias_status == 'Новая' or vitem.dias_status == '':
-                vitem.dias_status = dias_status
-            vitem.save()
+            vitem[0].is_filled = vitem_is_filled
+            if vitem[0].dias_status == 'Новая' or vitem[0].dias_status == '':
+                vitem[0].dias_status = dias_status
+            vitem[0].save()
 
+def newChatMessage(vitem, message, author):
+    new_msg = models.VitemChat()
+    new_msg.vitem = vitem
+    new_msg.msg = message
+    new_msg.author = author
+    new_msg.save()
+    utils.update_logger('VitemChat', new_msg.id, '', author)
 
+def accessing(item_id, model_name, user):
+    item = getattr(models, model_name).objects.filter(id = item_id)
+    if model_name == 'PersonWithRole':
+        vitem = models.VerificationItem.objects.filter(person__id = item_id)
+    elif model_name == 'VerificationItem':
+        vitem = item
+    else:
+        vitem = models.VerificationItem.objects.filter(organization__id = item_id)
+    if len(item):
+        if user.extendeduser.user_role.role_lvl <= 2:
+            return True
+        elif item[0].author.user_role == user.extendeduser.user_role:
+            return True
+        if len(vitem):
+            if vitem[0].author.user_role == user.extendeduser.user_role:
+                return True
+            elif vitem[0].case_officer.user_role == user.extendeduser.user_role:
+                return True
+    return False
