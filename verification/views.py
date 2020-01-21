@@ -11,22 +11,6 @@ def index(request):
     context['page_title'] = 'Верификация'
     return render(request, 'verification/index.html', context)
 
-@login_required
-def find_vitem(request):
-    context = views_utils.get_base_context(request.user)
-    if request.POST:
-        if request.POST['person']:
-            result = models.VerificationItem.objects.filter(person__person__fio__icontains = request.POST['person'].upper())
-        else:
-            result = models.VerificationItem.objects.filter(organization__organization__full_name__icontains = request.POST['organization'].upper())
-        if request.user.extendeduser.user_role.role_lvl > 3:
-            result = result.filter(author__user_role = request.user.extendeduser.user_role)
-        elif request.user.extendeduser.user_role.role_lvl == 3:
-            result = result.exclude(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент'))
-        context['result'] = result
-    context['page_title'] = 'Поиск заявки'
-    return render(request, 'verification/forms/vitem_search_result.html', context)
-
 def vitem_list(request, param=None):
     context = views_utils.get_base_context(request.user)
     context['page_title'] = 'Список заявок'
@@ -78,10 +62,14 @@ def scan_upload(request):
             print(form.errors)
     return redirect(request.META.get('HTTP_REFERER'))
 
-
+@login_required
 def scan_delete(request, scan_id=None):
     current_scan = models.DocStorage.objects.get(id=scan_id)
     current_scan.to_del = True
     current_scan.save()
     views_utils.required_scan_checking(current_scan)
     return redirect(request.META.get('HTTP_REFERER'))
+
+def sendmail(request):
+    views_utils.send_mail('dp@finfort.ru', 'Тема письма', 'Это вроде как от Юли<br>Но не от Юли!')
+    return redirect('index')

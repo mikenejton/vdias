@@ -51,7 +51,7 @@ admin.site.register(User, CustomUserAdmin)
 model_admin_links={
     'datalogger': ['id', 'model_name'],
     'userrole': ['id', 'role_name'],
-    'organization': ['id', 'org_form', 'full_name'],
+    'organization': ['id', 'org_form', 'org_name'],
     'verificationitem': ['id', 'person', 'organization'],
     'vitemchat': ['id', 'vitem'],
     'organizationwithrole': ['id', 'organization'],

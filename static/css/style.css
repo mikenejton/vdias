@@ -95,20 +95,28 @@ aside.sidebar{
     display: flex;
     flex-direction: column;
 }
-.sibar-menu_item{
+.sidebar-menu_item{
     display: block;
     padding: 0.5rem 0.8rem;
     color: #212529;
 }
-.sibar-menu_item:hover{
+.sidebar-menu_item:hover{
     background: #859fb5;
     color: #fff;
 }
-.sibar-menu_item.active{
+.sidebar-menu_item.active{
     background: #859fb5;
     color: #fff;
     box-shadow: inset 0px -4px 6px -5px #3b3b3b;
-
+}
+.sidebar-menu_legend{
+    display: block;
+    padding: 0.5rem 0.8rem;
+    color: #212529;
+    border-bottom: 1px solid #ced4da;
+}
+.top-border{
+    border-top: 1px solid #ced4da;
 }
 .main-fixed-box{
     grid-area: mainbox;

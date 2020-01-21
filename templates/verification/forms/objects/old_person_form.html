@@ -16,8 +16,8 @@
     </div>
     <div class="multitab-form">
         <div class="multitab-form_buttons">
-            <a class="sibar-menu_item" v-bind:class="{ active: currentTab=='Object'}" @click="changeTab('Object')">Агент</a>
-            <a class="sibar-menu_item" v-bind:class="{ active: currentTab=='Scan'}" @click="changeTab('Scan')">Сканы</a>
+            <a class="sidebar-menu_item" v-bind:class="{ active: currentTab=='Object'}" @click="changeTab('Object')">Агент</a>
+            <a class="sidebar-menu_item" v-bind:class="{ active: currentTab=='Scan'}" @click="changeTab('Scan')">Сканы</a>
         </div>
         <form action="" method="post" id="personForm" v-show="currentTab=='Object'">
             {% csrf_token %}

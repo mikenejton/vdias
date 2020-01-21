@@ -1,7 +1,7 @@
 {% block person_form %}
     <div class="multitab-form_buttons">
-        <a class="sibar-menu_item" v-bind:class="{ active: currentPersTab=='Person'}" @click="changePersTab('Person')">Физ.лицо</a>
-        <a class="sibar-menu_item" v-bind:class="{ active: currentPersTab=='personScan'}" @click="changePersTab('personScan')">Сканы</a>
+        <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='Person'}" @click="changePersTab('Person')">Физ.лицо</a>
+        <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='personScan'}" @click="changePersTab('personScan')">Сканы</a>
     </div>
     <form action="" method="post" id="personForm" v-show="currentPersTab=='Person'">
         {% csrf_token %}

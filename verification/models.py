@@ -21,7 +21,8 @@ class ExtendedUser(models.Model):
 # Базовые модели
 class Organization(models.Model):
     org_form = models.CharField('Орг форма', max_length = 100)
-    full_name = models.CharField('Название', max_length = 500)
+    org_name = models.CharField('Название', max_length = 500)
+    full_name = models.CharField('Полное название', max_length = 500, blank=True, null=True)
     adr_reg = models.CharField('Юридический адрес', max_length=500, blank=True, null=True)
     adr_fact = models.CharField('Фактический адрес', max_length=500, blank=True, null=True)
     inn = models.CharField('ИНН', max_length = 12, blank=True, null=True)
@@ -31,6 +32,7 @@ class Organization(models.Model):
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
+        self.full_name = ' '.join(filter(None, [self.org_form, self.org_name])).upper()
         super().save(*args, **kwargs)
         return self.id
     

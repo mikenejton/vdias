@@ -7,7 +7,7 @@ from . import forms
 from . import views_utils
 
 def owr_call(request, owr_id, create_title, update_title):
-    if views_utils.accessing(owr_id, 'PersonWithRole', request.user):
+    if views_utils.accessing(owr_id, 'OrganizationWithRole', request.user):
         context = get_owr_context(request, owr_id, create_title, update_title)
         if request.method == 'POST':
             pass
@@ -29,17 +29,16 @@ def get_owr_context(request, owr_id, create_title, update_title):
     if owr_id:
         owr = models.OrganizationWithRole.objects.filter(id = owr_id)
         if len(owr) > 0 :
-            if views_utils.accessing(owr[0], vitem[0], request.user):
-                organization = owr[0].organization
-                form = forms.OrganizationForm(instance=organization)
-                context['page_title'] = update_title
-                context['owr'] = owr[0]
-                context['object_title'] = f"{context['owr'].organization.full_name} ({context['page_title']})"
-                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Ген. директор')
-                context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Бенефициар')
-                context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
-                if request.user.extendeduser.user_role.role_lvl <= 3:
-                    context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
+            organization = owr[0].organization
+            form = forms.OrganizationForm(instance=organization)
+            context['page_title'] = update_title
+            context['owr'] = owr[0]
+            context['object_title'] = f"{context['owr'].organization.full_name} ({context['page_title']})"
+            context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Ген. директор')
+            context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Бенефициар')
+            context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
+            if request.user.extendeduser.user_role.role_lvl <= 3:
+                context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
     else:
         form = forms.OrganizationForm()
         context['page_title'] = create_title

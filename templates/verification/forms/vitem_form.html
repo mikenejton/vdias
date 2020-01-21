@@ -5,7 +5,14 @@
     <div class="gcard_vitem-view">
         <div class="gcard_vitem-view_header">
             <div class="input_wrapper">
-            Заявка на верификацию&nbsp;({ vitemType })</div>
+                Заявка на верификацию&nbsp;({ vitemType })
+            </div>
+            {%if not vitem.is_filled%}
+            <div class="input_wrapper">|</div>
+            <div class="input_wrapper">
+                <i>Заявка не заполнена (проверьте связанные объекты)</i>
+            </div>
+            {%endif%}
             <div style="flex:1;"></div>
             {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 2 %}
             <div class="input_wrapper"><a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1 %}">Редактировать</a></div>

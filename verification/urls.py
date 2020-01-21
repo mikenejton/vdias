@@ -5,6 +5,7 @@ from . import views, form_views
 
 urlpatterns = [
     path('', views.index, name = 'index'),
+    path('sendmail', views.sendmail, name = 'sendmail'),
     path('find-vitem', views.vitem_list, name='find-vitem'),
     path('vitem-list/<str:param>', views.vitem_list, name='vitem-list'),
     path('scan/upload', views.scan_upload, name='scan-upload'),

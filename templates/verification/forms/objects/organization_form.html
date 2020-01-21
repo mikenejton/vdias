@@ -1,10 +1,10 @@
 {% block organization_form %}
 <div class="multitab-form_buttons">
-    <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='Organization'}"
+    <a class="sidebar-menu_item" v-bind:class="{ active: currentOrgTab=='Organization'}"
         @click="changeOrgTab('Organization')">Организация</a>
-    <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='Staff'}"
+    <a class="sidebar-menu_item" v-bind:class="{ active: currentOrgTab=='Staff'}"
         @click="changeOrgTab('Staff')">Состав</a>
-    <a class="sibar-menu_item" v-bind:class="{ active: currentOrgTab=='orgScan'}"
+    <a class="sidebar-menu_item" v-bind:class="{ active: currentOrgTab=='orgScan'}"
         @click="changeOrgTab('orgScan')">Сканы</a>
 </div>
 <form action="" method="post" id="organizationForm" v-show="currentOrgTab=='Organization'">
@@ -19,7 +19,7 @@
                 <option value="ОАО">ОАО</option>
                 <option value="ПАО">ПАО</option>
             </select>
-            <input class="form_input" type="text" name="full_name" placeholder="Название" required
+            <input class="form_input" type="text" name="org_name" placeholder="Название" required
                 value={%if form.full_name.value %}{{form.full_name.value}}{%endif%}>
             <input class="form_input" type="text" name="inn" placeholder="ИНН" v-model="inn" v-mask="'############'"
                 pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов">
