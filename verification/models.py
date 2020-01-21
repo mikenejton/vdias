@@ -206,17 +206,29 @@ class DocStorage(models.Model):
         return '{} {} {}'.format(self.model_id, self.model_name, self.doc_type)
     class Meta:
         verbose_name = 'Скан'
-        verbose_name_plural = 'Сканы'    
+        verbose_name_plural = 'Сканы'
 
 # -----------------------------------------------------------
 
 # Уведомления пользователя - непонятно, нужно ли
 class UserNotification(models.Model):
     user = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Пользователь')
-    msg_type = models.CharField('Тип уведомления', max_length=300)
+    email_to = models.CharField('Адрес', max_length=300)
+    email_from = models.CharField('Отправлено от', max_length=300)
+    msg_theme = models.CharField('Тема уведомления', max_length=300)
     msg = models.TextField('Уведомление')
-    msg_author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='NotifyAuthor', verbose_name='Пользователь')
     created = models.DateTimeField('Дата создания', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Уведомление'
+        verbose_name_plural = 'Уведомления'
+    
+    def __str__(self):
+        return '{}: {}'.format(self.email_to, self.msg_theme)
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        return self.id
 # -----------------------------------------------------------
 
 # Логирование действий

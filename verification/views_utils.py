@@ -102,13 +102,15 @@ def accessing(item_id, model_name, user):
                 return True
     return False
 
-def send_mail(email_to, subject, body):
+def send_mail(target_user, subject, body):
+    new_msg = models.UserNotification(user = target_user, email_to = target_user.user.email, email_from = 'dias@finfort.ru', msg_theme = subject, msg = body)
+    new_msg.save()
     msg = EmailMessage(
-        subject=subject,
-        body=body,
+        subject=new_msg.msg_theme,
+        body=new_msg.msg,
         from_email='sim@finfort.ru',
-        to=(email_to,),
-        headers={'From': 'pj@finfort.ru'}
+        to=(new_msg.email_to,),
+        headers={'From': new_msg.email_from}
     )
     msg.content_subtype = 'html'
     msg.send()
