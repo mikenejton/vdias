@@ -5,7 +5,7 @@ __pycache__/
 migrations/
 .vscode/
 file_storage/
-dias_venv/
+denv/
 .env
 db.sqlite3
 
