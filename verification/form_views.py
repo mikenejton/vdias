@@ -60,7 +60,7 @@ def vitem_form(request, vitem_id=None):
                         context['owr'] = vitem.organization
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
                         form_template = 'verification/forms/objects/vitem_organization_form.html'
-                        context['edit_link'] = ['detailing-partner' if vitem.organization.organization_role == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
+                        context['edit_link'] = ['detailing-partner' if vitem.organization.organization_type == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
                         context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, person_role = 'Бенефициар')
                         try:
                             context['ceo'] = models.PersonWithRole.objects.get(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
@@ -77,13 +77,17 @@ def vitem_form(request, vitem_id=None):
                 else:
                     if 'btn_save' in request.POST:
                         ff = forms.VerificationItemForm(request.POST)
+                        if 'dias_status' not in request.POST:
+                            ff.dias_status = vitem.dias_status
                         if ff.is_valid():
+                            
                             for key in ff.fields:
                                 if hasattr(vitem, key):
                                     if getattr(vitem, key) != ff.cleaned_data[key]:
                                         setattr(vitem, key, ff.cleaned_data[key])
                             views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
+                        
                         return redirect('index')
                     elif 'btn_to_fix' in request.POST:
                         vitem.to_fix = True

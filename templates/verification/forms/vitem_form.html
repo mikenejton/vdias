@@ -36,17 +36,21 @@
                         {% endif %}
                     {% endif %}
                     <div class="growing_block"></div>
-                    <div class="input_wrapper"><p>Статус:
-                        <select name="dias_status" {% if user.id != form.case_officer.value or form.dias_status.value == 'На доработке' %} disabled {% endif %}>
-                            <option value="Новая" {% if form.dias_status.value == 'Новая' %} selected {% endif %} disabled>Новая</option>
-                            <option value="В работе" {% if form.dias_status.value == 'В работе'  %} selected {% endif %}>В работе</option>
-                            <option value="Возможен особый контроль" {% if form.dias_status.value == 'Возможен особый контроль'  %} selected {% endif %}>Возможен особый контроль</option>
-                            <option value="На доработке" {% if form.dias_status.value == "На доработке"  %} selected {% endif %} disabled>На доработке</option>
-                            <option value="Доработано" {% if form.dias_status.value == "Доработано"  %} selected {% endif %} disabled>Доработано</option>
-                            <option value="Одобрено" {% if form.dias_status.value == "Одобрено"  %} selected {% endif %}>Одобрено</option>
-                            <option value="Одобрено, особый контроль" {% if form.dias_status.value == "Одобрено, особый контроль"  %} selected {% endif %}>Одобрено, особый контроль</option>
-                            <option value="Отказ" {% if form.dias_status.value == "Отказ"  %} selected {% endif %}>Отказ</option>
-                        </select></p>
+                    
+                    <div class="input_wrapper" >
+                        <p>Статус:
+                            <input type="hidden" name="dias_status" :value="diasStatus">
+                            <select name="dias_status_select" {% if user.id != form.case_officer.value or form.dias_status.value == 'На доработке' %} disabled {% endif %} required v-model="diasStatus">
+                                <option value="Новая" {% if form.dias_status.value == 'Новая' %} selected {% endif %} hidden>Новая</option>
+                                <option value="В работе" {% if form.dias_status.value == 'В работе'  %} selected {% endif %}>В работе</option>
+                                <option value="Возможен особый контроль" {% if form.dias_status.value == 'Возможен особый контроль'  %} selected {% endif %}>Возможен особый контроль</option>
+                                <option value="На доработке" {% if form.dias_status.value == "На доработке"  %} selected {% endif %} hidden>На доработке</option>
+                                <option value="Доработано" {% if form.dias_status.value == "Доработано"  %} selected {% endif %} hidden>Доработано</option>
+                                <option value="Одобрено" {% if form.dias_status.value == "Одобрено"  %} selected {% endif %}>Одобрено</option>
+                                <option value="Одобрено, особый контроль" {% if form.dias_status.value == "Одобрено, особый контроль"  %} selected {% endif %}>Одобрено, особый контроль</option>
+                                <option value="Отказ" {% if form.dias_status.value == "Отказ"  %} selected {% endif %}>Отказ</option>
+                            </select>
+                        </p>
                     </div>
                     {% if form.case_officer.value == user.id or vitem.author.id == user.id %}
                     <div class="itemform_controls_row">
@@ -271,6 +275,7 @@
             bankruptcyStatus: '{{form.bankruptcy.value}}',
             affiliationStatus: '{{form.affiliation.value}}',
             vitemType: '{% firstof pwr.person_role owr.organization_type %}',
+            diasStatus: '{{form.dias_status.value}}',
         },
         methods: {
             needComment: function(sendBtnName){

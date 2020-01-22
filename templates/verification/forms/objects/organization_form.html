@@ -13,14 +13,14 @@
         <div class="card_body-form_column">
             <select name="org_form" required>
                 <option value="Организационная форма" disabled selected>Организационная форма</option>
-                <option value="ИП">ИП</option>
+                <option value="ИП" {%if form.org_form.value == 'ИП'%}selected{%endif%}>ИП</option>
                 <option value="АО">АО</option>
                 <option value="ООО">ООО</option>
                 <option value="ОАО">ОАО</option>
                 <option value="ПАО">ПАО</option>
             </select>
             <input class="form_input" type="text" name="org_name" placeholder="Название" required
-                value={%if form.full_name.value %}{{form.full_name.value}}{%endif%}>
+                value={%if form.org_name.value %}{{form.org_name.value}}{%endif%}>
             <input class="form_input" type="text" name="inn" placeholder="ИНН" v-model="inn" v-mask="'############'"
                 pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов">
             <input class="form_input" type="text" name="ogrn" placeholder="ОГРН" v-model="ogrn"

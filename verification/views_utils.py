@@ -1,6 +1,7 @@
 from . import models
 from django.db.models import Q
 from django.core.mail import EmailMessage
+from djqscsv import render_to_csv_response
 class UserStats:
     def __init__(self):
         pass
@@ -54,6 +55,10 @@ def update_logger(model_name, pk, action, username, new_set=False):
                 new_dl = models.DataLogger(model_name=model_name, model_id=pk, action='Обновление записи', field_name=i[0], new_value=i[1], old_value=i[2], author=username)
                 new_dl.save()
 
+def vitem_creater(request, person=None, organization=None):
+    pass
+
+# Проверка сканов объекта, смена статус Заявки
 def required_scan_checking(scan):
         scan_list = models.DocStorage.objects.filter(model_name = scan.model_name, model_id = scan.model_id).exclude(to_del = True)
         if scan.model_name == 'Person':
@@ -74,32 +79,46 @@ def required_scan_checking(scan):
                 vitem[0].dias_status = dias_status
             vitem[0].save()
 
+def is_vitem_ready(item_type, item=None):
+    if item:
+        vitem = models.VerificationItem.objects.filter(**{item_type: item})
+        if not len(vitem):
+            if item_type == 'owr':
+                pass
+            elif item_type == 'pwr':
+                pass
+    
+    return False
+
 def newChatMessage(vitem, message, author):
     new_msg = models.VitemChat()
     new_msg.vitem = vitem
     new_msg.msg = message
     new_msg.author = author
     new_msg.save()
-    utils.update_logger('VitemChat', new_msg.id, '', author)
+    update_logger('VitemChat', new_msg.id, '', author)
 
 def accessing(item_id, model_name, user):
-    item = getattr(models, model_name).objects.filter(id = item_id)
-    if model_name == 'PersonWithRole':
-        vitem = models.VerificationItem.objects.filter(person__id = item_id)
-    elif model_name == 'VerificationItem':
-        vitem = item
+    if item_id:
+        item = getattr(models, model_name).objects.filter(id = item_id)
+        if model_name == 'PersonWithRole':
+            vitem = models.VerificationItem.objects.filter(person__id = item_id)
+        elif model_name == 'VerificationItem':
+            vitem = item
+        else:
+            vitem = models.VerificationItem.objects.filter(organization__id = item_id)
+        if len(item):
+            if user.extendeduser.user_role.role_lvl <= 2:
+                return True
+            elif item[0].author.user_role == user.extendeduser.user_role:
+                return True
+            if len(vitem):
+                if vitem[0].author.user_role == user.extendeduser.user_role:
+                    return True
+                elif vitem[0].case_officer.user_role == user.extendeduser.user_role:
+                    return True
     else:
-        vitem = models.VerificationItem.objects.filter(organization__id = item_id)
-    if len(item):
-        if user.extendeduser.user_role.role_lvl <= 2:
-            return True
-        elif item[0].author.user_role == user.extendeduser.user_role:
-            return True
-        if len(vitem):
-            if vitem[0].author.user_role == user.extendeduser.user_role:
-                return True
-            elif vitem[0].case_officer.user_role == user.extendeduser.user_role:
-                return True
+        return True
     return False
 
 def send_mail(target_user, subject, body):
@@ -114,3 +133,6 @@ def send_mail(target_user, subject, body):
     )
     msg.content_subtype = 'html'
     msg.send()
+
+def export_csv(qs):
+    return render_to_csv_response(qs)

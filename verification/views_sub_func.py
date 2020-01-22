@@ -9,10 +9,14 @@ from . import views_utils
 def owr_call(request, owr_id, create_title, update_title):
     if views_utils.accessing(owr_id, 'OrganizationWithRole', request.user):
         context = get_owr_context(request, owr_id, create_title, update_title)
-        if request.method == 'POST':
-            pass
-
-        return render(request, 'verification/forms/common/organization_form_common.html', context)
+        if 'err_txt' not in context:
+            if request.method == 'POST':
+                pass
+            if 'owr' in context:
+                context['vitem_ready'] = views_utils.is_vitem_ready('owr', context['owr'])
+            return render(request, 'verification/forms/common/organization_form_common.html', context)
+        else:
+            return render(request, 'verification/404.html', context)
     else:
         context = views_utils.get_base_context(request.user)
         context['err_txt'] = 'Запрашиваемая страница не существует или у Вас недостаточно прав на ее просмотр'
@@ -29,20 +33,24 @@ def get_owr_context(request, owr_id, create_title, update_title):
     if owr_id:
         owr = models.OrganizationWithRole.objects.filter(id = owr_id)
         if len(owr) > 0 :
-            organization = owr[0].organization
-            form = forms.OrganizationForm(instance=organization)
-            context['page_title'] = update_title
-            context['owr'] = owr[0]
-            context['object_title'] = f"{context['owr'].organization.full_name} ({context['page_title']})"
-            context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Ген. директор')
-            context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Бенефициар')
-            context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
-            if request.user.extendeduser.user_role.role_lvl <= 3:
-                context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
+            if owr[0].organization_type == update_title:
+                organization = owr[0].organization
+                form = forms.OrganizationForm(instance=organization)
+                context['page_title'] = update_title
+                context['owr'] = owr[0]
+                context['object_title'] = f"{context['owr'].organization.full_name} ({context['page_title']})"
+                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Ген. директор')
+                context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Бенефициар')
+                context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
+                if request.user.extendeduser.user_role.role_lvl <= 3:
+                    context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
+                context['form'] = form
+            else:
+                context['err_txt'] = 'Запрашиваемый объект не существует'
     else:
-        form = forms.OrganizationForm()
         context['page_title'] = create_title
-    context['form'] = form
+        context['form'] = forms.OrganizationForm()
+        print(context)
     return context
 
 
@@ -74,7 +82,9 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                         pwr.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
                     pwr.save()
                     context['pwr'] = pwr
+                    
                     views_utils.update_logger('PersonWithRole', context['pwr'].id, '', request.user.extendeduser)
+                    views_utils.vitem_creater(request,pwr, )
                 if pwr_role == 'Агент':
                     view_name = 'detailing-agent'
                 elif pwr_role == 'Штатный сотрудник':

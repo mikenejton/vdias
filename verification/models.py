@@ -65,7 +65,7 @@ class Person(models.Model):
     last_name = models.CharField('Фамилия', max_length=300)
     first_name = models.CharField('Имя', max_length=300)
     patronymic = models.CharField('Отчетство', max_length=300, blank=True, null=True)
-    prev_fio = models.CharField('ФИО', max_length=500, blank=True)
+    prev_fio = models.CharField('Предыдущее ФИО', max_length=500, blank=True)
     dob = models.DateField('Дата рождения', blank=True, null=True)
     pob = models.CharField('Место рождения', max_length=300, blank=True, null=True)
     adr_reg = models.CharField('Адрес регистрации', max_length=500, blank=True, null=True)

@@ -17,7 +17,9 @@
         <div class="input_wrapper"><a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Открыть заявку</a></div>
         {% elif owr_href %}
         <div class="input_wrapper"><a class="link white-text" href="{% url owr_href.view obj_id=owr_href.view_id %}">Вернуться к организации</a></div>
-        {% else %}
+        {% elif vitem_ready %}
+        <div class="input_wrapper"><button type="submit" form="{%if owr %}organizationForm{%else%}personForm{%endif%}">Создать заявку</button></div>
+        {%else%}
         <div class="input_wrapper">Заявка не заполнена</div>
         {%endif%}
     </div>

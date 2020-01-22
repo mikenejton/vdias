@@ -13,7 +13,7 @@ class SessionAdmin(admin.ModelAdmin):
 admin.site.register(Session, SessionAdmin)
 
 
-def auto_register(model, ldl):
+def auto_register(model, ldl, sf):
     #Get all fields from model, but exclude autocreated reverse relations
     field_list = [f.name for f in model._meta.get_fields() if f.auto_created == False]
     field_list.insert(0, 'id')
@@ -21,7 +21,7 @@ def auto_register(model, ldl):
     my_admin = type('MyAdmin', (admin.ModelAdmin,), 
                         {'list_display':field_list, 
                         'list_display_links': ldl,
-                        'list_filter': [x for x in ldl if x != 'id'] if ldl else [],
+                        'search_fields': [x for x in sf if x != 'id'] if sf else [],
                         }
                     )
     try:
@@ -49,20 +49,20 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)    
 
 model_admin_links={
-    'datalogger': ['id', 'model_name'],
-    'userrole': ['id', 'role_name'],
-    'organization': ['id', 'org_form', 'org_name'],
-    'verificationitem': ['id', 'person', 'organization'],
-    'vitemchat': ['id', 'vitem'],
-    'organizationwithrole': ['id', 'organization'],
-    'personwithrole': ['id', 'person'],
-    'docstorage': ['id', 'model_name', 'doc_type'],
-    'person': ['id', 'fio']
+    'datalogger': [['model_name'], ['field_name', 'old_value', 'new_value', 'author']],
+    'userrole': [['role_name'], ['role_name']],
+    'organization': [['org_form', 'org_name'], ['full_name', 'inn', 'ogrn', 'phone_number', 'author']],
+    'verificationitem': [['person', 'organization'], ['person', 'organization', 'dias_status']],
+    'vitemchat': [['vitem'], ['msg', 'author']],
+    'organizationwithrole': [['organization'], ['organization', 'organization_role']],
+    'personwithrole': [['person'], ['person__fio', 'person_role']],
+    'docstorage': [['model_name', 'doc_type'], ['doc_type', 'file_name', 'author']],
+    'person': [['fio'], ['fio', 'sneals', 'phone_number', 'pass_sn']]
 
 }
 for model in apps.get_app_config('verification').get_models():
     if model != ExtendedUser:
         if model._meta.model_name in model_admin_links:
-            auto_register(model, model_admin_links[model._meta.model_name])
+            auto_register(model, model_admin_links[model._meta.model_name][0], model_admin_links[model._meta.model_name][1])
         else:
-            auto_register(model, None)
+            auto_register(model, None, None)
