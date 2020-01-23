@@ -56,8 +56,6 @@ def scan_upload(request):
         form = forms.DocStorageForm(request.POST, request.FILES)
         if form.is_valid():
             new_scan = form.save()
-            views_utils.required_scan_checking(new_scan)
-
     return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required
@@ -65,7 +63,6 @@ def scan_delete(request, scan_id=None):
     current_scan = models.DocStorage.objects.get(id=scan_id)
     current_scan.to_del = True
     current_scan.save()
-    views_utils.required_scan_checking(current_scan)
     return redirect(request.META.get('HTTP_REFERER'))
 
 def sendmail(request):

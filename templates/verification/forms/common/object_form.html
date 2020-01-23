@@ -13,12 +13,11 @@
         </div>
         {%endif%}
         <div style="flex:1;"></div>
-        {%if vitem_is_filled and vitem_id %}
-        <div class="input_wrapper"><a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Открыть заявку</a></div>
-        {% elif owr_href %}
+
+        {% if owr_href %}
         <div class="input_wrapper"><a class="link white-text" href="{% url owr_href.view obj_id=owr_href.view_id %}">Вернуться к организации</a></div>
-        {% elif vitem_ready %}
-        <div class="input_wrapper"><button type="submit" form="{%if owr %}organizationForm{%else%}personForm{%endif%}">Создать заявку</button></div>
+        {% elif vitem_ready and vitem_id %}
+        <div class="input_wrapper"><a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Перейти к заявке</a></div>
         {%else%}
         <div class="input_wrapper">Заявка не заполнена</div>
         {%endif%}
@@ -58,6 +57,6 @@
             }
         }
     });
-    
 </script>
+
 {% endblock %}

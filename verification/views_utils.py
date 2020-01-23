@@ -55,40 +55,62 @@ def update_logger(model_name, pk, action, username, new_set=False):
                 new_dl = models.DataLogger(model_name=model_name, model_id=pk, action='Обновление записи', field_name=i[0], new_value=i[1], old_value=i[2], author=username)
                 new_dl.save()
 
-def vitem_creater(request, person=None, organization=None):
-    pass
+def vitem_creater(request, item, item_type):
+    print(f'{request} \n {item_type}:{item}')
+    vitem = models.VerificationItem.objects.filter(**{item_type: item})
+    if not len(vitem):
+        vitem = models.VerificationItem()
+        print(vitem)
+        if item_type == 'person':
+            vitem.person = item
+        elif item_type == 'organization':
+            vitem.organization = item
+        vitem.dias_status = 'Новая'
+        print(vitem)
+        vitem.author = request.user.extendeduser
+        vitem.save()
+    
+        
+
 
 # Проверка сканов объекта, смена статус Заявки
-def required_scan_checking(scan):
-        scan_list = models.DocStorage.objects.filter(model_name = scan.model_name, model_id = scan.model_id).exclude(to_del = True)
-        if scan.model_name == 'Person':
-            vitem = models.VerificationItem.objects.filter(person__person__id = scan.model_id)
-            doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета']
-        elif scan.model_name == 'Organization':
-            vitem = models.VerificationItem.objects.filter(organization__organization__id = scan.model_id)
-            doc_types = ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
-        vitem_is_filled = True
-        dias_status = 'Новая'
-        if len(vitem):
-            for doc_type in doc_types:
-                if scan_list.filter(doc_type = doc_type).count() == 0:
-                    vitem_is_filled = False
-                    dias_status = ''
-            vitem[0].is_filled = vitem_is_filled
-            if vitem[0].dias_status == 'Новая' or vitem[0].dias_status == '':
-                vitem[0].dias_status = dias_status
-            vitem[0].save()
+def required_scan_checking(model_id, model_name):
+    scan_list = models.DocStorage.objects.filter(model_name = model_name.title(), model_id = model_id).exclude(to_del = True)
+    if model_name == 'person':
+        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета']
+    elif model_name == 'organization':
+        doc_types = ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
+    
+    is_filled = True
+    
+    for doc_type in doc_types:
+        if scan_list.filter(doc_type = doc_type).count() == 0:
+            is_filled = False
+    return is_filled
 
 def is_vitem_ready(item_type, item=None):
+    if item_type == 'person':
+        if item.person_role in ['Ген. директор', 'Бенифициар']:
+            return False
     if item:
+        is_ready = required_scan_checking(getattr(item, item_type).id, item_type)
+        if is_ready:
+            if item_type == 'organization':
+                sub_items = models.PersonWithRole.objects.filter(related_organization = item)
+                if len(sub_items):
+                    for sub_item in sub_items:
+                        sub_item_rsc = required_scan_checking(item.person.id, 'person')
+                        if not sub_item_rsc:
+                            is_ready = False
+        
         vitem = models.VerificationItem.objects.filter(**{item_type: item})
-        if not len(vitem):
-            if item_type == 'owr':
-                pass
-            elif item_type == 'pwr':
-                pass
-    
-    return False
+        if len(vitem):
+            if vitem[0].is_filled != is_ready:
+                vitem[0].is_filled = is_ready
+                vitem[0].save()
+        
+
+    return is_ready
 
 def newChatMessage(vitem, message, author):
     new_msg = models.VitemChat()

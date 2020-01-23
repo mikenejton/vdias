@@ -212,7 +212,6 @@
         </div>
         <div class="gcard_vitem-view_table">
         {% if scan_list %}
-            <div class="input_wrapper">Загруженные сканы</div>
             <table>
                 <thead>
                     <th>ID объекта</th>
@@ -220,6 +219,7 @@
                     <th>Загружен</th>
                     <th>Автор</th>
                 </thead>
+                {% if scan_list %}<tr class="sep-tr"><td class="uploaded">Загруженные сканы</td></tr>{%endif%}
                 {% for item in scan_list %}
                 <tr>
                     <td>{{item.model_id}}</td>

@@ -7,6 +7,8 @@ from . import forms
 from . import views_utils
 from . import views_sub_func
 
+
+# формы физ.лиц
 @login_required
 def agent_form(request, obj_id=None):
     result = views_sub_func.pwr_call(request, obj_id, None, 'Агент', request.user.extendeduser.user_role.role_name)
@@ -26,7 +28,9 @@ def ceo_form(request, owr_id=None, pwr_id=None):
 def ben_form(request, owr_id=None, pwr_id=None):
     result = views_sub_func.pwr_call(request, pwr_id, owr_id, 'Бенефициар', None)
     return result
+# --------------------------------------------------------------
 
+# формы организаций
 @login_required
 def partner_form(request, obj_id=None):
     result = views_sub_func.owr_call(request, obj_id, 'Создание партнера', 'Партнер')
@@ -36,11 +40,13 @@ def partner_form(request, obj_id=None):
 def counterparty_form(request, obj_id=None):
     result = views_sub_func.owr_call(request, obj_id, 'Создание контрагента', 'Контрагент')
     return result
+# --------------------------------------------------------------
 
 # VITEM MAIN FORM
 @login_required
 def vitem_form(request, vitem_id=None):
     context = views_utils.get_base_context(request.user)
+
     if views_utils.accessing(vitem_id, 'VerificationItem', request.user):
         if vitem_id:
             vitem_qs = models.VerificationItem.objects.filter(id=vitem_id)
@@ -53,23 +59,24 @@ def vitem_form(request, vitem_id=None):
                     context['msgs'] = msgs
                     if vitem.person:
                         context['pwr'] = vitem.person
-                        scan_list = models.DocStorage.objects.filter(model_id = vitem.person.id, model_name = 'PersonWithRole')
+                        scan_list = models.DocStorage.objects.filter(model_id = vitem.person.person.id, model_name = 'Person')
                         form_template = 'verification/forms/objects/vitem_agent_form.html'
                         context['edit_link'] = ['detailing-agent' if vitem.person.person_role == 'Агент' else 'detailing-staff', vitem.person.id]
                     else:
                         context['owr'] = vitem.organization
-                        scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.id, model_name = 'OrganizationWithRole')
+                        scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.organization.id, model_name = 'Organization')
                         form_template = 'verification/forms/objects/vitem_organization_form.html'
                         context['edit_link'] = ['detailing-partner' if vitem.organization.organization_type == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
                         context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, person_role = 'Бенефициар')
-                        try:
-                            context['ceo'] = models.PersonWithRole.objects.get(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
-                        except:
-                            form_template = 'verification/404.html'
-                            context = {'err_txt':'Что-то пошло не так... Попробуйте позжe'}
+                        context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
+                        # try:
+                        #     context['ceo'] = models.PersonWithRole.objects.get(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
+                        # except:
+                        #     form_template = 'verification/404.html'
+                        #     context = {'err_txt':'Что-то пошло не так... Попробуйте позжe'}
 
-                        
                     context['scan_list'] = scan_list.filter(to_del = False)
+                    
                     if request.user.extendeduser.user_role.role_lvl <= 3:
                         context['deleted_scan_list'] = scan_list.filter(to_del = True)
                     context['form'] = forms.VerificationItemForm(instance=vitem)
@@ -110,6 +117,7 @@ def vitem_form(request, vitem_id=None):
                         vitem.save()
                     elif 'btn_add_comment' in request.POST and len(request.POST['chat_message']) > 0:                    
                         views_utils.newChatMessage(vitem, request.POST['chat_message'], request.user.extendeduser)
+
 
                     return redirect(reverse('vitem', args=[vitem_id]))
     else:

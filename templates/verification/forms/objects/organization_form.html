@@ -9,6 +9,7 @@
 </div>
 <form action="" method="post" id="organizationForm" v-show="currentOrgTab=='Organization'">
     {% csrf_token %}
+    <input type="hidden" name="currentOrgTab" v-model="currentOrgTab">
     <div class="mb-card_body card_body-form">
         <div class="card_body-form_column">
             <select name="org_form" required>
@@ -68,7 +69,7 @@
         <div class="itemform_controls_row_item">
             <legend>Ген.директор:</legend>
         </div>&nbsp;
-        {%if ceo|first %}
+        {%if ceo %}
         <div class="itemform_controls_row_item">
             {% for pwr in ceo %}
             <a href="{% url 'detailing-ceo' owr_id=owr.id pwr_id=pwr.id %}" class="link">{{pwr.person.fio}}</a>
