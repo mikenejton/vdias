@@ -15,7 +15,7 @@
             {%endif%}
             <div style="flex:1;"></div>
             {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 2 %}
-            <div class="input_wrapper"><a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1 %}">Редактировать</a></div>
+            <div class="input_wrapper"><a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1 %}">Открыть</a></div>
             {% endif %}
         </div>
         <div class="gcard_vitem-view_itemform">
@@ -138,7 +138,18 @@
                             </div>
                         </div>
                         <div class="txt_wrapper"><textarea name="fssp" placeholder="Информация по ФССП" :disabled="fsspStatus != 'Есть информация'" :required="fsspStatus == 'Есть информация'">{{vitem.fssp}}</textarea></div>
-
+                        
+                        <div class="itemform_controls_row spb" v-show="vitemType == 'Штатный сотрудник'">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Соц.сети:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Нет информации" id="soc_status_ok" {%if form.soc_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="soc_status_ok">Нет информации</label></div>
+                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Есть информация" id="soc_status_not_ok" {%if form.soc_status.value == 'Есть информация' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="soc_status_not_ok">Есть информация</label></div>
+                            </div>
+                        </div>
+                        <div class="txt_wrapper" v-show="vitemType == 'Штатный сотрудник'"><textarea name="soc" placeholder="Социальные сети" :disabled="socStatus != 'Есть информация'" :required="socStatus == 'Есть информация'">{{vitem.soc}}</textarea></div>
+                        
                         <div class="itemform_controls_row spb" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">КонтурФокус:</legend></div>
                             <div class="itemform_controls_row_item">
@@ -271,9 +282,10 @@
             cronosStatus: '{{form.cronos_status.value}}',
             fsspStatus: '{{form.fssp_status.value}}',
             conturFocusStatus: '{{form.contur_focus_status.value}}',
-            courtStatus: '{{form.сourt.value}}',
-            bankruptcyStatus: '{{form.bankruptcy.value}}',
-            affiliationStatus: '{{form.affiliation.value}}',
+            courtStatus: '{{form.сourt_status.value}}',
+            bankruptcyStatus: '{{form.bankruptcy_status.value}}',
+            affiliationStatus: '{{form.affiliation_status.value}}',
+            socStatus: '{{form.soc_status.value}}',
             vitemType: '{% firstof pwr.person_role owr.organization_type %}',
             diasStatus: '{{form.dias_status.value}}',
         },

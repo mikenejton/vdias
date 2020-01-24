@@ -17,17 +17,17 @@ def get_base_context(user):
     stats.q_to_fix = stats.q_all.filter(to_fix = True)
     stats.q_fixed = stats.q_all.filter(fixed = True)
     stats.q_finished = stats.q_all.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
-    stats.q_not_filled = stats.q_all.filter(is_filled = False)
+    stats.q_not_filled = stats.q_all.filter(is_filled = False, dias_status = 'Новая')
     if user.extendeduser.user_role.role_lvl == 2:
         stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
-        stats.q_all = stats.q_all.exclude(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент'))
+        stats.q_all = stats.q_all.exclude(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент')).exclude(Q(is_filled = False) and Q(dias_status = 'Новая'))
         stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True)
         stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
         stats.q_fixed = stats.q_mine.filter(fixed = True)
         stats.q_finished = stats.q_mine.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
-        stats.q_not_filled = stats.q_mine.filter(is_filled = False)
+        stats.q_not_filled = stats.q_mine.filter(is_filled = False, dias_status = 'Новая')
     elif user.extendeduser.user_role.role_lvl >= 4:
         stats.q_all = stats.q_all.filter(author__user_role = user.extendeduser.user_role)
         stats.q_mine = stats.q_all.filter(author__user = user)
@@ -35,7 +35,7 @@ def get_base_context(user):
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
         stats.q_fixed = stats.q_mine.filter(fixed = True)
         stats.q_finished = stats.q_mine.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
-        stats.q_not_filled = stats.q_mine.filter(is_filled = False)
+        stats.q_not_filled = stats.q_mine.filter(is_filled = False, dias_status = 'Новая')
     context['stats'] = stats
     return context
     

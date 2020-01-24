@@ -31,7 +31,7 @@
                 <li><a href = "{% url 'vitem-list' param='q_all' %}" class="sidebar-menu_item {% if 'q_all' in request.path %}active{%endif%}">Всего заявок: {{stats.q_all.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_mine' %}" class="sidebar-menu_item {% if 'q_mine' in request.path %}active{%endif%}">Мои заявки: {{stats.q_mine.count}}</a></li>
                 {% if user.extendeduser.user_role.role_lvl <= 3 %}
-                <li><a href = "{% url 'vitem-list' param='q_new' %}" class="sidebar-menu_item {% if 'q_new' in request.path %}active{%endif%}">Новые: {{stats.q_new.count}}</a></li>
+                <li><a href = "{% url 'vitem-list' param='q_new' %}" class="sidebar-menu_item {% if 'q_new' in request.path %}active{%elif stats.q_new.count >= 1 %}link_bold{%endif%}">Новые: {{stats.q_new.count}}</a></li>
                 {% endif %}
                 <li><a href = "{% url 'vitem-list' param='q_at_work' %}" class="sidebar-menu_item {% if 'q_at_work' in request.path %}active{%endif%}">В работе: {{stats.q_at_work.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_to_fix' %}" class="sidebar-menu_item {% if 'q_to_fix' in request.path %}active{%endif%}">На доработке: {{stats.q_to_fix.count}}</a></li>

@@ -69,12 +69,6 @@ def vitem_form(request, vitem_id=None):
                         context['edit_link'] = ['detailing-partner' if vitem.organization.organization_type == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
                         context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, person_role = 'Бенефициар')
                         context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
-                        # try:
-                        #     context['ceo'] = models.PersonWithRole.objects.get(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
-                        # except:
-                        #     form_template = 'verification/404.html'
-                        #     context = {'err_txt':'Что-то пошло не так... Попробуйте позжe'}
-
                     context['scan_list'] = scan_list.filter(to_del = False)
                     
                     if request.user.extendeduser.user_role.role_lvl <= 3:

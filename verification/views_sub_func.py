@@ -111,7 +111,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     if 'related_organization' in request.POST:
                         pwr.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
                     pwr.save()
-                    views_utils.update_logger('PersonWithRole', context['pwr'].id, '', request.user.extendeduser)
+                    views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
                     context['pwr'] = pwr
                     
                     views_utils.vitem_creater(request, pwr, 'person')

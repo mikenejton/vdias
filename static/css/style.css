@@ -30,6 +30,9 @@ a.color_link{
 a.link:hover{
     text-decoration: underline;
 }
+.link_bold{
+    font-weight: bold;
+}
 button, input, select, textarea{
     outline: none;
     text-decoration: none;
