@@ -174,7 +174,7 @@
                                 <div class="input_wrapper"><label for="court_status_not_ok">Есть информация</label></div>
                             </div>
                         </div>
-                        <div class="txt_wrapper"><textarea name="сourt" placeholder="Информация по судам" :disabled="courtStatus != 'Есть информация'" :required="courtStatus == 'Есть информация'">{{vitem.сourt}}</textarea></div>
+                        <div class="txt_wrapper"><textarea name="court" placeholder="Информация по судам" :disabled="courtStatus != 'Есть информация'" :required="courtStatus == 'Есть информация'">{{vitem.court}}</textarea></div>
 
                         <div class="itemform_controls_row spb">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Информация по банкротсву:</legend></div>
@@ -282,7 +282,7 @@
             cronosStatus: '{{form.cronos_status.value}}',
             fsspStatus: '{{form.fssp_status.value}}',
             conturFocusStatus: '{{form.contur_focus_status.value}}',
-            courtStatus: '{{form.сourt_status.value}}',
+            courtStatus: '{{form.court_status.value}}',
             bankruptcyStatus: '{{form.bankruptcy_status.value}}',
             affiliationStatus: '{{form.affiliation_status.value}}',
             socStatus: '{{form.soc_status.value}}',

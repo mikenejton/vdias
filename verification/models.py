@@ -9,6 +9,9 @@ class UserRole(models.Model):
     role_description = models.CharField('Описание', max_length = 1000)
     def __str__(self):
         return self.role_name
+    class Meta:
+        verbose_name = 'Роль пользователя'
+        verbose_name_plural = 'Роли пользователей'
 
 class ExtendedUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -16,6 +19,10 @@ class ExtendedUser(models.Model):
     access_lvl = models.IntegerField('Уровень доступа')
     def __str__(self):
         return ' '.join(filter(None, [self.user.last_name, self.user.first_name]))
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 # -----------------------------------------------------------
 
 # Базовые модели
@@ -130,8 +137,8 @@ class VerificationItem(models.Model):
     fssp = models.TextField('ФССП', blank=True, null=True, default='')
     bankruptcy_status = models.CharField('Сайт по банкротству статус', max_length = 300, blank=True, null=True, default='')
     bankruptcy = models.TextField('Сайт по банкротству', blank=True, null=True, default='')
-    сourt_status = models.CharField('Суды статус', max_length = 300, blank=True, null=True, default='')
-    сourt = models.TextField('Суды', blank=True, null=True, default='')
+    court_status = models.CharField('Суды статус', max_length = 300, blank=True, null=True, default='')
+    court = models.TextField('Суды', blank=True, null=True, default='')
     contur_focus_status = models.CharField('Контур-Фокус статус', max_length = 300, blank=True, null=True, default='')
     contur_focus = models.TextField('Контур-Фокус', blank=True, null=True, default='')
     affiliation_status = models.CharField('Проверка на аффилированность статус', max_length = 300, blank=True, null=True, default='')
@@ -171,6 +178,9 @@ class VitemChat(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         return self.id
+    class Meta:
+        verbose_name = 'Чат'
+        verbose_name_plural = 'Чат'
 
 # -----------------------------------------------------------
 

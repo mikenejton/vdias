@@ -81,9 +81,9 @@ def vitem_form(request, vitem_id=None):
                         if 'dias_status' not in request.POST:
                             ff.dias_status = vitem.dias_status
                         if ff.is_valid():
-                            
                             for key in ff.fields:
                                 if hasattr(vitem, key):
+                                    print(f'{key}: p({getattr(vitem, key)}), f({ff.cleaned_data[key]})')
                                     if getattr(vitem, key) != ff.cleaned_data[key]:
                                         setattr(vitem, key, ff.cleaned_data[key])
                             views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)

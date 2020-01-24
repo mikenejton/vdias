@@ -19,6 +19,7 @@ class OrganizationForm(ModelForm):
     class Meta:
         model = models.Organization
         fields = '__all__'
+
 class DocStorageForm(ModelForm):
     class Meta:
         model = models.DocStorage
@@ -27,7 +28,7 @@ class DocStorageForm(ModelForm):
 class VerificationItemForm(ModelForm):
     class Meta:
         model = models.VerificationItem
-        fields = ('dias_status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'сourt', 'сourt_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status')
+        fields = ('dias_status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status')
 
 class PersonWithRoleForm(ModelForm):
     class Meta:
