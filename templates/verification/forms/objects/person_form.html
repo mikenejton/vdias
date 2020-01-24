@@ -63,7 +63,7 @@
                 {% endfor %}
             </select>
             {%endif%}
-            <button type="submit" class="btn_prim" name="personFormSave" form="personForm">Сохранить</button>
+            <button type="submit" class="btn_prim" name="personFormSave" form="personForm" v-show="isEditable">Сохранить</button>
         </div>
 
     </form>

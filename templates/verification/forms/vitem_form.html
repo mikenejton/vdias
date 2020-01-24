@@ -14,7 +14,7 @@
             </div>
             {%endif%}
             <div style="flex:1;"></div>
-            {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 2 %}
+            {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 3 %}
             <div class="input_wrapper"><a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1 %}">Открыть</a></div>
             {% endif %}
         </div>

@@ -33,7 +33,7 @@
     Vue.use(VueMask.VueMaskPlugin);
     var app = new Vue({
         el: '#vuePart',
-        delimiters: ['[{', '}]'],
+        delimiters: ['{', '}'],
         data: {
             sneals: '{{form.sneals.value}}',
             phone: '{{form.phone_number.value}}',
@@ -45,6 +45,7 @@
             currentPersTab: 'Person',
             scanFile: '',
             scanType: 'Тип документа',
+            isEditable: {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
 
 
         },

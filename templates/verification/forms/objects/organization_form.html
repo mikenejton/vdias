@@ -60,7 +60,7 @@
     {% endif %}
     <div class="mb-card_footer" v-show="currentOrgTab=='Organization'">
         <div class="mb-card_footer_left"></div>
-        <button type="submit" class="btn_prim" name="organizationFormSave" form="organizationForm">Сохранить</button>
+        <button type="submit" class="btn_prim" name="organizationFormSave" form="organizationForm" v-show="isEditable">Сохранить</button>
     </div>
 </form>
 <div v-show="currentOrgTab=='Staff'" class="mb-card_body card_body-form_column">
@@ -76,7 +76,7 @@
             {%endfor%}
         </div>
         {% else %}
-        <div class="itemform_controls_row_item">
+        <div class="itemform_controls_row_item" v-show="isEditable">
             <a href="{% url 'create-ceo' owr_id=owr.id %}" class="link color_link">Создать</a>
         </div>
         {%endif%}
@@ -86,7 +86,7 @@
             <legend>Бенефициары:</legend>
         </div>
         <div class="itemform_controls_row_item">
-            <a href="{% url 'create-ben' owr_id=owr.id %}" class="link color_link">Добавить</a>
+            <a href="{% url 'create-ben' owr_id=owr.id %}" class="link color_link" v-show="isEditable">Добавить</a>
         </div>
     </div>
     {% for ben in bens %}
