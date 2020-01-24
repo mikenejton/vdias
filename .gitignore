@@ -6,6 +6,6 @@ migrations/
 .vscode/
 file_storage/
 denv/
+settings/
 .env
 db.sqlite3
-
