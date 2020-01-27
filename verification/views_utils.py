@@ -1,7 +1,6 @@
 from . import models
 from django.db.models import Q
 from django.core.mail import EmailMessage
-from djqscsv import render_to_csv_response
 class UserStats:
     def __init__(self):
         pass
@@ -155,6 +154,3 @@ def send_mail(target_user, subject, body):
     )
     msg.content_subtype = 'html'
     msg.send()
-
-def export_csv(qs):
-    return render_to_csv_response(qs)

@@ -49,15 +49,15 @@ def auto_register(model, ldl, sf):
         pass
 
 model_admin_links={
-    'datalogger': [['model_name'], ['field_name', 'old_value', 'new_value', 'author']],
+    'datalogger': [['model_name'], ['field_name', 'old_value', 'new_value', 'author__user__last_name']],
     'userrole': [['role_name'], ['role_name']],
-    'organization': [['org_form', 'org_name'], ['full_name', 'inn', 'ogrn', 'phone_number', 'author']],
-    'verificationitem': [['person', 'organization'], ['person', 'organization', 'dias_status']],
-    'vitemchat': [['vitem'], ['msg', 'author']],
-    'organizationwithrole': [['organization'], ['organization', 'organization_role']],
-    'personwithrole': [['person'], ['person__fio', 'person_role']],
-    'docstorage': [['model_name', 'doc_type'], ['doc_type', 'file_name', 'author']],
-    'person': [['fio'], ['fio', 'sneals', 'phone_number', 'pass_sn']]
+    'organization': [['org_form', 'org_name'], ['full_name', 'inn', 'ogrn', 'phone_number', 'author__user__last_name']],
+    'verificationitem': [['person', 'organization'], ['person', 'organization', 'dias_status', 'author__user__last_name']],
+    'vitemchat': [['vitem'], ['msg', 'author__user__last_name']],
+    'organizationwithrole': [['organization'], ['organization', 'organization_role', 'author__user__last_name']],
+    'personwithrole': [['person'], ['person__fio', 'person_role', 'author__user__last_name']],
+    'docstorage': [['model_name', 'doc_type'], ['doc_type', 'file_name', 'author__user__last_name']],
+    'person': [['fio'], ['fio', 'sneals', 'phone_number', 'pass_sn', 'author__user__last_name']]
 }
 
 for model in apps.get_app_config('verification').get_models():

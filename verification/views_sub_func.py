@@ -59,6 +59,7 @@ def get_owr_context(request, owr_id, create_title, update_title):
     if len(vitem) > 0:
         context['vitem_id'] = vitem[0].id
         context['vitem_is_filled'] = vitem[0].is_filled
+        context['dias_status'] = vitem[0].dias_status
     
     if owr_id:
         owr = models.OrganizationWithRole.objects.filter(id = owr_id)
@@ -179,6 +180,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                 vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
             context['vitem_id'] = vitem.id
             context['vitem_is_filled'] = vitem.is_filled
+            context['dias_status'] = vitem.dias_status
             context['page_title'] = pwr_role
             context['object_title'] = context['pwr'].person.fio
         else:

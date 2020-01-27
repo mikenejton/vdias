@@ -329,9 +329,9 @@ td.deleted{
 .gcard_vitem_chatbox{
     grid-area: chatbox;
     max-height: 100%;
-
     display: flex;
     flex-direction: column;
+    
 }
 .chatbox_chat-window{
     overflow-y: auto;
@@ -339,6 +339,7 @@ td.deleted{
     display: flex;
     flex-direction: column;
     padding: 0 0.3rem;
+    max-width: 30vw;
 }
 .chatbox_chat-message{
     display: flex;

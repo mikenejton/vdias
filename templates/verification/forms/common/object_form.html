@@ -45,7 +45,7 @@
             currentPersTab: 'Person',
             scanFile: '',
             scanType: 'Тип документа',
-            isEditable: {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
+            isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
 
 
         },

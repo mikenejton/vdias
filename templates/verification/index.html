@@ -20,5 +20,29 @@
             </div>
         </div>
     </form>
+
+    <div class="mb-card">
+
+        <div class="mb-card_header">Последние сообщения</div>
+        <div class="mb-card_body">
+            {% regroup chat_messages by vitem as msg_list %}
+            {% for msg in msg_list %}
+                <div class="input_wrapper grid_row input_wrapper">
+                    <a href="{% url 'vitem' vitem_id=msg.grouper.id%}" class="link">{{msg.grouper}}</a>
+                </div>
+                <div class="chatbox_chat-window" style="overflow-y: visible;">
+                    {% for item in msg.list %}
+                    <div class="chatbox_chat-message to-msg" style="max-width: 100%">
+                        <p class="msg-header">{{ item.created }}</p>
+                        <p class="msg-body">{{ item.msg }}</p>
+                        <p class="msg-footer">{{ item.author }}</p>
+                    </div>
+                    {%endfor%}
+                </div>
+            {%endfor%}
+        </div>
+        <div class="mb-card_footer">
+        </div>
+    </div>
 </div>
 {% endblock %}
