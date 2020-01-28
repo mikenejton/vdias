@@ -7,7 +7,7 @@
 <table>
     <thead>
         <tr>
-            <th>ID заявки</th>
+            <th>#</th>
             <th>Физ.Лицо</th>
             <th>Организация</th>
             <th>Роль</th>
@@ -20,7 +20,7 @@
     </thead>
     {% for item in result %}
         <tr>
-            <td># {{ item.id}}</td>
+            <td>{{ forloop.counter }}</td>
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{{ item.person.person }}</a></td>
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{{ item.organization.organization }}</a></td>
             <td>{% firstof item.organization.organization_role item.person.person_role %}</td>

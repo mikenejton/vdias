@@ -9,8 +9,8 @@ from . import models, forms, views_utils
 @login_required
 def index(request):
     context = views_utils.get_base_context(request.user)
-    context['page_title'] = 'Верификация'
-    context['chat_messages'] = models.VitemChat.objects.filter(Q(vitem__author = request.user.extendeduser) | Q(vitem__case_officer = request.user.extendeduser)).exclude(author = request.user.extendeduser).order_by('-vitem_id', '-created')[:5]
+    context['page_title'] = 'ДИАС'
+    context['chat_messages'] = models.VitemChat.objects.filter(Q(vitem__author = request.user.extendeduser) | Q(vitem__case_officer = request.user.extendeduser)).exclude(author = request.user.extendeduser).order_by('-created')[:5]
 
     return render(request, 'verification/index.html', context)
 
@@ -23,16 +23,18 @@ def vitem_list(request, param=None):
         if not param:
             if request.POST['person']:
                 result = result.filter(person__person__fio__icontains = request.POST['person'].upper())
-            if request.POST['organization']:
+            elif request.POST['organization']:
                 result = result.filter(organization__organization__full_name__icontains = request.POST['organization'].upper())
+            else:
+                result = {}
     elif param:
         result = getattr(context['stats'], param)
         context['q_name'] = param
-    
-    if request.user.extendeduser.user_role.role_lvl > 3:
-        result = result.filter(author__user_role = request.user.extendeduser.user_role)
-    elif request.user.extendeduser.user_role.role_lvl == 3:
-        result = result.exclude(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент'))
+    if len(result):
+        if request.user.extendeduser.user_role.role_lvl > 3:
+            result = result.filter(author__user_role = request.user.extendeduser.user_role)
+        elif request.user.extendeduser.user_role.role_lvl == 3:
+            result = result.exclude(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент'))
     
     context['result'] = result
     return render(request, 'verification/forms/vitem_search_result.html', context)
