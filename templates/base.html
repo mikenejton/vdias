@@ -12,7 +12,7 @@
 </head>
 <body>
     <header>
-        <h3><a href="{% url 'index' %}">Отдел верификации {{REQUEST}}</a></h3>
+        <h3><a href="{% url 'index' %}">Отдел верификации</a></h3>
         <div class="user_box">
             {% if user.is_authenticated %}
                 Здравствуйте, {{ user.last_name }} {{ user.first_name}}

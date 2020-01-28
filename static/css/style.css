@@ -88,6 +88,10 @@ header{
     z-index: 1;
 }
 header a {color: #fff;}
+.header_left{
+    display: flex;
+    align-items: center;
+}
 aside.sidebar{
     grid-area: sidebar;
     border-right: 1px solid #6d6d6d;

@@ -23,7 +23,7 @@
             <td>{{ forloop.counter }}</td>
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{{ item.person.person }}</a></td>
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{{ item.organization.organization }}</a></td>
-            <td>{% firstof item.organization.organization_role item.person.person_role %}</td>
+            <td>{% firstof item.organization.role item.person.role %}</td>
             <td>{{ item.is_filled|yesno:"Да,Нет" }}</td>
             <td>{{ item.dias_status }}</td>
             <td>{{ item.case_officer.user.last_name }} {{ item.case_officer.user.first_name }}</td>

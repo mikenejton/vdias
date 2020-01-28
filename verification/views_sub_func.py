@@ -30,9 +30,9 @@ def owr_call(request, owr_id, create_title, update_title):
                         owr.organization = new_org
                         owr.organization_type = update_title
                         if update_title == 'Партнер':
-                            owr.organization_role = request.user.extendeduser.user_role.role_name
+                            owr.role = request.user.extendeduser.user_role.role_name
                         else:
-                            owr.organization_role = update_title
+                            owr.role = update_title
                         owr.author = request.user.extendeduser
                         owr.save()
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
@@ -64,15 +64,15 @@ def get_owr_context(request, owr_id, create_title, update_title):
     if owr_id:
         owr = models.OrganizationWithRole.objects.filter(id = owr_id)
         if len(owr) > 0 :
-            if owr[0].organization_type == update_title:
+            if owr[0].role == update_title:
                 organization = owr[0].organization
                 form = forms.OrganizationForm(instance=organization)
                 context['page_title'] = update_title
                 context['owr'] = owr[0]
                 context['vitem_ready'] = views_utils.is_vitem_ready('organization', context['owr'])
                 context['object_title'] = f"{context['owr'].organization.full_name} ({context['page_title']})"
-                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Ген. директор')
-                context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, person_role = 'Бенефициар')
+                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role = 'Ген. директор')
+                context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role = 'Бенефициар')
                 context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
                 if request.user.extendeduser.user_role.role_lvl <= 3:
                     context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
@@ -107,7 +107,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     views_utils.update_logger('Person', new_person.id, '', request.user.extendeduser)
                     pwr = models.PersonWithRole()
                     pwr.person = new_person
-                    pwr.person_role = pwr_role
+                    pwr.role = pwr_role
                     pwr.author = request.user.extendeduser
                     if 'related_organization' in request.POST:
                         pwr.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
@@ -132,11 +132,11 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                 context['redirect'] = redirect(reverse(view_name, args=[x for x in target_id]))
         
         if pwr_role in ['Ген. директор', 'Бенефициар'] and pwr_id:
-            pwr_is_filled = views_utils.required_scan_checking(context['pwr'].person.id, 'person')
+            pwr_is_filled = views_utils.required_scan_checking(context['pwr'].person.id, 'person', pwr_role)
             if pwr_is_filled:
-                if context['owr'].organization_type == 'Партнер':
+                if context['owr'].role == 'Партнер':
                     context['owr_href'] = {'view':'detailing-partner', 'view_id': owr_id}
-                elif context['owr'].organization_type == 'Контрагент':
+                elif context['owr'].role == 'Контрагент':
                     context['owr_href'] = {'view':'detailing-counterparty', 'view_id': owr_id}
 
         context['template'] = 'verification/forms/common/person_form_common.html'
@@ -156,9 +156,9 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     
     person_organizations = models.OrganizationWithRole.objects.all()
     if request.user.extendeduser.user_role == 'HR':
-        person_organizations = person_organizations.filter(organization_role = 'Штатные сотрудники')
+        person_organizations = person_organizations.filter(organization_type = 'Штатные сотрудники')
     elif request.user.extendeduser.user_role.role_lvl > 3:
-        person_organizations = person_organizations.filter(organization_role = rel_pwr_type)    
+        person_organizations = person_organizations.filter(organization_type = rel_pwr_type)    
     context['org_list'] = person_organizations
 
     if owr_id:

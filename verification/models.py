@@ -51,7 +51,7 @@ class Organization(models.Model):
 
 class OrganizationWithRole(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    organization_role = models.CharField('Роль', max_length=300)
+    role = models.CharField('Роль', max_length=300)
     organization_type = models.CharField('Тип', max_length=300, blank=True, null=True)
     verificated = models.BooleanField('Верифицировано', default=False)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
@@ -61,7 +61,7 @@ class OrganizationWithRole(models.Model):
         return self.id
     
     def __str__(self):
-        return '{}, {}'.format(self.organization.full_name, self.organization_role)
+        return '{}, {}'.format(self.organization.full_name, self.role)
 
     class Meta:
         verbose_name = 'Роль организации'
@@ -87,7 +87,7 @@ class Person(models.Model):
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
-        self.fio = ' '.join(filter(None, [self.last_name, self.first_name, self.patronymic])).upper()
+        self.fio = ' '.join(filter(None, [self.last_name.strip(), self.first_name.strip(), self.patronymic.strip()])).upper()
         super().save(*args, **kwargs)
         return self.id
     
@@ -101,7 +101,7 @@ class Person(models.Model):
 
 class PersonWithRole(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    person_role = models.CharField('Роль', max_length=300)
+    role = models.CharField('Роль', max_length=300)
     verificated = models.BooleanField('Верифицирован', default=False)
     related_organization = models.ForeignKey(OrganizationWithRole, on_delete=models.PROTECT, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)

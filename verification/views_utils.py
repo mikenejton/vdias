@@ -18,9 +18,9 @@ def get_base_context(user):
     stats.q_finished = stats.q_all.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
     stats.q_not_filled = stats.q_all.filter(is_filled = False, dias_status = 'Новая')
     if user.extendeduser.user_role.role_lvl == 2:
-        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент')) #????????? штатник и контрагент?
+        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
-        stats.q_all = stats.q_all.exclude(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент')).exclude(Q(is_filled = False) and Q(dias_status = 'Новая'))
+        stats.q_all = stats.q_all.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')).exclude(Q(is_filled = False) and Q(dias_status = 'Новая'))
         stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True)
         stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
@@ -73,11 +73,15 @@ def vitem_creater(request, item, item_type):
 
 
 # Проверка сканов объекта, смена статус Заявки
-def required_scan_checking(model_id, model_name):
+def required_scan_checking(model_id, model_name, model_role=None):
     scan_list = models.DocStorage.objects.filter(model_name = model_name.title(), model_id = model_id).exclude(to_del = True)
     if model_name == 'person':
+        if model_role in ['Ген. директор', 'Бенефициар']:
+            return True
         doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета']
     elif model_name == 'organization':
+        if model_role == 'Контрагент':
+            return True
         doc_types = ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
     
     is_filled = True
@@ -89,25 +93,28 @@ def required_scan_checking(model_id, model_name):
 
 def is_vitem_ready(item_type, item=None):
     if item_type == 'person':
-        if item.person_role in ['Ген. директор', 'Бенифициар']:
+        if item.role in ['Ген. директор', 'Бенифициар']:
             return False
     if item:
-        is_ready = required_scan_checking(getattr(item, item_type).id, item_type)
+        is_ready = required_scan_checking(getattr(item, item_type).id, item_type, item.role)
         if is_ready:
             if item_type == 'organization':
-                sub_items = models.PersonWithRole.objects.filter(related_organization = item)
-                if len(sub_items):
-                    for sub_item in sub_items:
-                        sub_item_rsc = required_scan_checking(item.person.id, 'person')
-                        if not sub_item_rsc:
-                            is_ready = False
+                ceo = models.PersonWithRole.objects.filter(related_organization = item, role = 'Ген. директор')
+                if len(ceo) == 0:
+                    is_ready = False
+
+                # sub_items = models.PersonWithRole.objects.filter(related_organization = item, role__in = ['Ген. директор', 'Бенефициар'])
+                # if len(sub_items):
+                #     for sub_item in sub_items:
+                #         sub_item_rsc = required_scan_checking(sub_item.person.id, 'person', sub_item.role)
+                #         if not sub_item_rsc:
+                #             is_ready = False
         
         vitem = models.VerificationItem.objects.filter(**{item_type: item})
         if len(vitem):
             if vitem[0].is_filled != is_ready:
                 vitem[0].is_filled = is_ready
                 vitem[0].save()
-        
 
     return is_ready
 

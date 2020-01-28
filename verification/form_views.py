@@ -61,14 +61,14 @@ def vitem_form(request, vitem_id=None):
                         context['pwr'] = vitem.person
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.person.person.id, model_name = 'Person')
                         form_template = 'verification/forms/objects/vitem_agent_form.html'
-                        context['edit_link'] = ['detailing-agent' if vitem.person.person_role == 'Агент' else 'detailing-staff', vitem.person.id]
+                        context['edit_link'] = ['detailing-agent' if vitem.person.role == 'Агент' else 'detailing-staff', vitem.person.id]
                     else:
                         context['owr'] = vitem.organization
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.organization.id, model_name = 'Organization')
                         form_template = 'verification/forms/objects/vitem_organization_form.html'
-                        context['edit_link'] = ['detailing-partner' if vitem.organization.organization_type == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
-                        context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, person_role = 'Бенефициар')
-                        context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
+                        context['edit_link'] = ['detailing-partner' if vitem.organization.role == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
+                        context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, role = 'Бенефициар')
+                        context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, role = 'Ген. директор')
                     context['scan_list'] = scan_list.filter(to_del = False)
                     
                     if request.user.extendeduser.user_role.role_lvl <= 3:

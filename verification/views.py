@@ -10,7 +10,10 @@ from . import models, forms, views_utils
 def index(request):
     context = views_utils.get_base_context(request.user)
     context['page_title'] = 'ДИАС'
-    context['chat_messages'] = models.VitemChat.objects.filter(Q(vitem__author = request.user.extendeduser) | Q(vitem__case_officer = request.user.extendeduser)).exclude(author = request.user.extendeduser).order_by('-created')[:5]
+    if request.user.extendeduser.user_role.role_lvl <= 2:
+        context['chat_messages'] = models.VitemChat.objects.exclude(author = request.user.extendeduser).order_by('-created')[:10]
+    else:
+        context['chat_messages'] = models.VitemChat.objects.filter(Q(vitem__author = request.user.extendeduser) | Q(vitem__case_officer = request.user.extendeduser)).exclude(author = request.user.extendeduser).order_by('-created')[:5]
 
     return render(request, 'verification/index.html', context)
 
@@ -34,7 +37,7 @@ def vitem_list(request, param=None):
         if request.user.extendeduser.user_role.role_lvl > 3:
             result = result.filter(author__user_role = request.user.extendeduser.user_role)
         elif request.user.extendeduser.user_role.role_lvl == 3:
-            result = result.exclude(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент'))
+            result = result.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент'))
     
     context['result'] = result
     return render(request, 'verification/forms/vitem_search_result.html', context)

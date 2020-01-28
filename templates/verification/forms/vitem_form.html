@@ -286,7 +286,7 @@
             bankruptcyStatus: '{{form.bankruptcy_status.value}}',
             affiliationStatus: '{{form.affiliation_status.value}}',
             socStatus: '{{form.soc_status.value}}',
-            vitemType: '{% firstof pwr.person_role owr.organization_type %}',
+            vitemType: '{% firstof pwr.role owr.role %}',
             diasStatus: '{{form.dias_status.value}}',
         },
         methods: {

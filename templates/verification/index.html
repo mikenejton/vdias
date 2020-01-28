@@ -20,9 +20,7 @@
             </div>
         </div>
     </form>
-
     <div class="mb-card">
-
         <div class="mb-card_header">Последние сообщения</div>
         <div class="mb-card_body">
             {% for msg in chat_messages %}
@@ -33,14 +31,11 @@
                 {% endifchanged %}
                 <div class="chatbox_chat-window" style="overflow-y: visible;">
                     <div class="chatbox_chat-message to-msg" style="max-width: 100%">
-                        <p class="msg-header">{{ msg.created }}</p>
+                        <p class="msg-header">{{ msg.created|date:'d.m.Y H:i:s' }}, {{ msg.author }}</p>
                         <p class="msg-body">{{ msg.msg }}</p>
-                        <p class="msg-footer">{{ msg.author }}</p>
                     </div>
                 </div>
             {%endfor%}
-        </div>
-        <div class="mb-card_footer">
         </div>
     </div>
 </div>
