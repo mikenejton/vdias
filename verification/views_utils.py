@@ -20,8 +20,9 @@ def get_base_context(user):
     if user.extendeduser.user_role.role_lvl == 2:
         stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
-        stats.q_all = stats.q_all.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')).exclude(Q(is_filled = False) and Q(dias_status = 'Новая'))
-        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True)
+        stats.q_all = stats.q_all.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')).exclude(Q(is_filled = False) & Q(dias_status = 'Новая'))
+        # stats.q_all = stats.q_all.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент'))
+        stats.q_new = stats.q_all.filter(dias_status = 'Новая')
         stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
         stats.q_fixed = stats.q_mine.filter(fixed = True)
@@ -130,7 +131,11 @@ def accessing(item_id, model_name, user):
     if item_id:
         item = getattr(models, model_name).objects.filter(id = item_id)
         if model_name == 'PersonWithRole':
-            vitem = models.VerificationItem.objects.filter(person__id = item_id)
+            if item[0].role in ['Ген. директор', 'Бенефициар']:
+                vitem = models.VerificationItem.objects.filter(organization__id = item[0].related_organization.id)
+            else:
+                vitem = models.VerificationItem.objects.filter(person__id = item_id)
+
         elif model_name == 'VerificationItem':
             vitem = item
         else:
@@ -143,7 +148,10 @@ def accessing(item_id, model_name, user):
             if len(vitem):
                 if vitem[0].author.user_role == user.extendeduser.user_role:
                     return True
-                elif vitem[0].case_officer.user_role == user.extendeduser.user_role:
+                elif vitem[0].case_officer:
+                    if vitem[0].case_officer.user_role == user.extendeduser.user_role:
+                        return True
+                elif vitem[0].organization and user.extendeduser.user_role.role_lvl == 3:
                     return True
     else:
         return True

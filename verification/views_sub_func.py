@@ -114,8 +114,8 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     pwr.save()
                     views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
                     context['pwr'] = pwr
-                    
-                    views_utils.vitem_creater(request, pwr, 'person')
+                    if pwr_role not in ['Ген. директор', 'Бенефициар']:
+                        views_utils.vitem_creater(request, pwr, 'person')
 
                 if pwr_role == 'Агент':
                     view_name = 'detailing-agent'

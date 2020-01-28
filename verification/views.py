@@ -10,10 +10,10 @@ from . import models, forms, views_utils
 def index(request):
     context = views_utils.get_base_context(request.user)
     context['page_title'] = 'ДИАС'
-    if request.user.extendeduser.user_role.role_lvl <= 2:
-        context['chat_messages'] = models.VitemChat.objects.exclude(author = request.user.extendeduser).order_by('-created')[:10]
-    else:
-        context['chat_messages'] = models.VitemChat.objects.filter(Q(vitem__author = request.user.extendeduser) | Q(vitem__case_officer = request.user.extendeduser)).exclude(author = request.user.extendeduser).order_by('-created')[:5]
+    # if request.user.extendeduser.user_role.role_lvl <= 2:
+    #     context['chat_messages'] = models.VitemChat.objects.exclude(author = request.user.extendeduser).order_by('-created')[:10]
+    # else:
+    #     context['chat_messages'] = models.VitemChat.objects.filter(Q(vitem__author = request.user.extendeduser) | Q(vitem__case_officer = request.user.extendeduser)).exclude(author = request.user.extendeduser).order_by('-created')[:5]
 
     return render(request, 'verification/index.html', context)
 

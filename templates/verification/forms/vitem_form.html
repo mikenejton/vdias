@@ -55,7 +55,7 @@
                     {% if form.case_officer.value == user.id or vitem.author.id == user.id %}
                     <div class="itemform_controls_row">
                         <div class="itemform_controls_row_btns">
-                            {% if form.dias_status.value in 'Новая, В работе, На доработке, Доработано' %}
+                            {% if form.dias_status.value in 'В работе, На доработке, Доработано' %}
                                 {% if vitem.to_fix == False %}
                                     {% if user.extendeduser.user_role.role_lvl < 3 %}
                                     <button v-show="false" type="submit" name="btn_to_fix" id="btn_to_fix">На доработку</button>
