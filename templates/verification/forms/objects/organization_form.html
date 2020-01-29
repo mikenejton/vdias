@@ -15,10 +15,10 @@
             <select name="org_form" required>
                 <option value="Организационная форма" disabled selected>Организационная форма</option>
                 <option value="ИП" {%if form.org_form.value == 'ИП'%}selected{%endif%}>ИП</option>
-                <option value="АО">АО</option>
-                <option value="ООО">ООО</option>
-                <option value="ОАО">ОАО</option>
-                <option value="ПАО">ПАО</option>
+                <option value="АО" {%if form.org_form.value == 'АО'%}selected{%endif%}>АО</option>
+                <option value="ООО" {%if form.org_form.value == 'ООО'%}selected{%endif%}>ООО</option>
+                <option value="ОАО" {%if form.org_form.value == 'ОАО'%}selected{%endif%}>ОАО</option>
+                <option value="ПАО" {%if form.org_form.value == 'ПАО'%}selected{%endif%}>ПАО</option>
             </select>
             <input class="form_input" type="text" name="org_name" placeholder="Название" required
                 value={%if form.org_name.value %}{{form.org_name.value}}{%endif%}>

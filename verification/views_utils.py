@@ -21,7 +21,6 @@ def get_base_context(user):
         stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
         stats.q_all = stats.q_all.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')).exclude(Q(is_filled = False) & Q(dias_status = 'Новая'))
-        # stats.q_all = stats.q_all.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент'))
         stats.q_new = stats.q_all.filter(dias_status = 'Новая')
         stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
@@ -69,9 +68,6 @@ def vitem_creater(request, item, item_type):
         print(vitem)
         vitem.author = request.user.extendeduser
         vitem.save()
-    
-        
-
 
 # Проверка сканов объекта, смена статус Заявки
 def required_scan_checking(model_id, model_name, model_role=None):
@@ -131,11 +127,12 @@ def accessing(item_id, model_name, user):
     if item_id:
         item = getattr(models, model_name).objects.filter(id = item_id)
         if model_name == 'PersonWithRole':
+            if not len(item):
+                return False
             if item[0].role in ['Ген. директор', 'Бенефициар']:
                 vitem = models.VerificationItem.objects.filter(organization__id = item[0].related_organization.id)
             else:
                 vitem = models.VerificationItem.objects.filter(person__id = item_id)
-
         elif model_name == 'VerificationItem':
             vitem = item
         else:
