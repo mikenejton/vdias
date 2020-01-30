@@ -6,13 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     {% load static %}
+    <link rel="shortcut icon" href="{% static 'img/logo.png' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
     <title>{{ page_title }}</title>
 </head>
 <body>
     <header>
-        <h3><a href="{% url 'index' %}">Отдел верификации</a></h3>
+        <div class="user_box">
+            <h3><a href="{% url 'index' %}">Отдел верификации</a></h3>
+        </div>
+
         <div class="user_box">
             {% if user.is_authenticated %}
                 Здравствуйте, {{ user.last_name }} {{ user.first_name}}
