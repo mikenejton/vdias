@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
 <div class="mb-card card_centered" id="vuePart">
     <div class="mb-card_header">
@@ -27,7 +27,8 @@
         {% endblock %}
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js"></script>
+<script src="{% static 'js/v-mask.min.js' %}"></script>
+
 
 <script>
     Vue.use(VueMask.VueMaskPlugin);
