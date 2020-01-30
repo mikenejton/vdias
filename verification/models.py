@@ -130,6 +130,7 @@ class VerificationItem(models.Model):
     fms_not_ok = models.CharField('ФМС', max_length = 300, blank=True, null=True, default='')
     rosfin = models.CharField('Росфинмониторинг', max_length = 300, blank=True, null=True, default='')
     docs_full = models.CharField('Полнота и качество документов', max_length = 300, blank=True, null=True, default='')
+    reg_checked = models.CharField('ФМС', max_length = 300, blank=True, null=True, default='')
     
     cronos_status = models.CharField('Кронос статус', max_length = 300, blank=True, null=True)
     cronos = models.TextField('Кронос комментарий', blank=True, null=True, default='')
