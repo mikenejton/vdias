@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from . import views, form_views
+from . import views, form_views, views_utils
 
 urlpatterns = [
     path('', views.index, name = 'index'),
@@ -12,6 +12,8 @@ urlpatterns = [
     path('scan/delete/<int:scan_id>/', views.scan_delete, name='scan-delete'),
     path('vitem/<int:vitem_id>/', form_views.vitem_form, name='vitem'),
     path('create-item', views.create_item, name='create-item'),
+    path('short-item/add', form_views.short_item_form, name='create-short-item'),
+    path('short-item/<int:obj_id>', form_views.short_item_form, name='detailing-short-item'),
     path('agent/add', form_views.agent_form, name='create-agent'),
     path('agent/<int:obj_id>', form_views.agent_form, name='detailing-agent'),
     path('staff/add', form_views.staff_form, name='create-staff'),

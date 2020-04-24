@@ -30,6 +30,9 @@ a.color_link{
 a.link:hover{
     text-decoration: underline;
 }
+.link_bold{
+    font-weight: bold;
+}
 button, input, select, textarea{
     outline: none;
     text-decoration: none;
@@ -71,7 +74,7 @@ input:focus, select:focus, textarea:focus{
     flex: 1;
 }
 .input_wrapper{margin: 0.3rem 0.2rem;display: flex;flex-direction: column;}
-
+.img-adaptive{height: 100%;}
 header{
     grid-area: header;
     display: flex;
@@ -85,6 +88,15 @@ header{
     z-index: 1;
 }
 header a {color: #fff;}
+.header_left{
+    display: flex;
+    align-items: center;
+}
+.user_box{
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
 aside.sidebar{
     grid-area: sidebar;
     border-right: 1px solid #6d6d6d;
@@ -326,9 +338,9 @@ td.deleted{
 .gcard_vitem_chatbox{
     grid-area: chatbox;
     max-height: 100%;
-
     display: flex;
     flex-direction: column;
+    
 }
 .chatbox_chat-window{
     overflow-y: auto;
@@ -336,6 +348,7 @@ td.deleted{
     display: flex;
     flex-direction: column;
     padding: 0 0.3rem;
+    max-width: 30vw;
 }
 .chatbox_chat-message{
     display: flex;

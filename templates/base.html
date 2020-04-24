@@ -5,20 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    {% load static %}
+    <link rel="shortcut icon" href="{% static 'img/logo.png' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <script src="{% static 'js/vue.min.js' %}" type="text/javascript"></script>
     <title>{{ page_title }}</title>
 </head>
 <body>
     <header>
-        <h3><a href="{% url 'index' %}">Отдел верификации {{REQUEST}}</a></h3>
+        <div class="user_box">
+            <h3><a href="{% url 'index' %}">Отдел верификации</a></h3>
+        </div>
+
         <div class="user_box">
             {% if user.is_authenticated %}
                 Здравствуйте, {{ user.last_name }} {{ user.first_name}}
-                | <a class="link" href="{% url 'logout' %}">Выйти</a>
+                |&nbsp;<a class="link" href="{% url 'logout' %}">Выйти</a>
             {% else %}
-                | <a class="link" href="{% url 'login' %}">Войти</a>
+                |&nbsp;<a class="link" href="{% url 'login' %}">Войти</a>
             {% endif %}
         </div>
     </header>
@@ -31,13 +34,13 @@
                 <li><a href = "{% url 'vitem-list' param='q_all' %}" class="sidebar-menu_item {% if 'q_all' in request.path %}active{%endif%}">Всего заявок: {{stats.q_all.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_mine' %}" class="sidebar-menu_item {% if 'q_mine' in request.path %}active{%endif%}">Мои заявки: {{stats.q_mine.count}}</a></li>
                 {% if user.extendeduser.user_role.role_lvl <= 3 %}
-                <li><a href = "{% url 'vitem-list' param='q_new' %}" class="sidebar-menu_item {% if 'q_new' in request.path %}active{%endif%}">Новые: {{stats.q_new.count}}</a></li>
+                <li><a href = "{% url 'vitem-list' param='q_new' %}" class="sidebar-menu_item {% if 'q_new' in request.path %}active{%elif stats.q_new.count >= 1 %}link_bold{%endif%}">Новые: {{stats.q_new.count}}</a></li>
                 {% endif %}
                 <li><a href = "{% url 'vitem-list' param='q_at_work' %}" class="sidebar-menu_item {% if 'q_at_work' in request.path %}active{%endif%}">В работе: {{stats.q_at_work.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_to_fix' %}" class="sidebar-menu_item {% if 'q_to_fix' in request.path %}active{%endif%}">На доработке: {{stats.q_to_fix.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_fixed' %}" class="sidebar-menu_item {% if 'q_fixed' in request.path %}active{%endif%}">Доработано: {{stats.q_fixed.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_finished' %}" class="sidebar-menu_item {% if 'q_finished' in request.path %}active{%endif%}">Закрыто: {{stats.q_finished.count}}</a></li>
-                {% if user.extendeduser.user_role.role_lvl < 2 or user.extendeduser.user_role.role_lvl > 3 %}
+                {% if user.extendeduser.user_role.role_lvl <= 2 or user.extendeduser.user_role.role_lvl > 3 %}
                 <li><a href = "{% url 'vitem-list' param='q_not_filled' %}" class="sidebar-menu_item top-border {% if 'q_not_filled' in request.path %}active{%endif%}">Недозаполнено: {{stats.q_not_filled.count}}</a></li>
                 {%endif%}
                 {% if user.extendeduser.user_role.role_lvl <= 2 %}

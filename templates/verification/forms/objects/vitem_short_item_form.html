@@ -1,0 +1,12 @@
+{% extends "verification/forms/vitem_form.html" %}
+
+{% block form %}
+<div class="card_body-form_column">
+    <div class="input_wrapper grid_row">Роль в заявке: <p class="vitem_form_fields">{{ short_item.role }}</p></div>
+    <div class="input_wrapper grid_row">ID в системе: <p class="vitem_form_fields">{{ short_item.item_id }}</p></div>
+    <div class="input_wrapper grid_row">Ссылка: <p class="vitem_form_fields"><a href="{{ short_item.item_ref }}" target="_blank" class="link">{{ short_item.item_ref }}</a></p></div>
+    <div class="input_wrapper grid_row">Дата создания: <p class="vitem_form_fields">{{ short_item.created }}</p></div>
+    <div class="input_wrapper grid_row">Автор: <p class="vitem_form_fields">{{ short_item.author }}</p></div>
+</div>
+
+{% endblock %}

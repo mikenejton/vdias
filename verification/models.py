@@ -9,6 +9,9 @@ class UserRole(models.Model):
     role_description = models.CharField('Описание', max_length = 1000)
     def __str__(self):
         return self.role_name
+    class Meta:
+        verbose_name = 'Роль пользователя'
+        verbose_name_plural = 'Роли пользователей'
 
 class ExtendedUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -16,6 +19,10 @@ class ExtendedUser(models.Model):
     access_lvl = models.IntegerField('Уровень доступа')
     def __str__(self):
         return ' '.join(filter(None, [self.user.last_name, self.user.first_name]))
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 # -----------------------------------------------------------
 
 # Базовые модели
@@ -44,7 +51,7 @@ class Organization(models.Model):
 
 class OrganizationWithRole(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    organization_role = models.CharField('Роль', max_length=300)
+    role = models.CharField('Роль', max_length=300)
     organization_type = models.CharField('Тип', max_length=300, blank=True, null=True)
     verificated = models.BooleanField('Верифицировано', default=False)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
@@ -52,9 +59,9 @@ class OrganizationWithRole(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         return self.id
-    
+
     def __str__(self):
-        return '{}, {}'.format(self.organization.full_name, self.organization_role)
+        return '{}, {}'.format(self.organization.full_name, self.role)
 
     class Meta:
         verbose_name = 'Роль организации'
@@ -94,7 +101,7 @@ class Person(models.Model):
 
 class PersonWithRole(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    person_role = models.CharField('Роль', max_length=300)
+    role = models.CharField('Роль', max_length=300)
     verificated = models.BooleanField('Верифицирован', default=False)
     related_organization = models.ForeignKey(OrganizationWithRole, on_delete=models.PROTECT, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
@@ -110,9 +117,28 @@ class PersonWithRole(models.Model):
         verbose_name = 'Роль физ.лица'
         verbose_name_plural = 'Роли физ.лиц'
 
+class ShortItem(models.Model):
+    item_id = models.CharField('Системный ID', max_length=300, unique=True)
+    item_ref = models.CharField('Ссылка', max_length=300, unique=True)
+    role = models.CharField('Роль', max_length=300)
+    verificated = models.BooleanField('Верифицирован', default=False)
+    created = models.DateTimeField('Дата создания', auto_now_add=True)
+    author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        return self.id
+
+    def __str__(self):
+        return str(f'(заявка) {self.role}')
+
+    class Meta:
+        verbose_name = 'Короткая заявка'
+        verbose_name_plural = 'Короткие заявки'
+
 class VerificationItem(models.Model):
     person = models.ForeignKey(PersonWithRole, on_delete=models.CASCADE, blank = True, null = True)
     organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank = True, null = True)
+    short_item = models.ForeignKey(ShortItem, on_delete=models.CASCADE, blank = True, null = True)
     is_filled = models.BooleanField('Заявка заполнена', default=False)
     dias_status = models.CharField('Статус проверки', max_length = 300)
     to_fix = models.BooleanField('На доработке', default=False)
@@ -123,6 +149,7 @@ class VerificationItem(models.Model):
     fms_not_ok = models.CharField('ФМС', max_length = 300, blank=True, null=True, default='')
     rosfin = models.CharField('Росфинмониторинг', max_length = 300, blank=True, null=True, default='')
     docs_full = models.CharField('Полнота и качество документов', max_length = 300, blank=True, null=True, default='')
+    reg_checked = models.CharField('ФМС', max_length = 300, blank=True, null=True, default='')
     
     cronos_status = models.CharField('Кронос статус', max_length = 300, blank=True, null=True)
     cronos = models.TextField('Кронос комментарий', blank=True, null=True, default='')
@@ -130,8 +157,8 @@ class VerificationItem(models.Model):
     fssp = models.TextField('ФССП', blank=True, null=True, default='')
     bankruptcy_status = models.CharField('Сайт по банкротству статус', max_length = 300, blank=True, null=True, default='')
     bankruptcy = models.TextField('Сайт по банкротству', blank=True, null=True, default='')
-    сourt_status = models.CharField('Суды статус', max_length = 300, blank=True, null=True, default='')
-    сourt = models.TextField('Суды', blank=True, null=True, default='')
+    court_status = models.CharField('Суды статус', max_length = 300, blank=True, null=True, default='')
+    court = models.TextField('Суды', blank=True, null=True, default='')
     contur_focus_status = models.CharField('Контур-Фокус статус', max_length = 300, blank=True, null=True, default='')
     contur_focus = models.TextField('Контур-Фокус', blank=True, null=True, default='')
     affiliation_status = models.CharField('Проверка на аффилированность статус', max_length = 300, blank=True, null=True, default='')
@@ -171,6 +198,9 @@ class VitemChat(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         return self.id
+    class Meta:
+        verbose_name = 'Чат'
+        verbose_name_plural = 'Чат'
 
 # -----------------------------------------------------------
 
@@ -207,7 +237,6 @@ class DocStorage(models.Model):
     class Meta:
         verbose_name = 'Скан'
         verbose_name_plural = 'Сканы'
-
 # -----------------------------------------------------------
 
 # Уведомления пользователя - непонятно, нужно ли

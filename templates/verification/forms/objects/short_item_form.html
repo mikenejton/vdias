@@ -1,0 +1,46 @@
+{% block organization_form %}
+<div class="multitab-form_buttons">
+    <a class="sidebar-menu_item active">Заявка</a>
+</div>
+<form action="" method="post" id="shortItemForm">
+    {% csrf_token %}
+    <div class="mb-card_body card_body-form">
+        <div class="card_body-form_column" style="width: 25rem;">
+            <select name="role" required>
+                <option value="Роль" disabled selected>Роль</option>
+                <option value="Партнер" {%if form.role.value == 'Партнер'%}selected{%endif%}>Партнер</option>
+                <option value="Агент" {%if form.role.value == 'Агент'%}selected{%endif%}>Агент</option>
+                <option value="Штатный сотрудник" {%if form.role.value == 'Штатный сотрудник'%}selected{%endif%}>Штатный сотрудник</option>
+                <option value="Контрагент" {%if form.role.value == 'Контрагент'%}selected{%endif%}>Контрагент</option>
+            </select>
+            <input class="form_input" type="text" name="item_id" placeholder="ID в системе" required 
+                value={%if form.item_id.value %}{{form.item_id.value}}{%endif%}>
+            <textarea class="form_input" name="item_ref" placeholder="Ссылка" required>{%if form.item_ref.value %}{{form.item_ref.value}}{%endif%}</textarea>
+        </div>
+        {%if short_item %}
+        <input type="hidden" name="id" value="{{short_item.id}}">
+        <input type="hidden" name="author" value="{{short_item.author.id}}">
+        {% else %}
+        <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
+        {% endif %}
+    </div>
+    {% if form.errors %}
+    <div class="mb-card_errors">
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <p class="error_txt"><i>{{ error }}</i></p>
+        </div>
+        {% endfor %}
+        {% for field in form %}
+        {% if field.errors %}
+        <p class="error_txt">{{ field.label }}: {%for error in field.errors%}<i>{{ error }}</i>{% endfor %}</p>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="mb-card_footer">
+        <div class="mb-card_footer_left"></div>
+        <button type="submit" class="btn_prim" name="shortItemFormSave" form="shortItemForm" v-show="isEditable">Сохранить</button>
+    </div>
+</form>
+{% endblock %}

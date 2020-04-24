@@ -1,7 +1,6 @@
 from . import models
 from django.db.models import Q
 from django.core.mail import EmailMessage
-from djqscsv import render_to_csv_response
 class UserStats:
     def __init__(self):
         pass
@@ -17,17 +16,17 @@ def get_base_context(user):
     stats.q_to_fix = stats.q_all.filter(to_fix = True)
     stats.q_fixed = stats.q_all.filter(fixed = True)
     stats.q_finished = stats.q_all.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
-    stats.q_not_filled = stats.q_all.filter(is_filled = False)
+    stats.q_not_filled = stats.q_all.filter(is_filled = False, dias_status = 'Новая')
     if user.extendeduser.user_role.role_lvl == 2:
-        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент')) #????????? штатник и контрагент?
+        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
-        stats.q_all = stats.q_all.exclude(Q(person__person_role = 'Штатный сотрудник') | Q(organization__organization_role = 'Контрагент'))
-        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True)
+        stats.q_all = stats.q_all.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')).exclude(Q(is_filled = False) & Q(dias_status = 'Новая'))
+        stats.q_new = stats.q_all.filter(dias_status = 'Новая')
         stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
         stats.q_fixed = stats.q_mine.filter(fixed = True)
         stats.q_finished = stats.q_mine.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
-        stats.q_not_filled = stats.q_mine.filter(is_filled = False)
+        stats.q_not_filled = stats.q_mine.filter(is_filled = False, dias_status = 'Новая')
     elif user.extendeduser.user_role.role_lvl >= 4:
         stats.q_all = stats.q_all.filter(author__user_role = user.extendeduser.user_role)
         stats.q_mine = stats.q_all.filter(author__user = user)
@@ -35,7 +34,7 @@ def get_base_context(user):
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
         stats.q_fixed = stats.q_mine.filter(fixed = True)
         stats.q_finished = stats.q_mine.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
-        stats.q_not_filled = stats.q_mine.filter(is_filled = False)
+        stats.q_not_filled = stats.q_mine.filter(is_filled = False, dias_status = 'Новая')
     context['stats'] = stats
     return context
     
@@ -56,30 +55,37 @@ def update_logger(model_name, pk, action, username, new_set=False):
                 new_dl.save()
 
 def vitem_creater(request, item, item_type):
-    print(f'{request} \n {item_type}:{item}')
+
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
         vitem = models.VerificationItem()
-        print(vitem)
+        vitem.dias_status = 'Новая'
+        vitem.author = request.user.extendeduser
         if item_type == 'person':
             vitem.person = item
         elif item_type == 'organization':
             vitem.organization = item
-        vitem.dias_status = 'Новая'
-        print(vitem)
-        vitem.author = request.user.extendeduser
-        vitem.save()
-    
+        elif item_type == 'short_item':
+            vitem.short_item = item
+            vitem.dias_status = 'В работе'
+            vitem.case_officer = request.user.extendeduser
+            vitem.author = models.ExtendedUser.objects.filter(user_role__role_name='ФинБрокер', access_lvl=1)[0]
         
-
+        vitem.save()
 
 # Проверка сканов объекта, смена статус Заявки
-def required_scan_checking(model_id, model_name):
+def required_scan_checking(model_id, model_name, model_role=None):
     scan_list = models.DocStorage.objects.filter(model_name = model_name.title(), model_id = model_id).exclude(to_del = True)
     if model_name == 'person':
+        if model_role in ['Ген. директор', 'Бенефициар']:
+            return True
         doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета']
     elif model_name == 'organization':
+        if model_role == 'Контрагент':
+            return True
         doc_types = ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
+    elif model_name == 'short_item':
+        return True
     
     is_filled = True
     
@@ -90,25 +96,31 @@ def required_scan_checking(model_id, model_name):
 
 def is_vitem_ready(item_type, item=None):
     if item_type == 'person':
-        if item.person_role in ['Ген. директор', 'Бенифициар']:
+        if item.role in ['Ген. директор', 'Бенифициар']:
             return False
     if item:
-        is_ready = required_scan_checking(getattr(item, item_type).id, item_type)
+        if item_type == 'short_item':
+            is_ready = True
+        else:
+            is_ready = required_scan_checking(getattr(item, item_type).id, item_type, item.role)
         if is_ready:
             if item_type == 'organization':
-                sub_items = models.PersonWithRole.objects.filter(related_organization = item)
-                if len(sub_items):
-                    for sub_item in sub_items:
-                        sub_item_rsc = required_scan_checking(item.person.id, 'person')
-                        if not sub_item_rsc:
-                            is_ready = False
+                ceo = models.PersonWithRole.objects.filter(related_organization = item, role = 'Ген. директор')
+                if len(ceo) == 0:
+                    is_ready = False
+
+                # sub_items = models.PersonWithRole.objects.filter(related_organization = item, role__in = ['Ген. директор', 'Бенефициар'])
+                # if len(sub_items):
+                #     for sub_item in sub_items:
+                #         sub_item_rsc = required_scan_checking(sub_item.person.id, 'person', sub_item.role)
+                #         if not sub_item_rsc:
+                #             is_ready = False
         
         vitem = models.VerificationItem.objects.filter(**{item_type: item})
         if len(vitem):
             if vitem[0].is_filled != is_ready:
                 vitem[0].is_filled = is_ready
                 vitem[0].save()
-        
 
     return is_ready
 
@@ -124,7 +136,12 @@ def accessing(item_id, model_name, user):
     if item_id:
         item = getattr(models, model_name).objects.filter(id = item_id)
         if model_name == 'PersonWithRole':
-            vitem = models.VerificationItem.objects.filter(person__id = item_id)
+            if not len(item):
+                return False
+            if item[0].role in ['Ген. директор', 'Бенефициар']:
+                vitem = models.VerificationItem.objects.filter(organization__id = item[0].related_organization.id)
+            else:
+                vitem = models.VerificationItem.objects.filter(person__id = item_id)
         elif model_name == 'VerificationItem':
             vitem = item
         else:
@@ -137,7 +154,10 @@ def accessing(item_id, model_name, user):
             if len(vitem):
                 if vitem[0].author.user_role == user.extendeduser.user_role:
                     return True
-                elif vitem[0].case_officer.user_role == user.extendeduser.user_role:
+                elif vitem[0].case_officer:
+                    if vitem[0].case_officer.user_role == user.extendeduser.user_role:
+                        return True
+                elif vitem[0].organization and user.extendeduser.user_role.role_lvl == 3:
                     return True
     else:
         return True
@@ -155,6 +175,3 @@ def send_mail(target_user, subject, body):
     )
     msg.content_subtype = 'html'
     msg.send()
-
-def export_csv(qs):
-    return render_to_csv_response(qs)

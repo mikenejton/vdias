@@ -42,6 +42,13 @@ def counterparty_form(request, obj_id=None):
     return result
 # --------------------------------------------------------------
 
+# формы короткой заявки (с id и ссылкой на Еву)
+def short_item_form(request, obj_id=None):
+    result = views_sub_func.short_item_call(request, obj_id)
+    return result
+
+# --------------------------------------------------------------
+
 # VITEM MAIN FORM
 @login_required
 def vitem_form(request, vitem_id=None):
@@ -61,19 +68,19 @@ def vitem_form(request, vitem_id=None):
                         context['pwr'] = vitem.person
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.person.person.id, model_name = 'Person')
                         form_template = 'verification/forms/objects/vitem_agent_form.html'
-                        context['edit_link'] = ['detailing-agent' if vitem.person.person_role == 'Агент' else 'detailing-staff', vitem.person.id]
-                    else:
+                        context['edit_link'] = ['detailing-agent' if vitem.person.role == 'Агент' else 'detailing-staff', vitem.person.id]
+                    elif vitem.organization:
                         context['owr'] = vitem.organization
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.organization.id, model_name = 'Organization')
                         form_template = 'verification/forms/objects/vitem_organization_form.html'
-                        context['edit_link'] = ['detailing-partner' if vitem.organization.organization_type == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
-                        context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, person_role = 'Бенефициар')
-                        context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
-                        # try:
-                        #     context['ceo'] = models.PersonWithRole.objects.get(related_organization__id = context['owr'].id, person_role = 'Ген. директор')
-                        # except:
-                        #     form_template = 'verification/404.html'
-                        #     context = {'err_txt':'Что-то пошло не так... Попробуйте позжe'}
+                        context['edit_link'] = ['detailing-partner' if vitem.organization.role == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
+                        context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, role = 'Бенефициар')
+                        context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, role = 'Ген. директор')
+                    elif vitem.short_item:
+                        context['short_item'] = vitem.short_item
+                        scan_list = models.DocStorage.objects.filter(model_name = 'ShortItem')
+                        context['edit_link'] = ['detailing-short-item', vitem.short_item.id]
+                        form_template = 'verification/forms/objects/vitem_short_item_form.html'
 
                     context['scan_list'] = scan_list.filter(to_del = False)
                     
@@ -87,7 +94,6 @@ def vitem_form(request, vitem_id=None):
                         if 'dias_status' not in request.POST:
                             ff.dias_status = vitem.dias_status
                         if ff.is_valid():
-                            
                             for key in ff.fields:
                                 if hasattr(vitem, key):
                                     if getattr(vitem, key) != ff.cleaned_data[key]:

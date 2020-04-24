@@ -11,14 +11,15 @@
     {% csrf_token %}
     <input type="hidden" name="currentOrgTab" v-model="currentOrgTab">
     <div class="mb-card_body card_body-form">
+
         <div class="card_body-form_column">
             <select name="org_form" required>
                 <option value="Организационная форма" disabled selected>Организационная форма</option>
                 <option value="ИП" {%if form.org_form.value == 'ИП'%}selected{%endif%}>ИП</option>
-                <option value="АО">АО</option>
-                <option value="ООО">ООО</option>
-                <option value="ОАО">ОАО</option>
-                <option value="ПАО">ПАО</option>
+                <option value="АО" {%if form.org_form.value == 'АО'%}selected{%endif%}>АО</option>
+                <option value="ООО" {%if form.org_form.value == 'ООО'%}selected{%endif%}>ООО</option>
+                <option value="ОАО" {%if form.org_form.value == 'ОАО'%}selected{%endif%}>ОАО</option>
+                <option value="ПАО" {%if form.org_form.value == 'ПАО'%}selected{%endif%}>ПАО</option>
             </select>
             <input class="form_input" type="text" name="org_name" placeholder="Название" required
                 value={%if form.org_name.value %}{{form.org_name.value}}{%endif%}>
@@ -37,13 +38,19 @@
             <textarea class="form_input wide_textarea" type="text" name="adr_fact"
                 placeholder="Фактический адрес">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
         </div>
-        {%if organization_wr %}
+        {%if owr %}
         <input type="hidden" name="id" value="{{organization_wr.id}}">
         <input type="hidden" name="author" value="{{organization_wr.organization.author.id}}">
         {% else %}
         <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
         {% endif %}
     </div>
+    {%if owr %}
+    <div class="card_body-form" style="font-size: 12px;font-style: italic;padding: 0.3rem 0.3rem;">
+        <div class="card_body-form_column">Создан: {{owr.created}}</div>
+        <div class="card_body-form_column">Автор: {{owr.author}}</div>
+    </div>
+    {%endif%}
     {% if form.errors %}
     <div class="mb-card_errors">
         {% for error in form.non_field_errors %}
@@ -58,9 +65,10 @@
         {% endfor %}
     </div>
     {% endif %}
+
     <div class="mb-card_footer" v-show="currentOrgTab=='Organization'">
         <div class="mb-card_footer_left"></div>
-        <button type="submit" class="btn_prim" name="organizationFormSave" form="organizationForm">Сохранить</button>
+        <button type="submit" class="btn_prim" name="organizationFormSave" form="organizationForm" v-show="isEditable">Сохранить</button>
     </div>
 </form>
 <div v-show="currentOrgTab=='Staff'" class="mb-card_body card_body-form_column">
@@ -76,7 +84,7 @@
             {%endfor%}
         </div>
         {% else %}
-        <div class="itemform_controls_row_item">
+        <div class="itemform_controls_row_item" v-show="isEditable">
             <a href="{% url 'create-ceo' owr_id=owr.id %}" class="link color_link">Создать</a>
         </div>
         {%endif%}
@@ -86,7 +94,7 @@
             <legend>Бенефициары:</legend>
         </div>
         <div class="itemform_controls_row_item">
-            <a href="{% url 'create-ben' owr_id=owr.id %}" class="link color_link">Добавить</a>
+            <a href="{% url 'create-ben' owr_id=owr.id %}" class="link color_link" v-show="isEditable">Добавить</a>
         </div>
     </div>
     {% for ben in bens %}

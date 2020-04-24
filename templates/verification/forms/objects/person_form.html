@@ -11,21 +11,21 @@
                 <input class="form_input" type="text" name="first_name" placeholder="Имя" required value={%if form.first_name.value %}{{form.first_name.value}}{%endif%}>
                 <input class="form_input" type="text" name="patronymic" placeholder="Отчество" value={%if form.patronymic.value %}{{form.patronymic.value}}{%endif%}>
                 <input class="form_input" type="text" name="prev_fio" placeholder="Предыдущие ФИО" value={%if form.prev_fio.value %}{{form.prev_fio.value}}{%endif%}>
-                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" placeholder="Дата рождения" required value={%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}>
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" placeholder="Дата рождения" {%if not owr%}required{%endif%} value={%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}>
                 <input class="form_input" type="text" name="pob" placeholder="Место рождения" value={%if form.pob.value %}{{form.pob.value}}{%endif%}>
-                <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' required minlength="14">
-                <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" required>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
+                <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' {%if not owr%}required{%endif%} minlength="14">
+                <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" {%if not owr%}required{%endif%}>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
             </div>
             <div class="card_body-form_column">
-                <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'" v-model='phone' required minlength="11">
+                <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'" v-model='phone' {%if not owr%}required{%endif%} minlength="11">
                 <input class="form_input" type="email" name="email" placeholder="Email" value={%if form.email.value %}{{form.email.value}}{%endif%}>
-                <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" v-mask="'#### ######'" v-model='pass_sn' required minlength="11">
-                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" required value={%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}>
-                <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" required value={%if form.pass_org.value %}{{form.pass_org.value}}{%endif%}>
-                <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" v-mask="'###-###'" v-model='pass_code' required minlength="7">
+                <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" v-mask="'#### ######'" v-model='pass_sn' {%if not owr%}required{%endif%} minlength="11">
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" {%if not owr%}required{%endif%} value={%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}>
+                <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" {%if not owr%}required{%endif%} value={%if form.pass_org.value %}{{form.pass_org.value}}{%endif%}>
+                <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" v-mask="'###-###'" v-model='pass_code' {%if not owr%}required{%endif%} minlength="7">
                 <textarea class="form_input wide_textarea" type="text" name="adr_fact" placeholder="Адрес проживания">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
             </div>
-            <input type="hidden" name="person_role" value="{{pwr_role}}">
+            <input type="hidden" name="role" value="{{pwr_role}}">
             {%if pwr %}
                 <input type="hidden" name="id" value="{{pwr.person.id}}">
                 <input type="hidden" name="author" value="{{pwr.person.author.id}}">
@@ -36,7 +36,12 @@
                 <input type="hidden" name="owr_id" value="{{owr.id}}">
             {% endif %}
         </div>
-
+        {%if pwr %}
+        <div class="card_body-form" style="font-size: 12px;font-style: italic;padding: 0.3rem 0.3rem;">
+            <div class="card_body-form_column">Создан: {{pwr.created}}</div>
+            <div class="card_body-form_column">Автор: {{pwr.author}}</div>
+        </div>
+        {%endif%}
         {% if form.errors %}
         <div class="mb-card_errors">
             {% for error in form.non_field_errors %}
@@ -63,7 +68,7 @@
                 {% endfor %}
             </select>
             {%endif%}
-            <button type="submit" class="btn_prim" name="personFormSave" form="personForm">Сохранить</button>
+            <button type="submit" class="btn_prim" name="personFormSave" form="personForm" v-show="isEditable">Сохранить</button>
         </div>
 
     </form>

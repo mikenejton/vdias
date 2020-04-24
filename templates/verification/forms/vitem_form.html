@@ -14,8 +14,8 @@
             </div>
             {%endif%}
             <div style="flex:1;"></div>
-            {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 2 %}
-            <div class="input_wrapper"><a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1 %}">Редактировать</a></div>
+            {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 3 %}
+            <div class="input_wrapper"><a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1 %}">Открыть</a></div>
             {% endif %}
         </div>
         <div class="gcard_vitem-view_itemform">
@@ -27,12 +27,13 @@
             <!-- FORM -->
             <div class="itemform_controls">
                 <div class="itemform_controls_row">
+                    <div class="itemform_controls_row">Автор заявки: <i>{{vitem.author}}</i>&nbsp;|&nbsp;</div>
                     {%if form.case_officer.value %}
-                        Исполнитель: {{vitem.case_officer}}
-                        <input type="hidden" name="case_officer" value="{{form.case_officer.value}}">
+                    <div class="itemform_controls_row">Исполнитель: <i>{{vitem.case_officer}}</i></div>
+                    <input type="hidden" name="case_officer" value="{{form.case_officer.value}}">
                     {% else %}
                         {% if user.extendeduser.user_role.role_lvl <= 3 %}
-                        <button type="submit" class="btn_suc" name="btn_take_to">Принять в работу</button>
+                        <div class="itemform_controls_row"><button type="submit" class="btn_suc" name="btn_take_to">Принять в работу</button></div>
                         {% endif %}
                     {% endif %}
                     <div class="growing_block"></div>
@@ -55,7 +56,7 @@
                     {% if form.case_officer.value == user.id or vitem.author.id == user.id %}
                     <div class="itemform_controls_row">
                         <div class="itemform_controls_row_btns">
-                            {% if form.dias_status.value in 'Новая, В работе, На доработке, Доработано' %}
+                            {% if form.dias_status.value in 'В работе, На доработке, Доработано' %}
                                 {% if vitem.to_fix == False %}
                                     {% if user.extendeduser.user_role.role_lvl < 3 %}
                                     <button v-show="false" type="submit" name="btn_to_fix" id="btn_to_fix">На доработку</button>
@@ -107,6 +108,15 @@
                             </div>
                         </div>
                         <div class="itemform_controls_row spb spb-bordered">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Наличие постоянной регистрации:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper gb_input"><input type="radio" name="reg_checked" value="Есть" id="reg_checked_true" {%if form.reg_checked.value == 'Есть' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="reg_checked_true">Есть</label></div>
+                                <div class="input_wrapper"><input type="radio" name="reg_checked"  value="Нет" id="reg_checked_false" {%if form.reg_checked.value == 'Нет' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="reg_checked_false">Нет</label></div>
+                            </div>
+                        </div>
+                        <div class="itemform_controls_row spb spb-bordered">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Документы проверены:</legend></div>
                             <div class="itemform_controls_row_item">
                                 <div class="input_wrapper gb_input"><input type="radio" name="docs_full" value="Да" id="docs_full_true" {%if form.docs_full.value == 'Да' %} checked {% endif %}></div>
@@ -138,7 +148,18 @@
                             </div>
                         </div>
                         <div class="txt_wrapper"><textarea name="fssp" placeholder="Информация по ФССП" :disabled="fsspStatus != 'Есть информация'" :required="fsspStatus == 'Есть информация'">{{vitem.fssp}}</textarea></div>
-
+                        
+                        <div class="itemform_controls_row spb" v-show="vitemType == 'Штатный сотрудник'">
+                            <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Соц.сети:</legend></div>
+                            <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Нет информации" id="soc_status_ok" {%if form.soc_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="soc_status_ok">Нет информации</label></div>
+                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Есть информация" id="soc_status_not_ok" {%if form.soc_status.value == 'Есть информация' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><label for="soc_status_not_ok">Есть информация</label></div>
+                            </div>
+                        </div>
+                        <div class="txt_wrapper" v-show="vitemType == 'Штатный сотрудник'"><textarea name="soc" placeholder="Социальные сети" :disabled="socStatus != 'Есть информация'" :required="socStatus == 'Есть информация'">{{vitem.soc}}</textarea></div>
+                        
                         <div class="itemform_controls_row spb" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">КонтурФокус:</legend></div>
                             <div class="itemform_controls_row_item">
@@ -163,7 +184,7 @@
                                 <div class="input_wrapper"><label for="court_status_not_ok">Есть информация</label></div>
                             </div>
                         </div>
-                        <div class="txt_wrapper"><textarea name="сourt" placeholder="Информация по судам" :disabled="courtStatus != 'Есть информация'" :required="courtStatus == 'Есть информация'">{{vitem.сourt}}</textarea></div>
+                        <div class="txt_wrapper"><textarea name="court" placeholder="Информация по судам" :disabled="courtStatus != 'Есть информация'" :required="courtStatus == 'Есть информация'">{{vitem.court}}</textarea></div>
 
                         <div class="itemform_controls_row spb">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Информация по банкротсву:</legend></div>
@@ -271,10 +292,11 @@
             cronosStatus: '{{form.cronos_status.value}}',
             fsspStatus: '{{form.fssp_status.value}}',
             conturFocusStatus: '{{form.contur_focus_status.value}}',
-            courtStatus: '{{form.сourt.value}}',
-            bankruptcyStatus: '{{form.bankruptcy.value}}',
-            affiliationStatus: '{{form.affiliation.value}}',
-            vitemType: '{% firstof pwr.person_role owr.organization_type %}',
+            courtStatus: '{{form.court_status.value}}',
+            bankruptcyStatus: '{{form.bankruptcy_status.value}}',
+            affiliationStatus: '{{form.affiliation_status.value}}',
+            socStatus: '{{form.soc_status.value}}',
+            vitemType: '{% firstof pwr.role owr.role %}',
             diasStatus: '{{form.dias_status.value}}',
         },
         methods: {

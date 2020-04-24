@@ -21,4 +21,31 @@
         </div>
     </form>
 </div>
+<!-- <div class="component_wrapper" style="height:300px">
+    <div class="mb-card" id="vueStats">
+        <div class="mb-card_header">Последние сообщения</div>
+        <div class="mb-card_body" style="flex-direction: row; align-items: flex-end;">
+            <div v-for="block in hyst" v-bind:style="{height: block.h + '%', background: 'hsla(100-'+block.h+', 100%, 50%, 0.5)'}" background="hsla(100-{block.h}, 100%, 50%, 0.5)">{block.name}</div>
+        </div>
+        {hyst}
+    </div>
+</div>
+
+<script>
+    var app = new Vue({
+        el: '#vueStats',
+        delimiters: ['{', '}'],
+        data: {
+            hyst: [
+                {name: 'Всего заявок', color: '', h: "{{stats.q_all.count}}"/"{{stats.q_all.count}}"*100},
+                {name: 'В работе', color: 'green', h: Number("{{stats.q_at_work.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'На доработке', color: 'gray', h: Number("{{stats.q_to_fix.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'Закрыто', color: 'blue', h: Number("{{stats.q_finished.count}}")/Number("{{stats.q_all.count}}")*100},
+            ],
+        },
+        methods:{
+            
+        }
+    });
+</script> -->
 {% endblock %}

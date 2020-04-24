@@ -1,7 +1,7 @@
 <form action="{% url 'scan-upload' %}" id="scanForm" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="mb-card_body">
-        <div class="itemform_controls_row">
+        <div class="itemform_controls_row" v-show="isEditable">
             {%if vitem_id%}
             <input type="hidden" name="vitem" value="{{vitem_id}}">
             {%endif%}
@@ -25,7 +25,7 @@
                 <input type="file" class="form_input" name="scan_file" accept="image/*,.pdf" required>
             </div>
             <div class="input_wrapper" style="align-items: flex-end;">
-                <button type="submit" form="scanForm" class="btn_std" name="btn_scan_upload" >Загрузить</button>
+                <button type="submit" form="scanForm" class="btn_std" name="btn_scan_upload">Загрузить</button>
             </div>
         </div>
         {% if scan_list or deleted_scan_list%}
@@ -42,7 +42,7 @@
                 <td><a class="link" target="_blank" href="{{ scan.scan_file.url }}">{{ scan.doc_type }}</a></td>
                 <td>{{scan.created|date:"d.m.Y h:m:s"}}</td>
                 <td>{{scan.author.user.last_name}} {{scan.author.user.first_name}}</td>
-                <td><a href="{% url 'scan-delete' scan_id=scan.id %}" class="link error_txt" >Удалить</a></td>
+                <td><a href="{% url 'scan-delete' scan_id=scan.id %}" class="link error_txt" v-show="isEditable">Удалить</a></td>
             </tr>
         {% endfor %}
         {% if deleted_scan_list %}

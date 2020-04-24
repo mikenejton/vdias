@@ -7,12 +7,11 @@
 <table>
     <thead>
         <tr>
-            <th>ID заявки</th>
-            <th>Физ.Лицо</th>
-            <th>Организация</th>
+            <th>#</th>
+            <th>Объект</th>
             <th>Роль</th>
+            <th>Заявка заполнена</th>
             <th>Статус</th>
-            <th>На доработке</th>
             <th>Исполнитель</th>
             <th>Дата создания</th>
             <th>Автор</th>
@@ -20,12 +19,18 @@
     </thead>
     {% for item in result %}
         <tr>
-            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}"># {{ item.id}}</a></td>
-            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{{ item.person.person }}</a></td>
+            <td>{{ forloop.counter }}</td>
+            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{% firstof item.person.person item.organization.organization 'Короткая заявка' %}</a></td>
+            <!-- {% if item.person %}
+            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{% firstof item.person.person item.organization.organization 'Короткая заявка' %}</a></td>
+            {% elif item.organization %}
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{{ item.organization.organization }}</a></td>
-            <td>{% firstof item.organization.organization_role item.person.person_role %}</td>
+            {% elif item.short_item %}
+            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">Короткая заявка</a></td>
+            {% endif %} -->
+            <td>{% firstof item.organization.role item.person.role item.short_item.role %}</td>
+            <td>{{ item.is_filled|yesno:"Да,Нет" }}</td>
             <td>{{ item.dias_status }}</td>
-            <td>{{ item.to_fix }}</td>
             <td>{{ item.case_officer.user.last_name }} {{ item.case_officer.user.first_name }}</td>
             <td>{{ item.created }}</td>
             <td>{{ item.author.user.last_name }} {{ item.author.user.first_name }}</td>
