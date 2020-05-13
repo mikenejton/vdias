@@ -28,11 +28,11 @@ def owr_call(request, owr_id, create_title, update_title):
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
                         owr = models.OrganizationWithRole()
                         owr.organization = new_org
-                        owr.organization_type = update_title
+                        owr.role = update_title
                         if update_title == 'Партнер':
-                            owr.role = request.user.extendeduser.user_role.role_name
+                            owr.organization_type = request.user.extendeduser.user_role.role_name
                         else:
-                            owr.role = update_title
+                            owr.organization_type = update_title
                         owr.author = request.user.extendeduser
                         owr.save()
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
@@ -40,7 +40,7 @@ def owr_call(request, owr_id, create_title, update_title):
 
                         views_utils.vitem_creater(request, owr, 'organization')
 
-                    view_name = 'detailing-partner' if context['owr'].organization_type == 'Партнер' else 'detailing-counterparty'
+                    view_name = 'detailing-partner' if context['owr'].role == 'Партнер' else 'detailing-counterparty'
                     context['redirect'] = redirect(reverse(view_name, args=[context['owr'].id]))
     else:
         context['err_txt'] = 'Запрашиваемая страница не существует или у Вас недостаточно прав на ее просмотр'
@@ -55,13 +55,13 @@ def owr_call(request, owr_id, create_title, update_title):
 
 def get_owr_context(request, owr_id, create_title, update_title):
     context = {'doc_types': ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Иной документ']}
-    vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
-    if len(vitem) > 0:
-        context['vitem_id'] = vitem[0].id
-        context['vitem_is_filled'] = vitem[0].is_filled
-        context['dias_status'] = vitem[0].dias_status
-    
     if owr_id:
+        vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
+        if len(vitem) > 0 and owr_id is not None:
+            context['vitem_id'] = vitem[0].id
+            context['vitem_is_filled'] = vitem[0].is_filled
+            context['dias_status'] = vitem[0].dias_status
+
         owr = models.OrganizationWithRole.objects.filter(id = owr_id)
         if len(owr) > 0 :
             if owr[0].role == update_title:
@@ -189,4 +189,60 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         context['form'] = forms.PersonForm()
         context['page_title'] = f'Новый {pwr_role}'
     
+    return context
+
+def short_item_call(request, si_id):
+    context = views_utils.get_base_context(request.user)
+    if views_utils.accessing(si_id, 'ShortItem', request.user):
+        context['template'] = 'verification/forms/common/short_item_form_common.html'
+        context = {**context, **get_short_item_context(request, si_id)}
+        if request.method == 'POST':            
+            if si_id:
+                context['form'] = forms.ShortItemForm(data=request.POST, instance=context['short_item'])
+            else:
+                context['form'] = forms.ShortItemForm(data=request.POST)
+            
+            if context['form'].is_valid():
+                if si_id:
+                    updated_short_item = context['form'].save(commit=False)
+                    views_utils.update_logger('ShortItem', updated_short_item.id, 'Обновление записи', request.user.extendeduser, updated_short_item)
+                    updated_short_item = context['form'].save()
+                else:
+                    new_short_item = context['form'].save()
+                    views_utils.update_logger('ShortItem', new_short_item.id, '', request.user.extendeduser)
+                    context['short_item'] = new_short_item
+                    views_utils.vitem_creater(request, new_short_item, 'short_item')
+                
+                view_name = 'detailing-short-item'
+                context['redirect'] = redirect(reverse(view_name, args=[context['short_item'].id]))
+    else:
+        context['err_txt'] = 'Запрашиваемая страница не существует или у Вас недостаточно прав на ее просмотр'
+
+    if 'err_txt' in context:
+        context['template'] = 'verification/404.html'
+
+    if 'redirect' in context:
+        return context['redirect']
+    else:
+        return render(request, context['template'], context)
+
+def get_short_item_context(request, si_id):
+    context = {}
+    if si_id:
+        short_items = models.ShortItem.objects.filter(id = si_id)
+        if len(short_items):
+            context['short_item'] = short_items[0]
+            context['vitem_ready'] = views_utils.is_vitem_ready('short_item', context['short_item'])
+            context['form'] = forms.ShortItemForm(instance=context['short_item'])
+            context['vitem_is_filled'] = True
+            context['page_title'] = f"{context['short_item'].role} (short)"
+            vitem = models.VerificationItem.objects.filter(short_item__id = si_id)
+            if len(vitem):
+                context['vitem_id'] = vitem[0].id
+        else:
+            context['err_txt'] = 'Запрашиваемый объект не существует'
+
+    else:
+        context['form'] = forms.ShortItemForm()
+        context['page_title'] = f'Новая'
     return context
