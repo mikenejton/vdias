@@ -59,7 +59,7 @@ class OrganizationWithRole(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         return self.id
-    
+
     def __str__(self):
         return '{}, {}'.format(self.organization.full_name, self.role)
 
@@ -87,7 +87,7 @@ class Person(models.Model):
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
-        self.fio = ' '.join(filter(None, [self.last_name.strip(), self.first_name.strip(), self.patronymic.strip()])).upper()
+        self.fio = ' '.join(filter(None, [self.last_name, self.first_name, self.patronymic])).upper()
         super().save(*args, **kwargs)
         return self.id
     
@@ -117,9 +117,28 @@ class PersonWithRole(models.Model):
         verbose_name = 'Роль физ.лица'
         verbose_name_plural = 'Роли физ.лиц'
 
+class ShortItem(models.Model):
+    item_id = models.CharField('Системный ID', max_length=300, unique=True)
+    item_ref = models.CharField('Ссылка', max_length=300, unique=True)
+    role = models.CharField('Роль', max_length=300)
+    verificated = models.BooleanField('Верифицирован', default=False)
+    created = models.DateTimeField('Дата создания', auto_now_add=True)
+    author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        return self.id
+
+    def __str__(self):
+        return str(f'(заявка) {self.role}')
+
+    class Meta:
+        verbose_name = 'Короткая заявка'
+        verbose_name_plural = 'Короткие заявки'
+
 class VerificationItem(models.Model):
     person = models.ForeignKey(PersonWithRole, on_delete=models.CASCADE, blank = True, null = True)
     organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank = True, null = True)
+    short_item = models.ForeignKey(ShortItem, on_delete=models.CASCADE, blank = True, null = True)
     is_filled = models.BooleanField('Заявка заполнена', default=False)
     dias_status = models.CharField('Статус проверки', max_length = 300)
     to_fix = models.BooleanField('На доработке', default=False)
@@ -218,7 +237,6 @@ class DocStorage(models.Model):
     class Meta:
         verbose_name = 'Скан'
         verbose_name_plural = 'Сканы'
-
 # -----------------------------------------------------------
 
 # Уведомления пользователя - непонятно, нужно ли

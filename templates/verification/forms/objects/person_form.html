@@ -36,7 +36,12 @@
                 <input type="hidden" name="owr_id" value="{{owr.id}}">
             {% endif %}
         </div>
-
+        {%if pwr %}
+        <div class="card_body-form" style="font-size: 12px;font-style: italic;padding: 0.3rem 0.3rem;">
+            <div class="card_body-form_column">Создан: {{pwr.created}}</div>
+            <div class="card_body-form_column">Автор: {{pwr.author}}</div>
+        </div>
+        {%endif%}
         {% if form.errors %}
         <div class="mb-card_errors">
             {% for error in form.non_field_errors %}

@@ -40,3 +40,8 @@ class OrganizationWithRoleForm(ModelForm):
     class Meta:
         model = models.OrganizationWithRole
         fields = '__all__'
+
+class ShortItemForm(ModelForm):
+    class Meta:
+        model = models.ShortItem
+        fields = '__all__'

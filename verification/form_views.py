@@ -42,6 +42,13 @@ def counterparty_form(request, obj_id=None):
     return result
 # --------------------------------------------------------------
 
+# формы короткой заявки (с id и ссылкой на Еву)
+def short_item_form(request, obj_id=None):
+    result = views_sub_func.short_item_call(request, obj_id)
+    return result
+
+# --------------------------------------------------------------
+
 # VITEM MAIN FORM
 @login_required
 def vitem_form(request, vitem_id=None):
@@ -62,13 +69,19 @@ def vitem_form(request, vitem_id=None):
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.person.person.id, model_name = 'Person')
                         form_template = 'verification/forms/objects/vitem_agent_form.html'
                         context['edit_link'] = ['detailing-agent' if vitem.person.role == 'Агент' else 'detailing-staff', vitem.person.id]
-                    else:
+                    elif vitem.organization:
                         context['owr'] = vitem.organization
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.organization.id, model_name = 'Organization')
                         form_template = 'verification/forms/objects/vitem_organization_form.html'
                         context['edit_link'] = ['detailing-partner' if vitem.organization.role == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
                         context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, role = 'Бенефициар')
                         context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, role = 'Ген. директор')
+                    elif vitem.short_item:
+                        context['short_item'] = vitem.short_item
+                        scan_list = models.DocStorage.objects.filter(model_name = 'ShortItem')
+                        context['edit_link'] = ['detailing-short-item', vitem.short_item.id]
+                        form_template = 'verification/forms/objects/vitem_short_item_form.html'
+
                     context['scan_list'] = scan_list.filter(to_del = False)
                     
                     if request.user.extendeduser.user_role.role_lvl <= 3:
@@ -83,7 +96,6 @@ def vitem_form(request, vitem_id=None):
                         if ff.is_valid():
                             for key in ff.fields:
                                 if hasattr(vitem, key):
-                                    print(f'{key}: p({getattr(vitem, key)}), f({ff.cleaned_data[key]})')
                                     if getattr(vitem, key) != ff.cleaned_data[key]:
                                         setattr(vitem, key, ff.cleaned_data[key])
                             views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)

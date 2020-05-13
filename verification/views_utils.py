@@ -55,18 +55,22 @@ def update_logger(model_name, pk, action, username, new_set=False):
                 new_dl.save()
 
 def vitem_creater(request, item, item_type):
-    print(f'{request} \n {item_type}:{item}')
+
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
         vitem = models.VerificationItem()
-        print(vitem)
+        vitem.dias_status = 'Новая'
+        vitem.author = request.user.extendeduser
         if item_type == 'person':
             vitem.person = item
         elif item_type == 'organization':
             vitem.organization = item
-        vitem.dias_status = 'Новая'
-        print(vitem)
-        vitem.author = request.user.extendeduser
+        elif item_type == 'short_item':
+            vitem.short_item = item
+            vitem.dias_status = 'В работе'
+            vitem.case_officer = request.user.extendeduser
+            vitem.author = models.ExtendedUser.objects.filter(user_role__role_name='ФинБрокер', access_lvl=1)[0]
+        
         vitem.save()
 
 # Проверка сканов объекта, смена статус Заявки
@@ -80,6 +84,8 @@ def required_scan_checking(model_id, model_name, model_role=None):
         if model_role == 'Контрагент':
             return True
         doc_types = ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
+    elif model_name == 'short_item':
+        return True
     
     is_filled = True
     
@@ -93,7 +99,10 @@ def is_vitem_ready(item_type, item=None):
         if item.role in ['Ген. директор', 'Бенифициар']:
             return False
     if item:
-        is_ready = required_scan_checking(getattr(item, item_type).id, item_type, item.role)
+        if item_type == 'short_item':
+            is_ready = True
+        else:
+            is_ready = required_scan_checking(getattr(item, item_type).id, item_type, item.role)
         if is_ready:
             if item_type == 'organization':
                 ceo = models.PersonWithRole.objects.filter(related_organization = item, role = 'Ген. директор')

@@ -2,7 +2,12 @@
 
 в файле lib\site-packages\djqscsv\djqscsv.py нужно заменить 
 импорт библиотеки 'six' (в django 3 она удалена, а django_queryset_csv ее использует)
-
+- в папке vdias создаем папку settings/
+     - __init__.py
+     - base.py (базовые настройки джанги)
+     - dev.py (настройки джанги dev)
+     - prod.py (настройки джанги прод)
+     - secret_key_prod.txt (секретный ключ джанги)
 
 TODO:
     + Vitem + Наличие регистрации (Есть/Нет)

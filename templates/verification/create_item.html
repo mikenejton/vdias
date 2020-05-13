@@ -6,6 +6,9 @@
     <div class="mb-card_header">Выберите тип верификации</div>
     <div class="mb-card_body">
         <select name="item_type" v-model='itemType'>
+        {% if user.extendeduser.user_role.role_lvl < 3 %}
+            <option>Короткая заявка</option>
+        {%endif%}
         {% if user.extendeduser.user_role.role_name != "HR" %}
             <option>Партнер</option>
             <option>Агент</option>

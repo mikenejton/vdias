@@ -11,6 +11,7 @@
     {% csrf_token %}
     <input type="hidden" name="currentOrgTab" v-model="currentOrgTab">
     <div class="mb-card_body card_body-form">
+
         <div class="card_body-form_column">
             <select name="org_form" required>
                 <option value="Организационная форма" disabled selected>Организационная форма</option>
@@ -37,13 +38,19 @@
             <textarea class="form_input wide_textarea" type="text" name="adr_fact"
                 placeholder="Фактический адрес">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
         </div>
-        {%if organization_wr %}
+        {%if owr %}
         <input type="hidden" name="id" value="{{organization_wr.id}}">
         <input type="hidden" name="author" value="{{organization_wr.organization.author.id}}">
         {% else %}
         <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
         {% endif %}
     </div>
+    {%if owr %}
+    <div class="card_body-form" style="font-size: 12px;font-style: italic;padding: 0.3rem 0.3rem;">
+        <div class="card_body-form_column">Создан: {{owr.created}}</div>
+        <div class="card_body-form_column">Автор: {{owr.author}}</div>
+    </div>
+    {%endif%}
     {% if form.errors %}
     <div class="mb-card_errors">
         {% for error in form.non_field_errors %}
@@ -58,6 +65,7 @@
         {% endfor %}
     </div>
     {% endif %}
+
     <div class="mb-card_footer" v-show="currentOrgTab=='Organization'">
         <div class="mb-card_footer_left"></div>
         <button type="submit" class="btn_prim" name="organizationFormSave" form="organizationForm" v-show="isEditable">Сохранить</button>

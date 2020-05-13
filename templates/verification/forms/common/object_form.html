@@ -13,7 +13,6 @@
         </div>
         {%endif%}
         <div style="flex:1;"></div>
-
         {% if owr_href %}
         <div class="input_wrapper"><a class="link white-text" href="{% url owr_href.view obj_id=owr_href.view_id %}">Вернуться к организации</a></div>
         {% elif vitem_ready and vitem_id %}
@@ -46,9 +45,7 @@
             currentPersTab: 'Person',
             scanFile: '',
             scanType: 'Тип документа',
-            isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
-
-
+            isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or dias_status == None or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
         },
         methods:{
             changePersTab:function(tabName){

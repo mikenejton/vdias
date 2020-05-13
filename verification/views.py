@@ -61,6 +61,9 @@ def create_item(request):
     elif request.POST['item_type'] == 'Контрагент':
         return redirect('create-counterparty')
 
+    elif request.POST['item_type'] == 'Короткая заявка':
+        return redirect('create-short-item')
+
 @login_required    
 def scan_upload(request):
     if request.FILES:

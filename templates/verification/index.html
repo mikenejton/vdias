@@ -20,23 +20,32 @@
             </div>
         </div>
     </form>
-    <!-- <div class="mb-card">
-        <div class="mb-card_header">Последние сообщения</div>
-        <div class="mb-card_body">
-            {% for msg in chat_messages %}
-                {% ifchanged msg.vitem.id %}
-                <div class="input_wrapper grid_row input_wrapper">
-                    <a href="{% url 'vitem' vitem_id=msg.vitem.id%}" class="link">{{msg.vitem}}</a>
-                </div>
-                {% endifchanged %}
-                <div class="chatbox_chat-window" style="overflow-y: visible;">
-                    <div class="chatbox_chat-message to-msg" style="max-width: 100%">
-                        <p class="msg-header">{{ msg.created|date:'d.m.Y H:i:s' }}, {{ msg.author }}</p>
-                        <p class="msg-body">{{ msg.msg }}</p>
-                    </div>
-                </div>
-            {%endfor%}
-        </div>
-    </div> -->
 </div>
+<!-- <div class="component_wrapper" style="height:300px">
+    <div class="mb-card" id="vueStats">
+        <div class="mb-card_header">Последние сообщения</div>
+        <div class="mb-card_body" style="flex-direction: row; align-items: flex-end;">
+            <div v-for="block in hyst" v-bind:style="{height: block.h + '%', background: 'hsla(100-'+block.h+', 100%, 50%, 0.5)'}" background="hsla(100-{block.h}, 100%, 50%, 0.5)">{block.name}</div>
+        </div>
+        {hyst}
+    </div>
+</div>
+
+<script>
+    var app = new Vue({
+        el: '#vueStats',
+        delimiters: ['{', '}'],
+        data: {
+            hyst: [
+                {name: 'Всего заявок', color: '', h: "{{stats.q_all.count}}"/"{{stats.q_all.count}}"*100},
+                {name: 'В работе', color: 'green', h: Number("{{stats.q_at_work.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'На доработке', color: 'gray', h: Number("{{stats.q_to_fix.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'Закрыто', color: 'blue', h: Number("{{stats.q_finished.count}}")/Number("{{stats.q_all.count}}")*100},
+            ],
+        },
+        methods:{
+            
+        }
+    });
+</script> -->
 {% endblock %}
