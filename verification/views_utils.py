@@ -54,7 +54,11 @@ def update_logger(model_name, pk, action, username, new_set=False):
                 new_dl = models.DataLogger(model_name=model_name, model_id=pk, action='Обновление записи', field_name=i[0], new_value=i[1], old_value=i[2], author=username)
                 new_dl.save()
 
+<<<<<<< HEAD
 def vitem_creater(request, item, item_type):
+=======
+def vitem_creator(request, item, item_type):
+>>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
 
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
@@ -68,8 +72,13 @@ def vitem_creater(request, item, item_type):
         elif item_type == 'short_item':
             vitem.short_item = item
             vitem.dias_status = 'В работе'
+<<<<<<< HEAD
             vitem.case_officer = request.user.extendeduser
             vitem.author = models.ExtendedUser.objects.filter(user_role__role_name='ФинБрокер', access_lvl=1)[0]
+=======
+            # vitem.case_officer = request.user.extendeduser
+            vitem.author = request.user.extendeduser
+>>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
         
         vitem.save()
 

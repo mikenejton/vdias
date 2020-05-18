@@ -68,7 +68,11 @@
 
     <div class="mb-card_footer" v-show="currentOrgTab=='Organization'">
         <div class="mb-card_footer_left"></div>
+<<<<<<< HEAD
         <button type="submit" class="btn_prim" name="organizationFormSave" form="organizationForm" v-show="isEditable">Сохранить</button>
+=======
+        <button type="submit" class="btn_prim" name="organizationFormSave" form="organizationForm" v-show="isEditable">{%if owr %}Обновить{% else %}Сохранить{% endif %}</button>
+>>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
     </div>
 </form>
 <div v-show="currentOrgTab=='Staff'" class="mb-card_body card_body-form_column">

@@ -45,9 +45,13 @@
             currentPersTab: 'Person',
             scanFile: '',
             scanType: 'Тип документа',
+<<<<<<< HEAD
             isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
 
 
+=======
+            isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or dias_status == None or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
+>>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
         },
         methods:{
             changePersTab:function(tabName){

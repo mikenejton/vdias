@@ -40,7 +40,7 @@
         {% for scan in scan_list %}
             <tr>
                 <td><a class="link" target="_blank" href="{{ scan.scan_file.url }}">{{ scan.doc_type }}</a></td>
-                <td>{{scan.created|date:"d.m.Y h:m:s"}}</td>
+                <td>{{scan.created|date:'d.m.Y H:i:s'}}</td>
                 <td>{{scan.author.user.last_name}} {{scan.author.user.first_name}}</td>
                 <td><a href="{% url 'scan-delete' scan_id=scan.id %}" class="link error_txt" v-show="isEditable">Удалить</a></td>
             </tr>
@@ -50,7 +50,7 @@
             {% for deleted_scan in deleted_scan_list %}
                 <tr>
                     <td><a class="link" target="_blank" href="{{ deleted_scan.scan_file.url }}">{{ deleted_scan.doc_type }}</a></td>
-                    <td>{{deleted_scan.created|date:"d.m.Y h:m:s"}}</td>
+                    <td>{{deleted_scan.created|date:'d.m.Y H:i:s'}}</td>
                     <td>{{deleted_scan.author.user.last_name}} {{deleted_scan.author.user.first_name}}</td>
                     <td><a></a></td>
                 </tr>

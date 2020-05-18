@@ -38,7 +38,7 @@ def owr_call(request, owr_id, create_title, update_title):
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
                         context['owr'] = owr
 
-                        views_utils.vitem_creater(request, owr, 'organization')
+                        views_utils.vitem_creator(request, owr, 'organization')
 
                     view_name = 'detailing-partner' if context['owr'].role == 'Партнер' else 'detailing-counterparty'
                     context['redirect'] = redirect(reverse(view_name, args=[context['owr'].id]))
@@ -55,13 +55,22 @@ def owr_call(request, owr_id, create_title, update_title):
 
 def get_owr_context(request, owr_id, create_title, update_title):
     context = {'doc_types': ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Иной документ']}
+<<<<<<< HEAD
     vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
     if len(vitem) > 0:
         context['vitem_id'] = vitem[0].id
         context['vitem_is_filled'] = vitem[0].is_filled
         context['dias_status'] = vitem[0].dias_status
     
+=======
+>>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
     if owr_id:
+        vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
+        if len(vitem) > 0 and owr_id is not None:
+            context['vitem_id'] = vitem[0].id
+            context['vitem_is_filled'] = vitem[0].is_filled
+            context['dias_status'] = vitem[0].dias_status
+
         owr = models.OrganizationWithRole.objects.filter(id = owr_id)
         if len(owr) > 0 :
             if owr[0].role == update_title:
@@ -96,9 +105,14 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
 
             if context['form'].is_valid():
                 if pwr_id:
-                    if context['pwr'].related_organization.id != request.POST['related_organization']:
+                    if context['pwr'].related_organization:
+                        if context['pwr'].related_organization.id != request.POST['related_organization']:
+                            context['pwr'].related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+                            context['pwr'].save()
+                    if 'related_organization' in request.POST:
                         context['pwr'].related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
                         context['pwr'].save()
+
                     updated_person = context['form'].save(commit=False)
                     views_utils.update_logger('Person', updated_person.id, 'Обновление записи', request.user.extendeduser, updated_person)
                     updated_person = context['form'].save()
@@ -115,7 +129,11 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
                     context['pwr'] = pwr
                     if pwr_role not in ['Ген. директор', 'Бенефициар']:
+<<<<<<< HEAD
                         views_utils.vitem_creater(request, pwr, 'person')
+=======
+                        views_utils.vitem_creator(request, pwr, 'person')
+>>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
 
                 if pwr_role == 'Агент':
                     view_name = 'detailing-agent'
@@ -169,7 +187,9 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
             context['pwr'] = pwr[0]
             context['vitem_ready'] = views_utils.is_vitem_ready('person', context['pwr'])
             context['pwr_role'] = pwr_role
-            context['org_list'] = person_organizations.filter(id = context['pwr'].related_organization.id)
+            if context['pwr'].related_organization:
+                context['org_list'] = person_organizations.filter(id = context['pwr'].related_organization.id)
+            
             context['form'] = forms.PersonForm(instance=context['pwr'].person)
             context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)
             if request.user.extendeduser.user_role.role_lvl <= 3:
@@ -208,10 +228,18 @@ def short_item_call(request, si_id):
                     views_utils.update_logger('ShortItem', updated_short_item.id, 'Обновление записи', request.user.extendeduser, updated_short_item)
                     updated_short_item = context['form'].save()
                 else:
+<<<<<<< HEAD
                     new_short_item = context['form'].save()
                     views_utils.update_logger('ShortItem', new_short_item.id, '', request.user.extendeduser)
                     context['short_item'] = new_short_item
                     views_utils.vitem_creater(request, new_short_item, 'short_item')
+=======
+                    
+                    new_short_item = context['form'].save()
+                    views_utils.update_logger('ShortItem', new_short_item.id, '', request.user.extendeduser)
+                    context['short_item'] = new_short_item
+                    views_utils.vitem_creator(request, new_short_item, 'short_item')
+>>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
                 
                 view_name = 'detailing-short-item'
                 context['redirect'] = redirect(reverse(view_name, args=[context['short_item'].id]))
