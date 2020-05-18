@@ -87,6 +87,7 @@ def get_owr_context(request, owr_id, create_title, update_title):
                 context['err_txt'] = 'Запрашиваемый объект не существует'
     else:
         context['page_title'] = create_title
+        context['unfilled'].append('Заполните данные организации')
         context['form'] = forms.OrganizationForm()
     return context
 
@@ -164,7 +165,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         return render(request, context['template'], context)
 
 def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
-    context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Иной документ']}
+    context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Видеоприветствие', 'Иной документ']}
     context['unfilled'] = []
     person_organizations = models.OrganizationWithRole.objects.all()
     if request.user.extendeduser.user_role == 'HR':

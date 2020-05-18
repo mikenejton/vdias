@@ -79,7 +79,7 @@ def required_scan_checking(model_id, model_name, model_role=None):
     if model_name == 'person':
         if model_role in ['Ген. директор', 'Бенефициар']:
             return True
-        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета']
+        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Видеоприветстсвие']
     elif model_name == 'organization':
         if model_role == 'Контрагент':
             return True
