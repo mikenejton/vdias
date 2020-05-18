@@ -55,15 +55,7 @@ def owr_call(request, owr_id, create_title, update_title):
 
 def get_owr_context(request, owr_id, create_title, update_title):
     context = {'doc_types': ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Иной документ']}
-<<<<<<< HEAD
-    vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
-    if len(vitem) > 0:
-        context['vitem_id'] = vitem[0].id
-        context['vitem_is_filled'] = vitem[0].is_filled
-        context['dias_status'] = vitem[0].dias_status
-    
-=======
->>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
+    context['unfilled'] = []
     if owr_id:
         vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
         if len(vitem) > 0 and owr_id is not None:
@@ -86,6 +78,11 @@ def get_owr_context(request, owr_id, create_title, update_title):
                 if request.user.extendeduser.user_role.role_lvl <= 3:
                     context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
                 context['form'] = form
+                if not context['vitem_ready']:
+                    if len(context['ceo']) == 0:
+                        context['unfilled'].append('Укажите Ген.директора')
+                    else:
+                        context['unfilled'].append('Загрузите все необходимые сканы')
             else:
                 context['err_txt'] = 'Запрашиваемый объект не существует'
     else:
@@ -129,11 +126,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
                     context['pwr'] = pwr
                     if pwr_role not in ['Ген. директор', 'Бенефициар']:
-<<<<<<< HEAD
-                        views_utils.vitem_creater(request, pwr, 'person')
-=======
                         views_utils.vitem_creator(request, pwr, 'person')
->>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
 
                 if pwr_role == 'Агент':
                     view_name = 'detailing-agent'
@@ -156,7 +149,8 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     context['owr_href'] = {'view':'detailing-partner', 'view_id': owr_id}
                 elif context['owr'].role == 'Контрагент':
                     context['owr_href'] = {'view':'detailing-counterparty', 'view_id': owr_id}
-
+            else:
+                context['unfilled'].append('Загрузите все необходимые сканы')
         context['template'] = 'verification/forms/common/person_form_common.html'
     else:
         context['err_txt'] = 'Запрашиваемая страница не существует или у Вас недостаточно прав на ее просмотр'
@@ -171,7 +165,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
 
 def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Иной документ']}
-    
+    context['unfilled'] = []
     person_organizations = models.OrganizationWithRole.objects.all()
     if request.user.extendeduser.user_role == 'HR':
         person_organizations = person_organizations.filter(organization_type = 'Штатные сотрудники')
@@ -196,6 +190,8 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                 context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = True)
             if pwr_role in ['Агент', 'Штатный сотрудник']:
                 vitem = models.VerificationItem.objects.filter(person__id = pwr_id)[0]
+                if not context['vitem_ready']:
+                    context['unfilled'].append('Загрузите все необходимые сканы')
             else:
                 vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
             context['vitem_id'] = vitem.id
@@ -203,11 +199,14 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
             context['dias_status'] = vitem.dias_status
             context['page_title'] = pwr_role
             context['object_title'] = context['pwr'].person.fio
+            
         else:
             context['err_txt'] = 'Запрашиваемый объект не существует'
     else:
         context['form'] = forms.PersonForm()
         context['page_title'] = f'Новый {pwr_role}'
+        context['unfilled'].append('Заполните данные физ.лица')
+        
     
     return context
 
@@ -228,18 +227,11 @@ def short_item_call(request, si_id):
                     views_utils.update_logger('ShortItem', updated_short_item.id, 'Обновление записи', request.user.extendeduser, updated_short_item)
                     updated_short_item = context['form'].save()
                 else:
-<<<<<<< HEAD
-                    new_short_item = context['form'].save()
-                    views_utils.update_logger('ShortItem', new_short_item.id, '', request.user.extendeduser)
-                    context['short_item'] = new_short_item
-                    views_utils.vitem_creater(request, new_short_item, 'short_item')
-=======
                     
                     new_short_item = context['form'].save()
                     views_utils.update_logger('ShortItem', new_short_item.id, '', request.user.extendeduser)
                     context['short_item'] = new_short_item
                     views_utils.vitem_creator(request, new_short_item, 'short_item')
->>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
                 
                 view_name = 'detailing-short-item'
                 context['redirect'] = redirect(reverse(view_name, args=[context['short_item'].id]))
@@ -255,7 +247,7 @@ def short_item_call(request, si_id):
         return render(request, context['template'], context)
 
 def get_short_item_context(request, si_id):
-    context = {}
+    context = {'unfilled': []}
     if si_id:
         short_items = models.ShortItem.objects.filter(id = si_id)
         if len(short_items):
@@ -273,4 +265,6 @@ def get_short_item_context(request, si_id):
     else:
         context['form'] = forms.ShortItemForm()
         context['page_title'] = f'Новая'
+        context['unfilled'].append('Заполните данные короткой заявки')
+
     return context

@@ -15,6 +15,10 @@ class PersonForm(ModelForm):
                 raise ValidationError({'dob': 'Возраст менее 18-ти лет!'})
             elif round(date_diff.days/365.25, 0)  > 99:
                 raise ValidationError({'dob': 'Возраст более 99-ти лет!'})
+            if cleaned_data.get('pass_date'):
+                date_diff = cleaned_data.get('pass_date') - cleaned_data.get('dob')
+                if round(date_diff.days/365.25, 0)  < 14:
+                    raise ValidationError({'pass_date': 'Ошибка в дате выдачи паспорта (разница с датой рождения менее 14 лет!'})
         
 class OrganizationForm(ModelForm):
     class Meta:

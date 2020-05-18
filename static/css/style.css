@@ -155,6 +155,12 @@ aside.sidebar{
     margin-right: 0;
 }
 
+.row-conteiner{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
 .mb-card{
     display: flex;
     flex-direction: column;
@@ -162,6 +168,12 @@ aside.sidebar{
     border-radius: 0.25rem;
     min-width: max-content;
     width: 250px;
+}
+.mb-card_hint-box{
+    display: flex;
+    flex-direction: column;
+    padding: 5px 5px 5px 15px;
+    border-right: 1px solid #ced4da;
 }
 .card_centered{
     align-self: center;

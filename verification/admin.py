@@ -57,12 +57,8 @@ model_admin_links={
     'organizationwithrole': [['organization'], ['organization', 'organization_role', 'author__user__last_name']],
     'personwithrole': [['person'], ['person__fio', 'person_role', 'author__user__last_name']],
     'docstorage': [['model_name', 'doc_type'], ['doc_type', 'file_name', 'author__user__last_name']],
-<<<<<<< HEAD
-    'person': [['fio'], ['fio', 'sneals', 'phone_number', 'pass_sn', 'author__user__last_name']]
-=======
     'person': [['fio'], ['fio', 'sneals', 'phone_number', 'pass_sn', 'author__user__last_name']],
     'shortitem':[['item_id'], ['item_id', 'role', 'verificated']]
->>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
 }
 
 for model in apps.get_app_config('verification').get_models():

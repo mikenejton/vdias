@@ -1,29 +1,44 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="mb-card card_centered" id="vuePart">
-    <div class="mb-card_header">
-        {%if object_title %}
-        <div class="input_wrapper">
-            {{ object_title }}
+<div class="row-conteiner">
+    <div class="mb-card card_centered" id="vuePart">
+        <div class="mb-card_header">
+            {%if object_title %}
+            <div class="input_wrapper">
+                {{ object_title }}
+            </div>
+            {% else %}
+            <div class="input_wrapper">
+                {{ page_title }}
+            </div>
+            {%endif%}
+            <div style="flex:1;"></div>
+            {% if owr_href %}
+            <div class="input_wrapper"><a class="link white-text" href="{% url owr_href.view obj_id=owr_href.view_id %}">Вернуться к организации</a></div>
+            {% elif vitem_ready and vitem_id %}
+            <div class="input_wrapper"><a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Перейти к заявке</a></div>
+            {%else%}
+            <div class="input_wrapper">Заявка не заполнена</div>
+            {%endif%}
         </div>
-        {% else %}
-        <div class="input_wrapper">
-            {{ page_title }}
+        <div class="multitab-form">
+            {% block object_form %}
+            {% endblock %}
         </div>
-        {%endif%}
-        <div style="flex:1;"></div>
-        {% if owr_href %}
-        <div class="input_wrapper"><a class="link white-text" href="{% url owr_href.view obj_id=owr_href.view_id %}">Вернуться к организации</a></div>
-        {% elif vitem_ready and vitem_id %}
-        <div class="input_wrapper"><a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Перейти к заявке</a></div>
-        {%else%}
-        <div class="input_wrapper">Заявка не заполнена</div>
-        {%endif%}
+        
     </div>
-    <div class="multitab-form">
-        {% block object_form %}
-        {% endblock %}
+    <div class="mb-card_hint-box">
+        <div>
+        {% if owr_href or vitem_ready and vitem_id %}
+            Заявка заполнена
+        {% else %}
+        Осталось заполнить:
+        </div>
+        {% for field in unfilled %}
+        <p class="error_txt"><i>{{ field }}</i></p>
+        {% endfor %}
+        {% endif %}
     </div>
 </div>
 <script src="{% static 'js/v-mask.min.js' %}"></script>
@@ -45,13 +60,7 @@
             currentPersTab: 'Person',
             scanFile: '',
             scanType: 'Тип документа',
-<<<<<<< HEAD
-            isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
-
-
-=======
             isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or dias_status == None or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
->>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
         },
         methods:{
             changePersTab:function(tabName){

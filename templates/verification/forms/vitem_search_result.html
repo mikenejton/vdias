@@ -20,9 +20,6 @@
     {% for item in result %}
         <tr>
             <td>{{ forloop.counter }}</td>
-<<<<<<< HEAD
-            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{% firstof item.person.person item.organization.organization 'Короткая заявка' %}</a></td>
-=======
             <!-- <td>{% firstof item.person.person item.organization.organization%}</a></td> -->
             <td align="left"><a class="link" href="{% url 'vitem' vitem_id=item.id %}">
                 {%if item.person.person %}{{item.person.person}}
@@ -31,7 +28,6 @@
                 {% endif %}
                 <!-- {% firstof item.person.person item.organization.organization item.short_item.item_id%} -->
             </a></td>
->>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
             <!-- {% if item.person %}
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{% firstof item.person.person item.organization.organization 'Короткая заявка' %}</a></td>
             {% elif item.organization %}
@@ -39,21 +35,12 @@
             {% elif item.short_item %}
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">Короткая заявка</a></td>
             {% endif %} -->
-<<<<<<< HEAD
-            <td>{% firstof item.organization.role item.person.role item.short_item.role %}</td>
-            <td>{{ item.is_filled|yesno:"Да,Нет" }}</td>
-            <td>{{ item.dias_status }}</td>
-            <td>{{ item.case_officer.user.last_name }} {{ item.case_officer.user.first_name }}</td>
-            <td>{{ item.created }}</td>
-            <td>{{ item.author.user.last_name }} {{ item.author.user.first_name }}</td>
-=======
             <td align="left">{% firstof item.organization.role item.person.role item.short_item.role %}</td>
             <td>{{ item.is_filled|yesno:"Да,Нет" }}</td>
             <td>{{ item.dias_status }}</td>
             <td align="left">{{ item.case_officer.user.last_name }} {{ item.case_officer.user.first_name }}</td>
             <td align="left">{{ item.created }}</td>
             <td align="left">{{ item.author.user.last_name }} {{ item.author.user.first_name }}</td>
->>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
         </tr>
     {% endfor %}
 </table>

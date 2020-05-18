@@ -32,25 +32,15 @@
         </div>
         {% endfor %}
         {% for field in form %}
-<<<<<<< HEAD
-        {% if field.errors %}
-        <p class="error_txt">{{ field.label }}: {%for error in field.errors%}<i>{{ error }}</i>{% endfor %}</p>
-        {% endif %}
-=======
             {% if field.errors %}
             <p class="error_txt">{{ field.label }}: {%for error in field.errors%}<i>{{ error }}</i>{% endfor %}</p>
             {% endif %}
->>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
         {% endfor %}
     </div>
     {% endif %}
     <div class="mb-card_footer">
         <div class="mb-card_footer_left"></div>
-<<<<<<< HEAD
-        <button type="submit" class="btn_prim" name="shortItemFormSave" form="shortItemForm" v-show="isEditable">Сохранить</button>
-=======
         <button type="submit" class="btn_prim" name="shortItemFormSave" form="shortItemForm" v-show="isEditable">{%if short_item %}Обновить{% else %}Сохранить{% endif %}</button>
->>>>>>> 6039fd0d26f45e5063339ed232770f0c9dee9b10
     </div>
 </form>
 {% endblock %}
