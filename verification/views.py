@@ -39,7 +39,7 @@ def vitem_list(request, param=None):
         elif request.user.extendeduser.user_role.role_lvl == 3:
             result = result.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент'))
     
-    context['result'] = result
+    context['result'] = result    
     return render(request, 'verification/forms/vitem_search_result.html', context)
 
 @login_required

@@ -36,6 +36,10 @@
                         <div class="itemform_controls_row"><button type="submit" class="btn_suc" name="btn_take_to">Принять в работу</button></div>
                         {% endif %}
                     {% endif %}
+                    {% if vitem.edited %}
+                    &nbsp;|&nbsp;
+                    <div class="itemform_controls_row">Изменено: <i>{{vitem.edited}}</i></div>
+                    {% endif %}
                     <div class="growing_block"></div>
                     
                     <div class="input_wrapper" >

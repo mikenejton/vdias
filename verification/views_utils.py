@@ -9,7 +9,7 @@ class UserStats:
 def get_base_context(user):
     context = {}
     stats = UserStats()
-    stats.q_all = models.VerificationItem.objects.all().order_by('-created')
+    stats.q_all = models.VerificationItem.objects.all().order_by('-created').select_related()
     stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True)
     stats.q_mine = stats.q_all.filter(case_officer__user = user)
     stats.q_at_work = stats.q_all.filter(dias_status = 'В работе')

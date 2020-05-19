@@ -149,7 +149,7 @@ class VerificationItem(models.Model):
     fms_not_ok = models.CharField('ФМС', max_length = 300, blank=True, null=True, default='')
     rosfin = models.CharField('Росфинмониторинг', max_length = 300, blank=True, null=True, default='')
     docs_full = models.CharField('Полнота и качество документов', max_length = 300, blank=True, null=True, default='')
-    reg_checked = models.CharField('ФМС', max_length = 300, blank=True, null=True, default='')
+    reg_checked = models.CharField('Постоянная регистрация', max_length = 300, blank=True, null=True, default='')
     
     cronos_status = models.CharField('Кронос статус', max_length = 300, blank=True, null=True)
     cronos = models.TextField('Кронос комментарий', blank=True, null=True, default='')
@@ -166,6 +166,7 @@ class VerificationItem(models.Model):
     soc_status = models.CharField('Соцсети', max_length = 300, blank=True, null=True, default='')
     soc = models.TextField('Соцсети', blank=True, null=True, default='')
 
+    edited = models.DateTimeField('Дата изменения', null=True, blank=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
@@ -173,6 +174,7 @@ class VerificationItem(models.Model):
             self.to_fix = False
         if self.to_fix:
             self.fixed = False
+        self.edited = datetime.now()
         super().save(*args, **kwargs)
         return self.id
     

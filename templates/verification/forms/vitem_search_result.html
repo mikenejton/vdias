@@ -13,6 +13,7 @@
             <th>Заявка заполнена</th>
             <th>Статус</th>
             <th>Исполнитель</th>
+            <th>Изменено</th>
             <th>Дата создания</th>
             <th>Автор</th>
         </tr>
@@ -39,6 +40,7 @@
             <td>{{ item.is_filled|yesno:"Да,Нет" }}</td>
             <td>{{ item.dias_status }}</td>
             <td align="left">{{ item.case_officer.user.last_name }} {{ item.case_officer.user.first_name }}</td>
+            <td align="left">{{ item.edited }}</td>
             <td align="left">{{ item.created }}</td>
             <td align="left">{{ item.author.user.last_name }} {{ item.author.user.first_name }}</td>
         </tr>
