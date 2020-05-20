@@ -25,6 +25,7 @@
                 {% endblock %}
             </div>
             <!-- FORM -->
+            {reverseStat}
             <div class="itemform_controls">
                 <div class="itemform_controls_row">
                     <div class="itemform_controls_row">Автор заявки: <i>{{vitem.author}}</i>&nbsp;|&nbsp;</div>
@@ -96,7 +97,7 @@
                         <div class="itemform_controls_row spb spb-bordered">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Проверка ФМС:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="fms_not_ok" value="Пройдена" id="fms_true" {%if form.fms_not_ok.value == 'Пройдена' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><input type="radio" name="fms_not_ok" value="Пройдена" id="fms_true" {%if form.fms_not_ok.value == 'Пройдена' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="fms_true">Пройдена</label></div>
                                 <div class="input_wrapper"><input type="radio" name="fms_not_ok" value="Не пройдена" id="fms_false" {%if form.fms_not_ok.value == 'Не пройдена' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="fms_false">Не пройдена</label></div>
@@ -105,7 +106,7 @@
                         <div class="itemform_controls_row spb spb-bordered">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Проверка РосФинМониторинг:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="rosfin" value="Пройдена" id="rosfin_true" {%if form.rosfin.value == 'Пройдена' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><input type="radio" name="rosfin" value="Пройдена" id="rosfin_true" {%if form.rosfin.value == 'Пройдена' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="rosfin_true">Пройдена</label></div>
                                 <div class="input_wrapper"><input type="radio" name="rosfin"  value="Не пройдена" id="rosfin_false" {%if form.rosfin.value == 'Не пройдена' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="rosfin_false">Не пройдена</label></div>
@@ -114,7 +115,7 @@
                         <div class="itemform_controls_row spb spb-bordered">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Наличие постоянной регистрации:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper gb_input"><input type="radio" name="reg_checked" value="Есть" id="reg_checked_true" {%if form.reg_checked.value == 'Есть' %} checked {% endif %}></div>
+                                <div class="input_wrapper gb_input"><input type="radio" name="reg_checked" value="Есть" id="reg_checked_true" {%if form.reg_checked.value == 'Есть' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="reg_checked_true">Есть</label></div>
                                 <div class="input_wrapper"><input type="radio" name="reg_checked"  value="Нет" id="reg_checked_false" {%if form.reg_checked.value == 'Нет' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="reg_checked_false">Нет</label></div>
@@ -123,7 +124,7 @@
                         <div class="itemform_controls_row spb spb-bordered">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Документы проверены:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper gb_input"><input type="radio" name="docs_full" value="Да" id="docs_full_true" {%if form.docs_full.value == 'Да' %} checked {% endif %}></div>
+                                <div class="input_wrapper gb_input"><input type="radio" name="docs_full" value="Да" id="docs_full_true" {%if form.docs_full.value == 'Да' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="docs_full_true">Да</label></div>
                                 <div class="input_wrapper"><input type="radio" name="docs_full"  value="Нет" id="docs_full_false" {%if form.docs_full.value == 'Нет' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="docs_full_false">Нет</label></div>
@@ -132,7 +133,7 @@
                         <div class="itemform_controls_row spb">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Кронос:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="cronos_status" v-model="cronosStatus" value="Нет информации" id="cronos_status_none" {%if form.cronos_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><input type="radio" name="cronos_status" v-model="cronosStatus" value="Нет информации" id="cronos_status_none" {%if form.cronos_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="cronos_status_none">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="cronos_status" v-model="cronosStatus" value="Нет негатива" id="cronos_status_ok" {%if form.cronos_status.value == 'Нет негатива' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="cronos_status_ok">Нет негатива</label></div>
@@ -145,7 +146,7 @@
                         <div class="itemform_controls_row spb">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">ФССП:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="fssp_status" v-model="fsspStatus" value="Нет информации" id="fssp_status_ok" {%if form.fssp_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><input type="radio" name="fssp_status" v-model="fsspStatus" value="Нет информации" id="fssp_status_ok" {%if form.fssp_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="fssp_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="fssp_status" v-model="fsspStatus" value="Есть информация" id="fssp_status_not_ok" {%if form.fssp_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="fssp_status_not_ok">Есть информация</label></div>
@@ -156,7 +157,7 @@
                         <div class="itemform_controls_row spb" v-show="vitemType == 'Штатный сотрудник'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Соц.сети:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Нет информации" id="soc_status_ok" {%if form.soc_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Нет информации" id="soc_status_ok" {%if form.soc_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="soc_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Есть информация" id="soc_status_not_ok" {%if form.soc_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="soc_status_not_ok">Есть информация</label></div>
@@ -167,7 +168,7 @@
                         <div class="itemform_controls_row spb" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">КонтурФокус:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Нет информации" id="contur_focus_status_ok" {%if form.contur_focus_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Нет информации" id="contur_focus_status_ok" {%if form.contur_focus_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="contur_focus_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Есть информация" id="contur_focus_status_not_ok" {%if form.contur_focus_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="contur_focus_status_not_ok">Есть информация</label></div>
@@ -182,7 +183,7 @@
                         <div class="itemform_controls_row spb">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Суды:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="court_status" v-model="courtStatus" value="Нет информации" id="court_status_ok" {%if form.court_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><input type="radio" name="court_status" v-model="courtStatus" value="Нет информации" id="court_status_ok" {%if form.court_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="court_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="court_status" v-model="courtStatus" value="Есть информация" id="court_status_not_ok" {%if form.court_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="court_status_not_ok">Есть информация</label></div>
@@ -193,7 +194,7 @@
                         <div class="itemform_controls_row spb">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Информация по банкротсву:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="bankruptcy_status" v-model="bankruptcyStatus" value="Нет информации" id="bankruptcy_status_ok" {%if form.bankruptcy_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><input type="radio" name="bankruptcy_status" v-model="bankruptcyStatus" value="Нет информации" id="bankruptcy_status_ok" {%if form.bankruptcy_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="bankruptcy_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="bankruptcy_status" v-model="bankruptcyStatus" value="Есть информация" id="bankruptcy_status_not_ok" {%if form.bankruptcy_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="bankruptcy_status_not_ok">Есть информация</label></div>
@@ -204,7 +205,7 @@
                         <div class="itemform_controls_row spb" v-show="vitemType == 'Контрагент'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Аффилированность:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="affiliation_status" v-model="affiliationStatus" value="Нет информации" id="affiliation_status_ok" {%if form.affiliation_status.value == 'Нет информации' %} checked {% endif %}></div>
+                                <div class="input_wrapper"><input type="radio" name="affiliation_status" v-model="affiliationStatus" value="Нет информации" id="affiliation_status_ok" {%if form.affiliation_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
                                 <div class="input_wrapper"><label for="affiliation_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="affiliation_status" v-model="affiliationStatus" value="Есть информация" id="affiliation_status_not_ok" {%if form.affiliation_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="affiliation_status_not_ok">Есть информация</label></div>
@@ -302,9 +303,19 @@
             socStatus: '{{form.soc_status.value}}',
             vitemType: '{% firstof pwr.role owr.role %}',
             diasStatus: '{{form.dias_status.value}}',
+            requiredChecks: false,
+        },
+        computed:{
+            reverseStat: function(){
+                this.requiredChecks = 'Возможен особый контроль;Одобрено;Одобрено, особый контроль;Отказ'.includes(this.diasStatus);
+                return this.requiredChecks
+            }
         },
         methods: {
             needComment: function(sendBtnName){
+                if(sendBtnName == 'btn_to_fix'){
+                    this.diasStatus = "В работе"
+                };
                 this.showModal = true;
                 this.btnName = sendBtnName;
             },
