@@ -25,7 +25,6 @@
                 {% endblock %}
             </div>
             <!-- FORM -->
-            {reverseStat}
             <div class="itemform_controls">
                 <div class="itemform_controls_row">
                     <div class="itemform_controls_row">Автор заявки: <i>{{vitem.author}}</i>&nbsp;|&nbsp;</div>
@@ -157,7 +156,7 @@
                         <div class="itemform_controls_row spb" v-show="vitemType == 'Штатный сотрудник'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Соц.сети:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Нет информации" id="soc_status_ok" {%if form.soc_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
+                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Нет информации" id="soc_status_ok" {%if form.soc_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat && vitemType == 'Штатный сотрудник'"></div>
                                 <div class="input_wrapper"><label for="soc_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Есть информация" id="soc_status_not_ok" {%if form.soc_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="soc_status_not_ok">Есть информация</label></div>
@@ -168,7 +167,7 @@
                         <div class="itemform_controls_row spb" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">КонтурФокус:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Нет информации" id="contur_focus_status_ok" {%if form.contur_focus_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
+                                <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Нет информации" id="contur_focus_status_ok" {%if form.contur_focus_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat && vitemType == 'Партнер' || vitemType == 'Брокер'"></div>
                                 <div class="input_wrapper"><label for="contur_focus_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Есть информация" id="contur_focus_status_not_ok" {%if form.contur_focus_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="contur_focus_status_not_ok">Есть информация</label></div>
@@ -205,7 +204,7 @@
                         <div class="itemform_controls_row spb" v-show="vitemType == 'Контрагент'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Аффилированность:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="affiliation_status" v-model="affiliationStatus" value="Нет информации" id="affiliation_status_ok" {%if form.affiliation_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat"></div>
+                                <div class="input_wrapper"><input type="radio" name="affiliation_status" v-model="affiliationStatus" value="Нет информации" id="affiliation_status_ok" {%if form.affiliation_status.value == 'Нет информации' %} checked {% endif %} :required="reverseStat && vitemType == 'Контрагент'"></div>
                                 <div class="input_wrapper"><label for="affiliation_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="affiliation_status" v-model="affiliationStatus" value="Есть информация" id="affiliation_status_not_ok" {%if form.affiliation_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="affiliation_status_not_ok">Есть информация</label></div>

@@ -8,6 +8,7 @@
     <thead>
         <tr>
             <th>#</th>
+            <th>ID заявки</th>
             <th>Объект</th>
             <th>Роль</th>
             <th>Заявка заполнена</th>
@@ -22,6 +23,7 @@
         <tr>
             <td>{{ forloop.counter }}</td>
             <!-- <td>{% firstof item.person.person item.organization.organization%}</a></td> -->
+            <td align="left">{{ item.id }}</td>
             <td align="left"><a class="link" href="{% url 'vitem' vitem_id=item.id %}">
                 {%if item.person.person %}{{item.person.person}}
                 {%elif item.organization.organization %}{{item.organization.organization}}
@@ -29,6 +31,7 @@
                 {% endif %}
                 <!-- {% firstof item.person.person item.organization.organization item.short_item.item_id%} -->
             </a></td>
+            
             <!-- {% if item.person %}
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{% firstof item.person.person item.organization.organization 'Короткая заявка' %}</a></td>
             {% elif item.organization %}
