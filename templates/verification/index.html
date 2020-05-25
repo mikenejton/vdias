@@ -25,7 +25,7 @@
             </div>
         </form>
     </div>
-    <div class="component_wrapper" style="grid-area: chat;">
+    <div class="component_wrapper" style="grid-area: chat; overflow-y: auto;">
         <div class="mb-card" style="width: 100%">
             <div class="mb-card_header">Чат</div>
             <div class="mb-card_body">
@@ -33,19 +33,19 @@
                     {% for msg in chat_messages %}
                         <div class="chatbox_chat-message to-msg">
                             <a href="{% url 'vitem' vitem_id=msg.vitem.id %}">
-                                <p>{{msg.vitem}}</p>
-                                <div style="padding: 0.5rem;"></div>
-                                <p class="msg-header">{{ msg.created }} | {{ msg.author }}</p>
+                                <p><u><b>{{msg.vitem}}</b></u></p>
+                                <div style="padding: 0.25rem;"></div>
                                 <p class="msg-body">{{ msg.msg }}</p>
+                                <p class="msg-footer">{{ msg.created }} | {{ msg.author }}</p>
                             </a>
                         </div>
                     {% endfor %}
-                    <div style="padding: 0.5rem;"></div>
+                    <div style="padding: 0.2rem;"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="component_wrapper" style="grid-area: stats;">
+    <div class="component_wrapper" style="grid-area: stats; height: 250px; justify-self: center;">
         <div class="mb-card" id="vueStats">
             <div class="mb-card_header">Распределение</div>
             <div class="mb-card_body" style="flex-direction: row; align-items: flex-end; margin: 10px; justify-content: space-around;">

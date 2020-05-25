@@ -11,7 +11,7 @@ def index(request):
     context = views_utils.get_base_context(request.user)
     context['page_title'] = 'ДИАС'
     if request.user.extendeduser.user_role.role_lvl <= 2:
-        context['chat_messages'] = models.VitemChat.objects.exclude(author = request.user.extendeduser).order_by('-created')[:5]
+        context['chat_messages'] = models.VitemChat.objects.exclude(author = request.user.extendeduser).order_by('-created')[:20]
     else:
         context['chat_messages'] = models.VitemChat.objects.filter(Q(vitem__author = request.user.extendeduser) | Q(vitem__case_officer = request.user.extendeduser)).exclude(author = request.user.extendeduser).order_by('-created')[:5]
 

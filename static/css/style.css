@@ -163,9 +163,11 @@ aside.sidebar{
 .index-grid{
     display: grid;
     grid-template-areas:
-        "search stats"
-        " chat stats";
+        "search chat"
+        "stats chat"
+        "fill-box chat";
     grid-gap: 1rem;
+    overflow-y: auto;
 }
 .mb-card{
     display: flex;
