@@ -1,51 +1,80 @@
 {% extends "base.html" %}
 <!-- карточный ЛК. ПОДУМАТЬ!!! Разные index'ы по ролям (вопрос отличий) -->
 {% block content %}
-<div class="component_wrapper">
-    <form method="post" action="{% url 'find-vitem' %}">
-        {% csrf_token %}
-        <div class="mb-card">
-            <div class="mb-card_header">Поиск заявки на верификацию</div>
+<div class="index-grid">
+    <div class="component_wrapper" style="grid-area: search;">
+        <form method="post" action="{% url 'find-vitem' %}" style="width: 100%;">
+            {% csrf_token %}
+            <div class="mb-card">
+                <div class="mb-card_header">Поиск заявки на верификацию</div>
+                <div class="mb-card_body">
+                    <div class="input_wrapper">
+                        <input type="text" class="form-control" name="person" placeholder="Физ.лицо">
+                    </div>
+                    <div class="input_wrapper">
+                        <input type="text" class="form-control" name="organization" placeholder="Организация">
+                    </div>
+                    <div class="input_wrapper">
+                        <input type="text" class="form-control" name="short_item" placeholder="Короткая заявка">
+                    </div>
+                </div>
+                <div class="mb-card_footer">
+                    <div class="mb-card_footer_left"></div>
+                    <button type="submit" class="btn_std">Найти</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="component_wrapper" style="grid-area: chat;">
+        <div class="mb-card" style="width: 100%">
+            <div class="mb-card_header">Чат</div>
             <div class="mb-card_body">
-                <div class="input_wrapper">
-                    <input type="text" class="form-control" name="person" placeholder="Физ.лицо">
-                </div>
-                <div class="input_wrapper">
-                    <input type="text" class="form-control" name="organization" placeholder="Организация">
+                <div class="chatbox_chat-window">
+                    {% for msg in chat_messages %}
+                        <div class="chatbox_chat-message to-msg">
+                            <a href="{% url 'vitem' vitem_id=msg.vitem.id %}">
+                                <p>{{msg.vitem}}</p>
+                                <div style="padding: 0.5rem;"></div>
+                                <p class="msg-header">{{ msg.created }} | {{ msg.author }}</p>
+                                <p class="msg-body">{{ msg.msg }}</p>
+                            </a>
+                        </div>
+                    {% endfor %}
+                    <div style="padding: 0.5rem;"></div>
                 </div>
             </div>
-            <div class="mb-card_footer">
-                <div class="mb-card_footer_left"></div>
-                <button type="submit" class="btn_std">Найти</button>
+        </div>
+    </div>
+    <div class="component_wrapper" style="grid-area: stats;">
+        <div class="mb-card" id="vueStats">
+            <div class="mb-card_header">Распределение</div>
+            <div class="mb-card_body" style="flex-direction: row; align-items: flex-end; margin: 10px; justify-content: space-around;">
+                <!-- <div v-for="block in hyst" v-bind:style="{height: 'calc(' + block.h + '% - 10px)'}" class="hyst-block" :title="block.count">{block.name}</div> -->
+                <div v-for="block in hyst" v-bind:style="{height: 'calc(' + block.h + '% - 10px)'}" class="hyst-block" :title="block.count">
+                    {block.name}
+                    <span class="hyst-block_hint">Количество: {block.count}</span>
+                </div>
             </div>
         </div>
-    </form>
-</div>
-<!-- <div class="component_wrapper" style="height:300px">
-    <div class="mb-card" id="vueStats">
-        <div class="mb-card_header">Последние сообщения</div>
-        <div class="mb-card_body" style="flex-direction: row; align-items: flex-end;">
-            <div v-for="block in hyst" v-bind:style="{height: block.h + '%', background: 'hsla(100-'+block.h+', 100%, 50%, 0.5)'}" background="hsla(100-{block.h}, 100%, 50%, 0.5)">{block.name}</div>
-        </div>
-        {hyst}
     </div>
 </div>
-
 <script>
     var app = new Vue({
         el: '#vueStats',
         delimiters: ['{', '}'],
         data: {
             hyst: [
-                {name: 'Всего заявок', color: '', h: "{{stats.q_all.count}}"/"{{stats.q_all.count}}"*100},
-                {name: 'В работе', color: 'green', h: Number("{{stats.q_at_work.count}}")/Number("{{stats.q_all.count}}")*100},
-                {name: 'На доработке', color: 'gray', h: Number("{{stats.q_to_fix.count}}")/Number("{{stats.q_all.count}}")*100},
-                {name: 'Закрыто', color: 'blue', h: Number("{{stats.q_finished.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'Всего заявок', count: "{{ stats.q_all.count }}", h: "{{stats.q_all.count}}"/"{{stats.q_all.count}}"*100},
+                {name: 'Новые', count: "{{ stats.q_new.count }}", h: Number("{{stats.q_new.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'Недозаполненные',count: "{{ stats.q_not_filled.count }}", h: Number("{{stats.q_not_filled.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'В работе', count: "{{ stats.q_at_work.count }}", h: Number("{{stats.q_at_work.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'На доработке',count: "{{ stats.q_to_fix.count }}", h: Number("{{stats.q_to_fix.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'Закрыто', count: "{{ stats.q_finished.count }}", h: Number("{{stats.q_finished.count}}")/Number("{{stats.q_all.count}}")*100},
             ],
         },
         methods:{
             
         }
     });
-</script> -->
+</script>
 {% endblock %}

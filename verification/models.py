@@ -129,7 +129,7 @@ class ShortItem(models.Model):
         return self.id
 
     def __str__(self):
-        return str(f'(заявка) {self.role}')
+        return str(f'{self.role} - {self.item_id}')
 
     class Meta:
         verbose_name = 'Короткая заявка'
@@ -184,6 +184,8 @@ class VerificationItem(models.Model):
             caption = str(self.person)
         elif self.organization:
             caption = str(self.organization)
+        elif self.short_item:
+            caption = str(self.short_item)
         else:
             caption = 'No verification item..'
         return caption

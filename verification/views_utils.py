@@ -67,7 +67,7 @@ def vitem_creator(request, item, item_type):
             vitem.organization = item
         elif item_type == 'short_item':
             vitem.short_item = item
-            vitem.dias_status = 'В работе'
+            # vitem.dias_status = 'В работе'
             # vitem.case_officer = request.user.extendeduser
             vitem.author = request.user.extendeduser
         

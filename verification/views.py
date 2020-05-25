@@ -10,10 +10,10 @@ from . import models, forms, views_utils
 def index(request):
     context = views_utils.get_base_context(request.user)
     context['page_title'] = 'ДИАС'
-    # if request.user.extendeduser.user_role.role_lvl <= 2:
-    #     context['chat_messages'] = models.VitemChat.objects.exclude(author = request.user.extendeduser).order_by('-created')[:10]
-    # else:
-    #     context['chat_messages'] = models.VitemChat.objects.filter(Q(vitem__author = request.user.extendeduser) | Q(vitem__case_officer = request.user.extendeduser)).exclude(author = request.user.extendeduser).order_by('-created')[:5]
+    if request.user.extendeduser.user_role.role_lvl <= 2:
+        context['chat_messages'] = models.VitemChat.objects.exclude(author = request.user.extendeduser).order_by('-created')[:5]
+    else:
+        context['chat_messages'] = models.VitemChat.objects.filter(Q(vitem__author = request.user.extendeduser) | Q(vitem__case_officer = request.user.extendeduser)).exclude(author = request.user.extendeduser).order_by('-created')[:5]
 
     return render(request, 'verification/index.html', context)
 
@@ -28,6 +28,8 @@ def vitem_list(request, param=None):
                 result = result.filter(person__person__fio__icontains = request.POST['person'].upper())
             elif request.POST['organization']:
                 result = result.filter(organization__organization__full_name__icontains = request.POST['organization'].upper())
+            elif request.POST['short_item']:
+                result = result.filter(short_item__item_id__icontains = request.POST['short_item'].upper().strip())
             else:
                 result = {}
     elif param:
