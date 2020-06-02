@@ -55,7 +55,6 @@ def update_logger(model_name, pk, action, username, new_set=False):
                 new_dl.save()
 
 def vitem_creator(request, item, item_type):
-
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
         vitem = models.VerificationItem()
