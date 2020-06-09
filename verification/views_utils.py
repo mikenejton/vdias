@@ -55,12 +55,8 @@ def update_logger(model_name, pk, action, username, new_set=False):
                 new_dl = models.DataLogger(model_name=model_name, model_id=pk, action='Обновление записи', field_name=i[0], new_value=i[1], old_value=i[2], author=username)
                 new_dl.save()
 
-<<<<<<< HEAD
 def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = None):
 
-=======
-def vitem_creator(request, item, item_type):
->>>>>>> 50955d0fd54e211e5b94a89bacc5b08b1b4fd060
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
         vitem = models.VerificationItem()
