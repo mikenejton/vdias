@@ -23,8 +23,10 @@
                 {% block form %}
                     <!-- БЛОК ФОРМЫ ЭЛЕМЕНТА -->
                 {% endblock %}
+                {%if vitem.related_vitem%}<div class="input_wrapper grid_row">Связанная заявка: <a class="vitem_form_fields" href="{% url 'vitem' vitem_id=vitem.related_vitem.id %}">{{ vitem.related_vitem }}</a></div>{%endif%}
             </div>
             <!-- FORM -->
+            
             <div class="itemform_controls">
                 <div class="itemform_controls_row">
                     <div class="itemform_controls_row">Автор заявки: <i>{{vitem.author}}</i>&nbsp;|&nbsp;</div>

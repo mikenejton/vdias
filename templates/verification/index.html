@@ -27,7 +27,7 @@
     </div>
     <div class="component_wrapper" style="grid-area: chat; overflow-y: auto;">
         <div class="mb-card" style="width: 100%">
-            <div class="mb-card_header">Чат</div>
+            <div class="mb-card_header">Последние сообщения</div>
             <div class="mb-card_body">
                 <div class="chatbox_chat-window">
                     {% for msg in chat_messages %}
@@ -40,7 +40,7 @@
                             </a>
                         </div>
                     {% endfor %}
-                    <div style="padding: 0.2rem;"></div>
+                    <div style="padding: 0.5rem;"></div>
                 </div>
             </div>
         </div>
@@ -49,11 +49,16 @@
         <div class="mb-card" id="vueStats">
             <div class="mb-card_header">Распределение</div>
             <div class="mb-card_body" style="flex-direction: row; align-items: flex-end; margin: 10px; justify-content: space-around;">
-                <!-- <div v-for="block in hyst" v-bind:style="{height: 'calc(' + block.h + '% - 10px)'}" class="hyst-block" :title="block.count">{block.name}</div> -->
-                <div v-for="block in hyst" v-bind:style="{height: 'calc(' + block.h + '% - 10px)'}" class="hyst-block" :title="block.count">
+                <div v-for="block in activeHyst" v-bind:style="{height: 'calc(' + block.h + '% - 10px)'}" class="hyst-block">
                     {block.name}
                     <span class="hyst-block_hint">Количество: {block.count}</span>
                 </div>
+
+                <!-- <div v-for="block in hyst" class="hyst-block">
+                    <div v-bind:style="{height: 'calc(' + block.h + '% - 10px)'}" :title="block.count"></div>
+                    <div>{block.name}</div>
+                    <span class="hyst-block_hint">Количество: {block.count}</span>
+                </div> -->
             </div>
         </div>
     </div>
@@ -64,13 +69,20 @@
         delimiters: ['{', '}'],
         data: {
             hyst: [
-                {name: 'Всего заявок', count: "{{ stats.q_all.count }}", h: "{{stats.q_all.count}}"/"{{stats.q_all.count}}"*100},
-                {name: 'Новые', count: "{{ stats.q_new.count }}", h: Number("{{stats.q_new.count}}")/Number("{{stats.q_all.count}}")*100},
-                {name: 'Недозаполненные',count: "{{ stats.q_not_filled.count }}", h: Number("{{stats.q_not_filled.count}}")/Number("{{stats.q_all.count}}")*100},
-                {name: 'В работе', count: "{{ stats.q_at_work.count }}", h: Number("{{stats.q_at_work.count}}")/Number("{{stats.q_all.count}}")*100},
-                {name: 'На доработке',count: "{{ stats.q_to_fix.count }}", h: Number("{{stats.q_to_fix.count}}")/Number("{{stats.q_all.count}}")*100},
-                {name: 'Закрыто', count: "{{ stats.q_finished.count }}", h: Number("{{stats.q_finished.count}}")/Number("{{stats.q_all.count}}")*100},
+                {name: 'Всего заявок', count: "{{ stats.q_all.count }}", h: "{{stats.q_all.count}}"/"{{stats.q_all.count}}"*100, maxAccessLvl: 5},
+                {name: 'Новые', count: "{{ stats.q_new.count }}", h: Number("{{stats.q_new.count}}")/Number("{{stats.q_all.count}}")*100, maxAccessLvl: 3},
+                {name: 'Недозаполненные',count: "{{ stats.q_not_filled.count }}", h: Number("{{stats.q_not_filled.count}}")/Number("{{stats.q_all.count}}")*100, maxAccessLvl: 5},
+                {name: 'В работе', count: "{{ stats.q_at_work.count }}", h: Number("{{stats.q_at_work.count}}")/Number("{{stats.q_all.count}}")*100, maxAccessLvl: 5},
+                {name: 'На доработке',count: "{{ stats.q_to_fix.count }}", h: Number("{{stats.q_to_fix.count}}")/Number("{{stats.q_all.count}}")*100, maxAccessLvl: 5},
+                {name: 'Закрыто', count: "{{ stats.q_finished.count }}", h: Number("{{stats.q_finished.count}}")/Number("{{stats.q_all.count}}")*100, maxAccessLvl: 5},
             ],
+        },
+        computed:{
+            activeHyst: function(){
+                return this.hyst.filter(function(u){
+                    return u.maxAccessLvl >= Number('{{user.extendeduser.user_role.role_lvl}}')
+                })
+            }
         },
         methods:{
             

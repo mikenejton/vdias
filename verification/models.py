@@ -24,7 +24,16 @@ class ExtendedUser(models.Model):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 # -----------------------------------------------------------
+class Manager(models.Model):
+    fio = models.CharField('ФИО', max_length = 200)
+    subdivisoin = models.CharField('Принадлежность', max_length = 200)
 
+    def __str__(self):
+        return f'{self.fio} ({self.subdivisoin})'
+
+    class Meta:
+        verbose_name = 'Менеджер'
+        verbose_name_plural = 'Менеджеры'
 # Базовые модели
 class Organization(models.Model):
     org_form = models.CharField('Орг форма', max_length = 100)
@@ -77,6 +86,7 @@ class Person(models.Model):
     pob = models.CharField('Место рождения', max_length=300, blank=True, null=True)
     adr_reg = models.CharField('Адрес регистрации', max_length=500, blank=True, null=True)
     adr_fact = models.CharField('Адрес проживания', max_length=500, blank=True, null=True)
+    city = models.CharField('Город', max_length=500, blank=True, null=True)
     pass_sn = models.CharField('Серия-номер паспорта', max_length=11, blank=True, null=True, unique=True)
     pass_date = models.DateField('Дата выдачи', blank=True, null=True)
     pass_org = models.CharField('Кем выдан', max_length=500, blank=True, null=True)
@@ -103,6 +113,7 @@ class PersonWithRole(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     role = models.CharField('Роль', max_length=300)
     verificated = models.BooleanField('Верифицирован', default=False)
+    related_manager = models.ForeignKey(Manager, on_delete=models.PROTECT, blank=True, null=True)
     related_organization = models.ForeignKey(OrganizationWithRole, on_delete=models.PROTECT, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
@@ -143,9 +154,10 @@ class VerificationItem(models.Model):
     dias_status = models.CharField('Статус проверки', max_length = 300)
     to_fix = models.BooleanField('На доработке', default=False)
     fixed = models.BooleanField('Доработано', default=False)
-    dias_comment = models.TextField('Комментарий ДИАС', blank=True, null=True)
+    dias_comment = models.TextField('Комментарий ДИАС', blank=True, null=True, default='')
     case_officer = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='CaseOfficer', blank=True, null=True, verbose_name='Исполнитель')
-    
+    related_vitem = models.ForeignKey('self', on_delete = models.CASCADE, related_name = "ShadowVitem", blank=True, null=True, verbose_name='Связанная заявка')
+    is_shadow = models.BooleanField('Ведомая заявка', default=False)
     fms_not_ok = models.CharField('ФМС', max_length = 300, blank=True, null=True, default='')
     rosfin = models.CharField('Росфинмониторинг', max_length = 300, blank=True, null=True, default='')
     docs_full = models.CharField('Полнота и качество документов', max_length = 300, blank=True, null=True, default='')

@@ -1,6 +1,7 @@
 
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.db.models import Q
 
 from . import models
 from . import forms
@@ -42,6 +43,9 @@ def owr_call(request, owr_id, create_title, update_title):
 
                     view_name = 'detailing-partner' if context['owr'].role == 'Партнер' else 'detailing-counterparty'
                     context['redirect'] = redirect(reverse(view_name, args=[context['owr'].id]))
+                else:
+                    context['twins'] = models.OrganizationWithRole.objects.filter(Q(organization__inn = context['form'].data['inn']) | Q(organization__ogrn = context['form'].data['ogrn']))
+
     else:
         context['err_txt'] = 'Запрашиваемая страница не существует или у Вас недостаточно прав на ее просмотр'
     
@@ -54,7 +58,7 @@ def owr_call(request, owr_id, create_title, update_title):
         return render(request, context['template'], context)
 
 def get_owr_context(request, owr_id, create_title, update_title):
-    context = {'doc_types': ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Иной документ']}
+    context = {'doc_types': ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
     context['unfilled'] = []
     if owr_id:
         vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
@@ -91,6 +95,15 @@ def get_owr_context(request, owr_id, create_title, update_title):
         context['form'] = forms.OrganizationForm()
     return context
 
+
+def pwr_call_SS(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
+    context = views_utils.get_base_context(request.user)
+    if views_utils.accessing(pwr_id, 'PersonWithRole', request.user):
+        context = {**context, **get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type)}
+    else:
+        context['err_txt'] = 'Запрашиваемая страница не существует или у Вас недостаточно прав на ее просмотр'
+    pass
+
 def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context = views_utils.get_base_context(request.user)
     if views_utils.accessing(pwr_id, 'PersonWithRole', request.user):
@@ -110,6 +123,9 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     if 'related_organization' in request.POST:
                         context['pwr'].related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
                         context['pwr'].save()
+                    if 'related_manager' in request.POST:
+                        context['pwr'].related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
+                        context['pwr'].save()
 
                     updated_person = context['form'].save(commit=False)
                     views_utils.update_logger('Person', updated_person.id, 'Обновление записи', request.user.extendeduser, updated_person)
@@ -128,6 +144,9 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     context['pwr'] = pwr
                     if pwr_role not in ['Ген. директор', 'Бенефициар']:
                         views_utils.vitem_creator(request, pwr, 'person')
+                    elif pwr_role == 'Ген. директор':
+                        vitem = models.VerificationItem.objects.filter(organization = pwr.related_organization)
+                        views_utils.vitem_creator(request, pwr, 'person', True, vitem)
 
                 if pwr_role == 'Агент':
                     view_name = 'detailing-agent'
@@ -142,7 +161,40 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                 if owr_id:
                     target_id.insert(0, owr_id)
                 context['redirect'] = redirect(reverse(view_name, args=[x for x in target_id]))
-        
+            elif not pwr_id:
+                person_fio = ' '.join([context['form'].data['last_name'], context['form'].data['first_name'], context['form'].data['patronymic']])
+                context['twins'] = models.PersonWithRole.objects.filter(Q(person__pass_sn = context['form'].data['pass_sn']) | Q(person__sneals = context['form'].data['sneals']) | Q(person__phone_number = context['form'].data['phone_number']) | Q(person__fio = person_fio, person__dob = context['form'].data['dob'] ))
+                if len(context['twins']):
+                    is_new_twin = True
+                    for twin in context['twins']:
+                        if twin.role == pwr_role:
+                            is_new_twin = False
+                    if is_new_twin:
+                        pwr = models.PersonWithRole()
+                        pwr.person = context['twins'][0].person
+                        pwr.role = pwr_role
+                        pwr.author = request.user.extendeduser
+                        if 'related_organization' in request.POST:
+                            pwr.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+                        pwr.save()
+                        context['pwr'] = pwr
+                        vitem = models.VerificationItem.objects.filter(person__person = pwr.person, is_shadow = False)
+                        if pwr_role != 'Бенефициар':
+                            views_utils.vitem_creator(request, pwr, 'person', len(vitem), vitem)
+                        if pwr_role == 'Агент':
+                            view_name = 'detailing-agent'
+                        elif pwr_role == 'Штатный сотрудник':
+                            view_name = 'detailing-staff'
+                        elif pwr_role == 'Ген. директор':
+                            view_name = 'detailing-ceo'
+                        else:
+                            view_name = 'detailing-ben'
+                        
+                        target_id = [context['pwr'].id]
+                        if owr_id:
+                            target_id.insert(0, owr_id)
+                        context['redirect'] = redirect(reverse(view_name, args=[x for x in target_id]))
+
         if pwr_role in ['Ген. директор', 'Бенефициар'] and pwr_id:
             pwr_is_filled = views_utils.required_scan_checking(context['pwr'].person.id, 'person', pwr_role)
             if pwr_is_filled:
@@ -158,33 +210,46 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
 
     if 'err_txt' in context:
         context['template'] = 'verification/404.html'
-
     if 'redirect' in context:
         return context['redirect']
     else:
         return render(request, context['template'], context)
 
+def save_object(request, form, context):
+    pass
+
+def twin_catcher():
+    pass
+
 def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
-    context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Видеоприветствие', 'Иной документ']}
+    context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Видеоприветствие', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
     context['unfilled'] = []
     person_organizations = models.OrganizationWithRole.objects.all()
-    if request.user.extendeduser.user_role == 'HR':
+    if request.user.extendeduser.user_role == 'HR' or pwr_role == 'Штатные сотрудники':
         person_organizations = person_organizations.filter(organization_type = 'Штатные сотрудники')
     elif request.user.extendeduser.user_role.role_lvl > 3:
-        person_organizations = person_organizations.filter(organization_type = rel_pwr_type)    
+        person_organizations = person_organizations.filter(organization_type = rel_pwr_type)
     context['org_list'] = person_organizations
-
+    if request.user.extendeduser.user_role.role_lvl <= 2:
+        context['mngr_list'] = models.Manager.objects.all()
+    else:
+        context['mngr_list'] = models.Manager.objects.filter(id = 0)
+    
     if owr_id:
         context['owr'] = models.OrganizationWithRole.objects.get(id=owr_id)
     if pwr_id:
         pwr = models.PersonWithRole.objects.filter(id = pwr_id)
         if len(pwr):
             context['pwr'] = pwr[0]
+            context['roles'] = models.PersonWithRole.objects.filter(person__id = pwr[0].person.id)
             context['vitem_ready'] = views_utils.is_vitem_ready('person', context['pwr'])
             context['pwr_role'] = pwr_role
-            if context['pwr'].related_organization:
-                context['org_list'] = person_organizations.filter(id = context['pwr'].related_organization.id)
-            
+            if request.user.extendeduser.user_role.role_lvl > 2:
+                if context['pwr'].related_organization:
+                    context['org_list'] = person_organizations.filter(id = context['pwr'].related_organization.id)
+                if context['pwr'].related_manager:
+                    context['mngr_list'] = context['mngr_list'].filter(id = context['pwr'].related_manager.id)
+
             context['form'] = forms.PersonForm(instance=context['pwr'].person)
             context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)
             if request.user.extendeduser.user_role.role_lvl <= 3:

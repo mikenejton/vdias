@@ -8,9 +8,11 @@
     <div class="input_wrapper grid_row">Адрес регистрации: <p class="vitem_form_fields">{{ pwr.person.adr_reg }}</p></div>
     <div class="input_wrapper grid_row">Адрес проживания: <p class="vitem_form_fields">{{ pwr.person.adr_fact }}</p></div>
     <div class="input_wrapper grid_row">Телефон: <p class="vitem_form_fields">{{ pwr.person.phone_number }}</p></div>
-    <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ pwr.person.email }}</p></div>        
+    <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ pwr.person.email }}</p></div>
+    <div class="input_wrapper grid_row">Менеджер: <p class="vitem_form_fields">{{ pwr.related_manager }}</p></div>
 </div>
 <div class="card_body-form_column">
+    <div class="input_wrapper grid_row">Город: <p class="vitem_form_fields">{{ pwr.city }}</p></div>
     <div class="input_wrapper grid_row">Паспорт: <p class="vitem_form_fields">{{ pwr.person.pass_sn }}</p></div>
     <div class="input_wrapper grid_row">Дата выдачи: <p class="vitem_form_fields">{{ pwr.person.pass_date }}</p></div>
     <div class="input_wrapper grid_row">Кем выдан: <p class="vitem_form_fields">{{ pwr.person.pass_org }}</p></div>

@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="row-conteiner">
-    <div class="mb-card card_centered" id="vuePart">
+<div class="row-conteiner" id="vuePart">
+    <div class="mb-card card_centered">
         <div class="mb-card_header">
             {%if object_title %}
             <div class="input_wrapper">
-                {{ object_title }}
+                {{ object_title }} ({{ page_title }})
             </div>
             {% else %}
             <div class="input_wrapper">
                 {{ page_title }}
             </div>
             {%endif%}
+            
             <div style="flex:1;"></div>
             {% if owr_href %}
             <div class="input_wrapper"><a class="link white-text" href="{% url owr_href.view obj_id=owr_href.view_id %}">Вернуться к организации</a></div>
@@ -29,20 +30,48 @@
         
     </div>
     <div class="mb-card_hint-box">
-        <div>
-        {% if owr_href or vitem_ready and vitem_id %}
-            Заявка заполнена
-        {% else %}
-        Осталось заполнить:
+        <div class="hint-box_unfilled">
+            {% if owr_href or vitem_ready and vitem_id %}
+                Заявка заполнена
+            {% else %}
+                Осталось заполнить:    
+                {% for field in unfilled %}
+                <p class="error_txt form_input"><i>{{ field }}</i></p>
+                {% endfor %}
+            {% endif %}
         </div>
-        {% for field in unfilled %}
-        <p class="error_txt"><i>{{ field }}</i></p>
-        {% endfor %}
-        {% endif %}
+        <div class="hint-box_roles">
+            Роли:
+            {% for role in roles %}
+            <p class="form_input"><i>{{role.role}} ({{role.related_organization}})</i></p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="modal_form" v-if="showModal">
+        <div class="mb-card" style="background: #fff">
+            <div class="mb-card_header">Найден дубликат:</div>
+            <div class="mb-card_body">
+                <div class="txt_wrapper">
+                    <p>Найден совпадающий объект: {{twins.first}}</p>
+                    {% for field in form %}
+                        {% if field.errors %}
+                        {%for error in field.errors%}
+                            <p class="error_txt"><i>{{ error }}</i></p>
+                        {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    <p>Повторная верификация не нужна.</p>
+                </div>
+            </div>
+            <div class="mb-card_footer">
+                <div class="mb-card_footer_left"></div>
+                
+                <div class="input_wrapper"><button type="button" class="btn_std" v-on:click="fixNewObject()">Ок, все понятно</button></div>
+            </div>
+        </div>
     </div>
 </div>
 <script src="{% static 'js/v-mask.min.js' %}"></script>
-
 
 <script>
     Vue.use(VueMask.VueMaskPlugin);
@@ -61,6 +90,8 @@
             scanFile: '',
             scanType: 'Тип документа',
             isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or dias_status == None or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
+            showModal: {% if twins %}true{% else %}false{% endif %},
+            btnName: '',
         },
         methods:{
             changePersTab:function(tabName){
@@ -68,7 +99,13 @@
             },
             changeOrgTab:function(tabName){
                 this.currentOrgTab = tabName;
-            }
+            },
+            fixNewObject:function(){
+                this.showModal = false;
+            },
+            sendFound:function(){
+                this.showModal = false;
+            },
         }
     });
 </script>

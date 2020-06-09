@@ -29,6 +29,7 @@ def get_base_context(user):
         stats.q_not_filled = stats.q_mine.filter(is_filled = False, dias_status = 'Новая')
     elif user.extendeduser.user_role.role_lvl >= 4:
         stats.q_all = stats.q_all.filter(author__user_role = user.extendeduser.user_role)
+        stats.q_new = stats.q_all.filter(dias_status = 'Новая')
         stats.q_mine = stats.q_all.filter(author__user = user)
         stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
@@ -54,7 +55,7 @@ def update_logger(model_name, pk, action, username, new_set=False):
                 new_dl = models.DataLogger(model_name=model_name, model_id=pk, action='Обновление записи', field_name=i[0], new_value=i[1], old_value=i[2], author=username)
                 new_dl.save()
 
-def vitem_creator(request, item, item_type):
+def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = None):
 
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
@@ -71,7 +72,14 @@ def vitem_creator(request, item, item_type):
             # vitem.case_officer = request.user.extendeduser
             vitem.author = request.user.extendeduser
         
-        vitem.save()
+        vitem.is_shadow = is_shadow
+        new_vitem = vitem.save()
+        if not related_vitem is None and len(related_vitem):
+            vitem.related_vitem = related_vitem[0]
+            related_vitem[0].related_vitem = vitem
+            related_vitem[0].save()
+            new_vitem = vitem.save()
+        return new_vitem
 
 # Проверка сканов объекта, смена статус Заявки
 def required_scan_checking(model_id, model_name, model_role=None):
@@ -79,7 +87,7 @@ def required_scan_checking(model_id, model_name, model_role=None):
     if model_name == 'person':
         if model_role in ['Ген. директор', 'Бенефициар']:
             return True
-        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Видеоприветстсвие']
+        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Видеоприветствие']
     elif model_name == 'organization':
         if model_role == 'Контрагент':
             return True
