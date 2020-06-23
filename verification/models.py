@@ -53,7 +53,7 @@ class Organization(models.Model):
         return self.id
     
     def __str__(self):
-        return '{}, ИНН {}'.format(self.full_name, self.inn)
+        return f'{self.full_name}, ИНН {self.inn}'
     class Meta:
         verbose_name = 'Организация'
         verbose_name_plural = 'Организации'
@@ -70,7 +70,7 @@ class OrganizationWithRole(models.Model):
         return self.id
 
     def __str__(self):
-        return '{}, {}'.format(self.organization.full_name, self.role)
+        return f'{self.organization.full_name}, {self.role}'
 
     class Meta:
         verbose_name = 'Роль организации'
@@ -228,7 +228,7 @@ def doc_path_maker(instance, filename):
     else:
         obj_name = Organization.objects.get(id = instance.model_id).full_name
     f_name = ''.join([instance.doc_type.replace(' ', '_'), '_', timestamp, '.', filename.split('.')[-1]])
-    return '{}/{}_{}/{}'.format(instance.model_name, obj_name, instance.model_id, f_name)
+    return f'{instance.model_name}/{obj_name}_{instance.model_id}/{f_name}'
 
 class DocStorage(models.Model):
     model_id = models.CharField('ID модели', max_length = 50)
@@ -249,7 +249,7 @@ class DocStorage(models.Model):
         return self.id
     
     def __str__(self):
-        return '{} {} {}'.format(self.model_id, self.model_name, self.doc_type)
+        return f'{self.model_id} {self.model_name} {self.doc_type}'
     class Meta:
         verbose_name = 'Скан'
         verbose_name_plural = 'Сканы'
@@ -287,6 +287,6 @@ class DataLogger(models.Model):
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.SET_NULL, null=True, verbose_name='Пользователь')
     def __str__(self):
-        return '{} {}'.format(self.model_name, self.created)
+        return f'{self.model_name} {self.created}'
 
 # -----------------------------------------------------------

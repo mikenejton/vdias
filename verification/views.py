@@ -26,9 +26,9 @@ def vitem_list(request, param=None):
     if request.POST:
         if not param:
             if request.POST['person']:
-                result = result.filter(person__person__fio__icontains = request.POST['person'].upper())
+                result = result.filter(Q(person__person__fio__icontains = request.POST['person'].upper()) | Q(person__person__sneals = request.POST['person']))
             elif request.POST['organization']:
-                result = result.filter(organization__organization__full_name__icontains = request.POST['organization'].upper())
+                result = result.filter(Q(organization__organization__full_name__icontains = request.POST['organization'].upper()) | Q(organization__organization__inn = request.POST['organization']) | Q(organization__organization__ogrn = request.POST['organization']) )
             elif request.POST['short_item']:
                 result = result.filter(short_item__item_id__icontains = request.POST['short_item'].upper().strip())
             else:

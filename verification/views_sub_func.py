@@ -222,7 +222,7 @@ def twin_catcher():
     pass
 
 def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
-    context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Видеоприветствие', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
+    context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'СНИЛС', 'Видеоприветствие', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
     context['unfilled'] = []
     person_organizations = models.OrganizationWithRole.objects.all()
     if request.user.extendeduser.user_role == 'HR' or pwr_role == 'Штатные сотрудники':

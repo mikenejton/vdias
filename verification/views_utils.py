@@ -48,7 +48,7 @@ def update_logger(model_name, pk, action, username, new_set=False):
         changes = []
         old_set = getattr(models, model_name).objects.get(id=pk)
         for i in new_set._meta.fields:
-            if getattr(old_set, i.name) != getattr(new_set, i.name):
+            if getattr(old_set, i.name) != getattr(new_set, i.name) and i.name != 'fio':
                 changes.append([i.name, getattr(new_set, i.name), getattr(old_set, i.name)])
         if len(changes) > 0:
             for i in changes:
@@ -87,7 +87,7 @@ def required_scan_checking(model_id, model_name, model_role=None):
     if model_name == 'person':
         if model_role in ['Ген. директор', 'Бенефициар']:
             return True
-        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Анкета', 'Видеоприветствие']
+        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Видеоприветствие']
     elif model_name == 'organization':
         if model_role == 'Контрагент':
             return True
