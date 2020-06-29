@@ -23,18 +23,23 @@
                 {% block form %}
                     <!-- БЛОК ФОРМЫ ЭЛЕМЕНТА -->
                 {% endblock %}
-                {%if vitem.related_vitem%}<div class="input_wrapper grid_row">Связанная заявка: <a class="vitem_form_fields" href="{% url 'vitem' vitem_id=vitem.related_vitem.id %}">{{ vitem.related_vitem }}</a></div>{%endif%}
             </div>
             <!-- FORM -->
-            
+            <div class="itemform_controls">
+                {%if vitem.related_vitem%}
+                    <div>{% if vitem.is_shadow %} Основная {% else %} Ведомая {% endif %} заявка: <a class="vitem_form_fields link" href="{% url 'vitem' vitem_id=vitem.related_vitem.id %}">{{ vitem.related_vitem }}</a></div>
+                {%endif%}
+            </div>
             <div class="itemform_controls">
                 <div class="itemform_controls_row">
-                    <div class="itemform_controls_row">Автор заявки: <i>{{vitem.author}}</i>&nbsp;|&nbsp;</div>
+                    <div class="itemform_controls_row">Автор заявки: <i>{{vitem.author}}</i></div>
                     {%if form.case_officer.value %}
+                    &nbsp;|&nbsp;
                     <div class="itemform_controls_row">Исполнитель: <i>{{vitem.case_officer}}</i></div>
                     <input type="hidden" name="case_officer" value="{{form.case_officer.value}}">
                     {% else %}
-                        {% if user.extendeduser.user_role.role_lvl <= 3 %}
+                        {% if user.extendeduser.user_role.role_lvl <= 3 and not vitem.is_shadow %}
+                        &nbsp;|&nbsp;
                         <div class="itemform_controls_row"><button type="submit" class="btn_suc" name="btn_take_to">Принять в работу</button></div>
                         {% endif %}
                     {% endif %}
@@ -47,7 +52,7 @@
                     <div class="input_wrapper" >
                         <p>Статус:
                             <input type="hidden" name="dias_status" :value="diasStatus">
-                            <select name="dias_status_select" {% if user.id != form.case_officer.value or form.dias_status.value == 'На доработке' %} disabled {% endif %} required v-model="diasStatus">
+                            <select name="dias_status_select" {% if user.id != form.case_officer.value or form.dias_status.value == 'На доработке' or vitem.is_shadow %} disabled {% endif %} required v-model="diasStatus">
                                 <option value="Новая" {% if form.dias_status.value == 'Новая' %} selected {% endif %} hidden>Новая</option>
                                 <option value="В работе" {% if form.dias_status.value == 'В работе'  %} selected {% endif %}>В работе</option>
                                 <option value="Возможен особый контроль" {% if form.dias_status.value == 'Возможен особый контроль'  %} selected {% endif %}>Возможен особый контроль</option>
@@ -59,7 +64,7 @@
                             </select>
                         </p>
                     </div>
-                    {% if form.case_officer.value == user.id or vitem.author.id == user.id %}
+                    {% if vitem.is_shadow == False and form.case_officer.value == user.id or vitem.author.id == user.id %}
                     <div class="itemform_controls_row">
                         <div class="itemform_controls_row_btns">
                             {% if form.dias_status.value in 'В работе, На доработке, Доработано' %}

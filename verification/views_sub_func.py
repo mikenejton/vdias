@@ -74,8 +74,9 @@ def get_owr_context(request, owr_id, create_title, update_title):
                 form = forms.OrganizationForm(instance=organization)
                 context['page_title'] = update_title
                 context['owr'] = owr[0]
+                context['roles'] = models.OrganizationWithRole.objects.filter(organization__id = owr[0].organization.id)
                 context['vitem_ready'] = views_utils.is_vitem_ready('organization', context['owr'])
-                context['object_title'] = f"{context['owr'].organization.full_name} ({context['page_title']})"
+                context['object_title'] = context['owr'].organization.full_name
                 context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role = 'Ген. директор')
                 context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role = 'Бенефициар')
                 context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)

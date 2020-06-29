@@ -87,7 +87,17 @@ def create_item(request):
                     owr.organization_type = request.POST['item_type']
                 owr.author = request.user.extendeduser
                 owr.save()
-                is_shadow = len(vitem)
+                org_admins = models.PersonWithRole.objects.filter(related_organization = found[0], role__in = ['Бенефициар', 'Ген. директор'])
+                if len(org_admins):
+                    for org_admin in org_admins:
+                        new_admin = models.PersonWithRole()
+                        new_admin.person = org_admin.person
+                        new_admin.related_organization = owr
+                        new_admin.role = org_admin.role
+                        new_admin.verificated = org_admin.verificated
+                        new_admin.author = request.user.extendeduser
+                        new_admin.save()
+                is_shadow = len(vitem) > 0
                 vitem_id = views_utils.vitem_creator(request, owr, 'organization', is_shadow, vitem)
                 return redirect(reverse('vitem', args=[vitem_id]))
             elif request.POST['item_type'] == 'Партнер':

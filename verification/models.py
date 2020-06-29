@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils.timezone import get_current_timezone
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -114,7 +115,7 @@ class PersonWithRole(models.Model):
     role = models.CharField('Роль', max_length=300)
     verificated = models.BooleanField('Верифицирован', default=False)
     related_manager = models.ForeignKey(Manager, on_delete=models.PROTECT, blank=True, null=True)
-    related_organization = models.ForeignKey(OrganizationWithRole, on_delete=models.PROTECT, blank=True, null=True)
+    related_organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
@@ -156,7 +157,7 @@ class VerificationItem(models.Model):
     fixed = models.BooleanField('Доработано', default=False)
     dias_comment = models.TextField('Комментарий ДИАС', blank=True, null=True, default='')
     case_officer = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, related_name='CaseOfficer', blank=True, null=True, verbose_name='Исполнитель')
-    related_vitem = models.ForeignKey('self', on_delete = models.CASCADE, related_name = "ShadowVitem", blank=True, null=True, verbose_name='Связанная заявка')
+    related_vitem = models.ForeignKey('self', on_delete = models.SET_NULL, related_name = "ShadowVitem", blank=True, null=True, verbose_name='Связанная заявка')
     is_shadow = models.BooleanField('Ведомая заявка', default=False)
     fms_not_ok = models.CharField('ФМС', max_length = 300, blank=True, null=True, default='')
     rosfin = models.CharField('Росфинмониторинг', max_length = 300, blank=True, null=True, default='')
@@ -186,7 +187,12 @@ class VerificationItem(models.Model):
             self.to_fix = False
         if self.to_fix:
             self.fixed = False
-        self.edited = datetime.now()
+        self.edited = datetime.now(tz=get_current_timezone())
+        if not self.is_shadow and self.related_vitem:
+            for i in ['dias_status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status']:
+                if getattr(self.related_vitem, i) != getattr(self, i):
+                    setattr(self.related_vitem, i, getattr(self, i))
+                self.related_vitem.save()
         super().save(*args, **kwargs)
         return self.id
     

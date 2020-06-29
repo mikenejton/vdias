@@ -78,6 +78,7 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
             vitem.related_vitem = related_vitem[0]
             related_vitem[0].related_vitem = vitem
             related_vitem[0].save()
+            vitem.is_filled = related_vitem[0].is_filled
             new_vitem = vitem.save()
         return new_vitem
 
