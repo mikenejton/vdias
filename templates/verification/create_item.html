@@ -1,33 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="modal_form">
-    <div class="mb-card" style="background: #fff">
-    <form action="create-item" method="POST">
-    {% csrf_token %}
-    <div class="mb-card_header">Выберите тип верификации</div>
-    <div class="mb-card_body">
-        <input type="hidden" name="create_stage" value="{{create_stage}}">
-        <select name="item_type" v-model='itemType'>
-        {% if user.extendeduser.user_role.role_lvl < 3 %}
-            <option>Короткая заявка</option>
-        {%endif%}
-        {% if user.extendeduser.user_role.role_name != "HR" %}
-            <option>Партнер</option>
-            <option>Агент</option>
-        {% endif %}
-        {% if user.extendeduser.user_role.role_name == "HR" or user.extendeduser.user_role.role_name == "Админ" %}
-            <option>Штатный сотрудник</option>
-        {% endif %}
-            <option>Контрагент</option>
-        </select>
+
+    <div class="mb-card card_centered" style="background: #fff">
+        <form action="create-item" method="POST">
+        {% csrf_token %}
+        <div class="mb-card_header">Выберите тип верификации</div>
+        <div class="mb-card_body">
+            <input type="hidden" name="create_stage" value="{{create_stage}}">
+            <select name="item_type" v-model='itemType'>
+            {% if user.extendeduser.user_role.role_lvl < 3 %}
+                <option>Короткая заявка</option>
+            {%endif%}
+            {% if user.extendeduser.user_role.role_name != "HR" %}
+                <option>Партнер</option>
+                <option>Агент</option>
+            {% endif %}
+            {% if user.extendeduser.user_role.role_name == "HR" or user.extendeduser.user_role.role_name == "Админ" %}
+                <option>Штатный сотрудник</option>
+            {% endif %}
+                <option>Контрагент</option>
+            </select>
+        </div>
+        <div class="mb-card_footer">
+            <div class="mb-card_footer_left"></div>
+            <button type="submit" class="btn_prim">Далее</button>
+        </div>
+        </form>
     </div>
-    <div class="mb-card_footer">
-        <!-- <div class="mb-card_footer_left"></div> -->
-        <button type="submit" class="btn_std" name="btn_back">Назад</button>
-        <button type="submit" class="btn_prim">Далее</button>
-        
-    </div>
-    </form>
-</div>
-</div>
+
 {% endblock %}

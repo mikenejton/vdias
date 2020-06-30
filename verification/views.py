@@ -52,10 +52,6 @@ def create_item(request):
         context['page_title'] = 'Создание заявки'
         context['create_stage'] = 'type_choice'
         template = 'verification/create_item.html'
-    elif 'btn_back' in request.POST:
-        q = request.META.get('HTTP_REFERER', '/')
-        return redirect('index')
-
     elif request.POST['create_stage'] == 'type_choice':
         if request.POST['item_type'] == 'Короткая заявка':
             return redirect('create-short-item')
