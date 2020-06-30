@@ -7,10 +7,10 @@
 <table>
     <thead>
         <tr>
-            <th>#</th>
             <th>ID заявки</th>
             <th>Объект</th>
             <th>Роль</th>
+            <th>Ведомая</th>
             <th>Заявка заполнена</th>
             <th>Статус</th>
             <th>Исполнитель</th>
@@ -20,8 +20,7 @@
         </tr>
     </thead>
     {% for item in result %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
+        {% if item.is_shadow %}<tr class="table_shadow-row">{% else %}<tr>{%endif%}
             <!-- <td>{% firstof item.person.person item.organization.organization%}</a></td> -->
             <td align="left">{{ item.id }}</td>
             <td align="left"><a class="link" href="{% url 'vitem' vitem_id=item.id %}">
@@ -40,6 +39,7 @@
             <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">Короткая заявка</a></td>
             {% endif %} -->
             <td align="left">{% firstof item.organization.role item.person.role item.short_item.role %}</td>
+            <td>{{ item.is_shadow|yesno:"Да,Нет" }}</td>
             <td>{{ item.is_filled|yesno:"Да,Нет" }}</td>
             <td>{{ item.dias_status }}</td>
             <td align="left">{{ item.case_officer.user.last_name }} {{ item.case_officer.user.first_name }}</td>

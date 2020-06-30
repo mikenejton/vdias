@@ -255,7 +255,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
             context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)
             if request.user.extendeduser.user_role.role_lvl <= 3:
                 context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = True)
-            if pwr_role in ['Агент', 'Штатный сотрудник']:
+            if pwr_role in ['Агент', 'Штатный сотрудник', 'Ген. директор', 'Бенефициар']:
                 vitem = models.VerificationItem.objects.filter(person__id = pwr_id)[0]
                 if not context['vitem_ready']:
                     context['unfilled'].append('Загрузите все необходимые сканы')

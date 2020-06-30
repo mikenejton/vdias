@@ -74,6 +74,7 @@ input:focus, select:focus, textarea:focus{
     flex: 1;
 }
 .input_wrapper{margin: 0.3rem 0.2rem;display: flex;flex-direction: column;}
+.flex_row{flex-direction: row;}
 .img-adaptive{height: 100%;}
 header{
     grid-area: header;
@@ -272,6 +273,11 @@ th, td{
 
 td.deleted{
     color: #d63200;
+}
+.table_shadow-row>td, .table_shadow-row>td>a{
+    color: #a8a8a8;
+    font-style: italic;
+    font-size: 0.78rem;
 }
 /*  */
 

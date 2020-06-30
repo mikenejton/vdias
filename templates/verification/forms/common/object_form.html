@@ -15,30 +15,34 @@
             {%endif%}
             
             <div style="flex:1;"></div>
-            {% if owr_href %}
-            <div class="input_wrapper"><a class="link white-text" href="{% url owr_href.view obj_id=owr_href.view_id %}">Вернуться к организации</a></div>
-            {% elif vitem_ready and vitem_id %}
-            <div class="input_wrapper"><a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Перейти к заявке</a></div>
-            {%else%}
-            <div class="input_wrapper">Заявка не заполнена</div>
-            {%endif%}
+            <div class="input_wrapper flex_row">
+                {% if vitem_id %}
+                <a class="link white-text" href="{% url 'vitem' vitem_id=vitem_id %}">Перейти к заявке</a>
+                {% elif not owr_href %}
+                Заявка не заполнена
+                {%endif%}
+            </div>
         </div>
         <div class="multitab-form">
             {% block object_form %}
             {% endblock %}
         </div>
-        
     </div>
     <div class="mb-card_hint-box">
         <div class="hint-box_unfilled">
+            {% if owr_href %}
+                <div class="input_wrapper"><a class="link" href="{% url owr_href.view obj_id=owr_href.view_id %}">Перейти к организации</a></div>
+            {% endif %}
+            <div class="input_wrapper">
             {% if owr_href or vitem_ready and vitem_id %}
-                Заявка заполнена
+                <i>Заявка заполнена</i>
             {% else %}
-                Осталось заполнить:    
+                Осталось заполнить:
                 {% for field in unfilled %}
                 <p class="error_txt form_input"><i>{{ field }}</i></p>
                 {% endfor %}
             {% endif %}
+            </div>
         </div>
         <div class="hint-box_roles">
             Роли:
