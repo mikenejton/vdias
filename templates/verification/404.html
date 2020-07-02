@@ -1,13 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p class="error_txt"><a href="{% url 'index' %}" class="link">На главную</a></p>
-<p class="error_txt">
-    {% if err_txt %}
-        {{ err_txt }}
-    {% else %}
-        Запрашиваемая страница не найдена
-    {% endif %}
-</p>
-    
+<div class="mb-card card_centered">
+    <div class="mb-card_header">Что-то не так...</div>
+    <div class="mb-card_body">
+    <p class="error_txt">
+        {% if err_txt %}
+            {{ err_txt }}
+        {% else %}
+            Запрашиваемая страница не найдена
+        {% endif %}
+    </p>
+    </div>
+    <div class="mb-card_footer">
+        <div></div>
+        <a href="{% url 'index' %}" class="link">На главную</a>
+    </div>
+</div>
 {% endblock %}

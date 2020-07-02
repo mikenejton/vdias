@@ -23,6 +23,7 @@ def vitem_list(request, param=None):
     context = views_utils.get_base_context(request.user)
     context['page_title'] = 'Список заявок'
     result = context['stats'].q_all
+    template = 'verification/forms/vitem_search_result.html'
     if request.POST:
         if not param:
             if request.POST['person']:
@@ -41,9 +42,11 @@ def vitem_list(request, param=None):
             result = result.filter(author__user_role = request.user.extendeduser.user_role)
         elif request.user.extendeduser.user_role.role_lvl == 3:
             result = result.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент'))
-    
-    context['result'] = result    
-    return render(request, 'verification/forms/vitem_search_result.html', context)
+    if len(result) == 0:
+        context['err_txt'] = 'Результаты не найдены'
+        template = 'verification/404.html'
+    context['result'] = result
+    return render(request, template, context)
 
 @login_required
 def create_item(request):

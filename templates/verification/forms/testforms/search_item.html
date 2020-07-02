@@ -5,7 +5,7 @@
 <div class="mb-card card_centered" style="background: #fff" id="search-form">
     <form action="search-item" method="POST">
     {% csrf_token %}
-    <div class="mb-card_header">Введите данные для поиска</div> owr_id {{owr_id}} item_type {{item_type}}
+    <div class="mb-card_header">Введите данные для поиска</div> owr_id {{owr_id}}
     <div class="mb-card_body">
         <input type="hidden" name="item_type" v-model='itemType'>
         <div v-if="['agent', 'staff', 'ceo', 'ben'].includes(itemType)" style="display: flex; flex-direction: column;">
