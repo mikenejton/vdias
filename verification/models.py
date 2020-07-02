@@ -3,6 +3,42 @@ from django.utils.timezone import get_current_timezone
 from django.db import models
 from django.contrib.auth.models import User
 
+# Directories
+class Division(models.Model):
+    division = models.CharField('Подразделение', max_length = 200)
+    division_name = models.CharField('Имя подразделения', max_length = 200)
+    
+    def __str__(self):
+        return self.division_name
+
+    class Meta:
+        verbose_name = 'Подразделение'
+        verbose_name_plural = 'Подразделения'
+
+class Manager(models.Model):
+    fio = models.CharField('ФИО', max_length = 200)
+    division = models.ForeignKey(Division, on_delete=models.PROTECT, verbose_name = 'Подразделение', blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.fio} ({self.division})'
+
+    class Meta:
+        verbose_name = 'Менеджер'
+        verbose_name_plural = 'Менеджеры'
+
+
+class ObjectRole(models.Model):
+    role = models.CharField('Роль', max_length = 200)
+    role_name = models.CharField('Имя роли', max_length = 200)
+    
+    def __str__(self):
+        return self.role_name
+
+    class Meta:
+        verbose_name = 'Роль объекта'
+        verbose_name_plural = 'Роли объектов'
+# -----------------------------------------------------------
+
 # User's extends
 class UserRole(models.Model):
     role_lvl = models.IntegerField('Уровень роли ')
@@ -25,16 +61,8 @@ class ExtendedUser(models.Model):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 # -----------------------------------------------------------
-class Manager(models.Model):
-    fio = models.CharField('ФИО', max_length = 200)
-    subdivisoin = models.CharField('Принадлежность', max_length = 200)
 
-    def __str__(self):
-        return f'{self.fio} ({self.subdivisoin})'
 
-    class Meta:
-        verbose_name = 'Менеджер'
-        verbose_name_plural = 'Менеджеры'
 # Базовые модели
 class Organization(models.Model):
     org_form = models.CharField('Орг форма', max_length = 100)
@@ -61,8 +89,8 @@ class Organization(models.Model):
 
 class OrganizationWithRole(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    role = models.CharField('Роль', max_length=300)
-    organization_type = models.CharField('Тип', max_length=300, blank=True, null=True)
+    role = models.ForeignKey(ObjectRole, on_delete=models.PROTECT, verbose_name = 'Роль')
+    division = models.ForeignKey(Division, on_delete=models.PROTECT, verbose_name = 'Подразделение', blank=True, null=True)
     verificated = models.BooleanField('Верифицировано', default=False)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
@@ -112,9 +140,10 @@ class Person(models.Model):
 
 class PersonWithRole(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    role = models.CharField('Роль', max_length=300)
+    role = models.ForeignKey(ObjectRole, on_delete=models.PROTECT, verbose_name = 'Роль')
     verificated = models.BooleanField('Верифицирован', default=False)
     related_manager = models.ForeignKey(Manager, on_delete=models.PROTECT, blank=True, null=True)
+    division = models.ForeignKey(Division, on_delete=models.PROTECT, verbose_name = 'Подразделение', blank=True, null=True)
     related_organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')

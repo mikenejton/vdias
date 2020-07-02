@@ -22,26 +22,31 @@ def owr_call(request, owr_id, create_title, update_title):
                 if context['form'].is_valid():
                     if owr_id:
                         updated_organization = context['form'].save(commit=False)
+                        if 'division' in request.POST:
+                            context['owr'].division = models.Division.objects.get(id = request.POST['division'])
+                            context['owr'].save()
                         views_utils.update_logger('Organization', updated_organization.id, 'Обновление записи', request.user.extendeduser, updated_organization)
                         updated_organization = context['form'].save()
+
                     else:
                         new_org = context['form'].save()
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
                         owr = models.OrganizationWithRole()
                         owr.organization = new_org
-                        owr.role = update_title
+                        owr.role = models.ObjectRole.objects.get(role_name = update_title)
                         if update_title == 'Партнер':
                             owr.organization_type = request.user.extendeduser.user_role.role_name
                         else:
                             owr.organization_type = update_title
                         owr.author = request.user.extendeduser
+                        owr.division = models.Division.objects.get(id = request.POST['division'])
                         owr.save()
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
                         context['owr'] = owr
 
                         views_utils.vitem_creator(request, owr, 'organization')
 
-                    view_name = 'detailing-partner' if context['owr'].role == 'Партнер' else 'detailing-counterparty'
+                    view_name = 'detailing-partner' if context['owr'].role.role_name == 'Партнер' else 'detailing-counterparty'
                     context['redirect'] = redirect(reverse(view_name, args=[context['owr'].id]))
                 else:
                     context['twins'] = models.OrganizationWithRole.objects.filter(Q(organization__inn = context['form'].data['inn']) | Q(organization__ogrn = context['form'].data['ogrn']))
@@ -60,6 +65,7 @@ def owr_call(request, owr_id, create_title, update_title):
 def get_owr_context(request, owr_id, create_title, update_title):
     context = {'doc_types': ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
     context['unfilled'] = []
+    context['divisions'] = models.Division.objects.all()[:2]
     if owr_id:
         vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
         if len(vitem) > 0 and owr_id is not None:
@@ -69,7 +75,7 @@ def get_owr_context(request, owr_id, create_title, update_title):
 
         owr = models.OrganizationWithRole.objects.filter(id = owr_id)
         if len(owr) > 0 :
-            if owr[0].role == update_title:
+            if owr[0].role.role_name == update_title:
                 organization = owr[0].organization
                 form = forms.OrganizationForm(instance=organization)
                 context['page_title'] = update_title
@@ -77,8 +83,8 @@ def get_owr_context(request, owr_id, create_title, update_title):
                 context['roles'] = models.OrganizationWithRole.objects.filter(organization__id = owr[0].organization.id)
                 context['vitem_ready'] = views_utils.is_vitem_ready('organization', context['owr'])
                 context['object_title'] = context['owr'].organization.full_name
-                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role = 'Ген. директор')
-                context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role = 'Бенефициар')
+                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__organization__id = owr[0].id, role__role_name = 'Ген. директор')
+                context['bens'] = models.PersonWithRole.objects.filter(related_organization__organization__id = owr[0].id, role__role_name = 'Бенефициар')
                 context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
                 if request.user.extendeduser.user_role.role_lvl <= 3:
                     context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
@@ -255,12 +261,14 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
             context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)
             if request.user.extendeduser.user_role.role_lvl <= 3:
                 context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = True)
+            vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
             if pwr_role in ['Агент', 'Штатный сотрудник', 'Ген. директор', 'Бенефициар']:
-                vitem = models.VerificationItem.objects.filter(person__id = pwr_id)[0]
+                person_vitem = models.VerificationItem.objects.filter(person__id = pwr_id)
+                if len(person_vitem):
+                    vitem = person_vitem[0]
                 if not context['vitem_ready']:
                     context['unfilled'].append('Загрузите все необходимые сканы')
-            else:
-                vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
+
             context['vitem_id'] = vitem.id
             context['vitem_is_filled'] = vitem.is_filled
             context['dias_status'] = vitem.dias_status

@@ -74,9 +74,9 @@ def vitem_form(request, vitem_id=None):
                         context['owr'] = vitem.organization
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.organization.id, model_name = 'Organization')
                         form_template = 'verification/forms/objects/vitem_organization_form.html'
-                        context['edit_link'] = ['detailing-partner' if vitem.organization.role == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
-                        context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, role = 'Бенефициар')
-                        context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].id, role = 'Ген. директор')
+                        context['edit_link'] = ['detailing-partner' if vitem.organization.role.role_name == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
+                        context['bens'] = models.PersonWithRole.objects.filter(related_organization__organization__id = context['owr'].organization.id, role__role_name = 'Бенефициар')
+                        context['ceo'] = models.PersonWithRole.objects.filter(related_organization__organization__id = context['owr'].organization.id, role__role_name = 'Ген. директор')
                     elif vitem.short_item:
                         context['short_item'] = vitem.short_item
                         scan_list = models.DocStorage.objects.filter(model_name = 'ShortItem')

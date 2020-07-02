@@ -2,17 +2,40 @@
     <div class="multitab-form_buttons">
         <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='Person'}" @click="changePersTab('Person')">Физ.лицо</a>
         <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='personScan'}" @click="changePersTab('personScan')">Сканы</a>
+        <div class="hint-box_unfilled">
+            {% if owr_href %}
+                <div class="input_wrapper"><a class="link" href="{% url owr_href.view obj_id=owr_href.view_id %}">Перейти к организации</a></div>
+            {% endif %}
+            <div class="input_wrapper">
+            {% if owr_href or vitem_ready and vitem_id %}
+                <i>Заявка заполнена</i>
+            {% else %}
+                Осталось заполнить:
+                {% for field in unfilled %}
+                <p class="error_txt form_input"><i>{{ field }}</i></p>
+                {% endfor %}
+            {% endif %}
+            </div>
+        </div>
+        <div class="hint-box_roles">
+            <p class="form_input">Роли:</p>
+            {% for role in roles %}
+            <p class="form_input"><i>{{role.role}} ({{role.related_organization}})</i></p>
+            {% endfor %}
+        </div>
     </div>
     <form action="" method="post" id="personForm" v-show="currentPersTab=='Person'">
         {% csrf_token %}
         <div class="mb-card_body card_body-form">
             <div class="card_body-form_column">
+                {% if page_title not in 'Ген. директор, Бенефициар' %}
                 <select name="related_manager" class="form_input">
                     <option value="0" selected disabled>Менеджер</option>
                     {% for mngr in mngr_list %}
                         <option value="{{ mngr.id}}" {% if pwr.related_manager.id == mngr.id  %} selected {% endif %}>{{mngr}}</option>
                     {% endfor %}
                 </select>
+                {% endif %}
                 <input class="form_input" type="text" name="last_name" placeholder="Фамилия" required value={%if form.last_name.value %}{{form.last_name.value}}{%endif%}>
                 <input class="form_input" type="text" name="first_name" placeholder="Имя" required value={%if form.first_name.value %}{{form.first_name.value}}{%endif%}>
                 <input class="form_input" type="text" name="patronymic" placeholder="Отчество" value={%if form.patronymic.value %}{{form.patronymic.value}}{%endif%}>

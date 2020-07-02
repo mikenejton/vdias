@@ -6,14 +6,41 @@
         @click="changeOrgTab('Staff')">Состав</a>
     <a class="sidebar-menu_item" v-bind:class="{ active: currentOrgTab=='orgScan'}"
         @click="changeOrgTab('orgScan')">Сканы</a>
+    
+    <div class="hint-box_unfilled">
+        {% if owr_href %}
+            <div class="input_wrapper"><a class="link" href="{% url owr_href.view obj_id=owr_href.view_id %}">Перейти к организации</a></div>
+        {% endif %}
+        <div class="input_wrapper">
+        {% if owr_href or vitem_ready and vitem_id %}
+            <i>Заявка заполнена</i>
+        {% else %}
+            Осталось заполнить:
+            {% for field in unfilled %}
+            <p class="error_txt form_input"><i>{{ field }}</i></p>
+            {% endfor %}
+        {% endif %}
+        </div>
+    </div>
+    <div class="hint-box_roles">
+        <p class="form_input">Роли:</p>
+        {% for role in roles %}
+        <p class="form_input"><i>{{role.role}} ({{role.related_organization}})</i></p>
+        {% endfor %}
+    </div>
 </div>
 <form action="" method="post" id="organizationForm" v-show="currentOrgTab=='Organization'">
     {% csrf_token %}
     <input type="hidden" name="currentOrgTab" v-model="currentOrgTab">
     <div class="mb-card_body card_body-form">
-
         <div class="card_body-form_column">
-            <select name="org_form" required>
+            <select name="division" required class="form_input">
+                <option value="0" disabled selected>Подразделение</option>
+                {% for division in divisions %}
+                    <option value="{{ division.id}}" {% if owr.division.id == division.id  %} selected {% endif %}>{{division}}</option>
+                {% endfor %}
+            </select>
+            <select name="org_form" required class="form_input">
                 <option value="Организационная форма" disabled selected>Организационная форма</option>
                 <option value="ИП" {%if form.org_form.value == 'ИП'%}selected{%endif%}>ИП</option>
                 <option value="АО" {%if form.org_form.value == 'АО'%}selected{%endif%}>АО</option>
@@ -85,16 +112,16 @@
         </div>
         {% else %}
         <div class="itemform_controls_row_item" v-show="isEditable">
-            <a href="{% url 'create-ceo' owr_id=owr.id %}" class="link color_link">Создать</a>
+            <a href="{% url 'item-searcher' item_type='ceo' owr_id=owr.id %}" class="link color_link">Создать</a>
         </div>
         {%endif%}
     </div>
     <div class="itemform_controls_row spb" style="padding: 0.3rem 0;">
         <div class="itemform_controls_row_item">
             <legend>Бенефициары:</legend>
-        </div>
+        </div>&nbsp;
         <div class="itemform_controls_row_item">
-            <a href="{% url 'create-ben' owr_id=owr.id %}" class="link color_link" v-show="isEditable">Добавить</a>
+            <a href="{% url 'item-searcher' item_type='ben' owr_id=owr.id %}" class="link color_link" v-show="isEditable">Добавить</a>
         </div>
     </div>
     {% for ben in bens %}

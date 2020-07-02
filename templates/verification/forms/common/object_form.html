@@ -28,29 +28,6 @@
             {% endblock %}
         </div>
     </div>
-    <div class="mb-card_hint-box">
-        <div class="hint-box_unfilled">
-            {% if owr_href %}
-                <div class="input_wrapper"><a class="link" href="{% url owr_href.view obj_id=owr_href.view_id %}">Перейти к организации</a></div>
-            {% endif %}
-            <div class="input_wrapper">
-            {% if owr_href or vitem_ready and vitem_id %}
-                <i>Заявка заполнена</i>
-            {% else %}
-                Осталось заполнить:
-                {% for field in unfilled %}
-                <p class="error_txt form_input"><i>{{ field }}</i></p>
-                {% endfor %}
-            {% endif %}
-            </div>
-        </div>
-        <div class="hint-box_roles">
-            Роли:
-            {% for role in roles %}
-            <p class="form_input"><i>{{role.role}} ({{role.related_organization}})</i></p>
-            {% endfor %}
-        </div>
-    </div>
     <div class="modal_form" v-if="showModal">
         <div class="mb-card" style="background: #fff">
             <div class="mb-card_header">Найден дубликат:</div>

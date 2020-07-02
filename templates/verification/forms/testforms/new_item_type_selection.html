@@ -2,23 +2,23 @@
 {% block content %}
 
     <div class="mb-card card_centered" style="background: #fff">
-        <form action="create-item" method="POST">
+        <form action="item-selection" method="POST">
         {% csrf_token %}
-        <div class="mb-card_header">Выберите тип верификации</div>
+        <div class="mb-card_header">Выберите тип объекта верификации</div>
         <div class="mb-card_body">
             <input type="hidden" name="create_stage" value="{{create_stage}}">
             <select name="item_type" v-model='itemType'>
             {% if user.extendeduser.user_role.role_lvl < 3 %}
-                <option>Короткая заявка</option>
+                <option value="short-item">Короткая заявка</option>
             {%endif%}
             {% if user.extendeduser.user_role.role_name != "HR" %}
-                <option>Партнер</option>
-                <option>Агент</option>
+                <option value="partner">Партнер</option>
+                <option value="agent">Агент</option>
             {% endif %}
             {% if user.extendeduser.user_role.role_name == "HR" or user.extendeduser.user_role.role_name == "admin" %}
-                <option>Штатный сотрудник</option>
+                <option value="staff">Штатный сотрудник</option>
             {% endif %}
-                <option>Контрагент</option>
+                <option value="counterparty">Контрагент</option>
             </select>
         </div>
         <div class="mb-card_footer">
