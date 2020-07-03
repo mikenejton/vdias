@@ -193,4 +193,5 @@ def object_wr_creater(request, model_name, obj, role):
     setattr(new_obj, model_name.lower(), obj)
     new_obj.author = request.user.extendeduser
     new_obj.role = role
-    return new_obj.save()
+    new_obj.save()
+    return new_obj
