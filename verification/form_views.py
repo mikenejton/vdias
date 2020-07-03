@@ -68,15 +68,19 @@ def vitem_form(request, vitem_id=None):
                         context['pwr'] = vitem.person
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.person.person.id, model_name = 'Person')
                         form_template = 'verification/forms/objects/vitem_agent_form.html'
-                        context['edit_link'] = [{'Агент': 'detailing-agent', 'Штатный сотрудник': 'detailing-staff', 'Ген. директор': 'detailing-ceo', 'Бенефициар': 'detailing-ben'}[vitem.person.role], vitem.person.id]
+                        context['edit_link'] = [{'Агент': 'detailing-agent', 'Штатный сотрудник': 'detailing-staff', 'Ген. директор': 'detailing-ceo', 'Бенефициар': 'detailing-ben'}[vitem.person.role.role_name], vitem.person.id]
+                        if context['pwr'].role.role_name in ['Ген. директор', 'Бенефициар']:
+                            owr_qs = models.OrganizationWithRole.objects.filter(organization__id = context['pwr'].related_organization.id)
+                            if len(owr_qs):
+                                context['owr_id'] = owr_qs[0].id
 
                     elif vitem.organization:
                         context['owr'] = vitem.organization
                         scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.organization.id, model_name = 'Organization')
                         form_template = 'verification/forms/objects/vitem_organization_form.html'
                         context['edit_link'] = ['detailing-partner' if vitem.organization.role.role_name == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
-                        context['bens'] = models.PersonWithRole.objects.filter(related_organization__organization__id = context['owr'].organization.id, role__role_name = 'Бенефициар')
-                        context['ceo'] = models.PersonWithRole.objects.filter(related_organization__organization__id = context['owr'].organization.id, role__role_name = 'Ген. директор')
+                        context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].organization.id, role__role_name = 'Бенефициар')
+                        context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].organization.id, role__role_name = 'Ген. директор')
                     elif vitem.short_item:
                         context['short_item'] = vitem.short_item
                         scan_list = models.DocStorage.objects.filter(model_name = 'ShortItem')

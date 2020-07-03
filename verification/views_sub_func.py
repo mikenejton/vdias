@@ -83,8 +83,8 @@ def get_owr_context(request, owr_id, create_title, update_title):
                 context['roles'] = models.OrganizationWithRole.objects.filter(organization__id = owr[0].organization.id)
                 context['vitem_ready'] = views_utils.is_vitem_ready('organization', context['owr'])
                 context['object_title'] = context['owr'].organization.full_name
-                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__organization__id = owr[0].id, role__role_name = 'Ген. директор')
-                context['bens'] = models.PersonWithRole.objects.filter(related_organization__organization__id = owr[0].id, role__role_name = 'Бенефициар')
+                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role__role_name = 'Ген. директор')
+                context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role__role_name = 'Бенефициар')
                 context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
                 if request.user.extendeduser.user_role.role_lvl <= 3:
                     context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
@@ -136,14 +136,14 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     pwr.role = models.ObjectRole.objects.get(role_name=pwr_role)
                     pwr.author = request.user.extendeduser
                     if 'related_organization' in request.POST:
-                        pwr.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+                        pwr.related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
                     pwr.save()
                     views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
                     context['pwr'] = pwr
                     if pwr_role not in ['Ген. директор', 'Бенефициар']:
                         views_utils.vitem_creator(request, pwr, 'person')
                     elif pwr_role == 'Ген. директор':
-                        vitem = models.VerificationItem.objects.filter(organization = pwr.related_organization)
+                        vitem = models.VerificationItem.objects.filter(organization__organization = pwr.related_organization)
                         views_utils.vitem_creator(request, pwr, 'person', True, vitem)
 
                 if pwr_role == 'Агент':
@@ -196,10 +196,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         if pwr_role in ['Ген. директор', 'Бенефициар'] and pwr_id:
             pwr_is_filled = views_utils.required_scan_checking(context['pwr'].person.id, 'person', pwr_role)
             if pwr_is_filled:
-                if context['owr'].role == 'Партнер':
-                    context['owr_href'] = {'view':'detailing-partner', 'view_id': owr_id}
-                elif context['owr'].role == 'Контрагент':
-                    context['owr_href'] = {'view':'detailing-counterparty', 'view_id': owr_id}
+                context['owr_href'] = {'view':'detailing-partner' if context['pwr'].role.role_name == 'Партнер' else 'detailing-counterparty', 'view_id': owr_id}
             else:
                 context['unfilled'].append('Загрузите все необходимые сканы')
         context['template'] = 'verification/forms/common/person_form_common.html'
@@ -246,17 +243,18 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
             context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)
             if request.user.extendeduser.user_role.role_lvl <= 3:
                 context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = True)
-            vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
+            if owr_id:
+                vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
             if pwr_role in ['Агент', 'Штатный сотрудник', 'Ген. директор', 'Бенефициар']:
                 person_vitem = models.VerificationItem.objects.filter(person__id = pwr_id)
                 if len(person_vitem):
                     vitem = person_vitem[0]
                 if not context['vitem_ready']:
                     context['unfilled'].append('Загрузите все необходимые сканы')
-
-            context['vitem_id'] = vitem.id
-            context['vitem_is_filled'] = vitem.is_filled
-            context['dias_status'] = vitem.dias_status
+            if vitem:
+                context['vitem_id'] = vitem.id
+                context['vitem_is_filled'] = vitem.is_filled
+                context['dias_status'] = vitem.dias_status
             context['page_title'] = pwr_role
             context['object_title'] = context['pwr'].person.fio
             

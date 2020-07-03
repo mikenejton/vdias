@@ -48,7 +48,7 @@ def vitem_list(request, param=None):
     context['result'] = result
     return render(request, template, context)
 
-@login_required
+@login_required #will be deprecated
 def create_item(request):
     context = views_utils.get_base_context(request.user)
     if request.method == 'GET':
@@ -178,7 +178,6 @@ def item_searcher(request, item_type = None, owr_id = 0):
         context['page_title'] = 'Поиск совпадений'
         context['item_type'] = item_type
         context['owr_id'] = owr_id if owr_id else 0
-        
         return render(request, template, context)
     
     elif request.method == 'POST':
@@ -188,17 +187,18 @@ def item_searcher(request, item_type = None, owr_id = 0):
 
             return redirect(reverse(f'create-{item_type}'))
 
-        if item_type in ['counterparty', 'partner']:
-            twins = views_utils.twin_detecter('organization', request.POST['inn'], item_type)
-        elif item_type in ['agent', 'staff', 'ceo', 'ben']:
-            twins = views_utils.twin_detecter('person', request.POST['sneals'], item_type)
-        
+        twins = views_utils.twin_detecter('Organization' if item_type in ['counterparty', 'partner'] else 'Person', request.POST['inn' if item_type in ['counterparty', 'partner'] else 'sneals'], item_type)
         if not len(twins):
             if owr_id > 0:
                 return redirect(reverse(f'create-{item_type}', args=[owr_id]))
             return redirect(reverse(f'create-{item_type}'))
-        
-        return render(request, template, context)
+        elif twins[0] == 'new':
+            new_item_wr = views_utils.object_wr_creater(request, 'Organization' if item_type in ['counterparty', 'partner'] else 'Person', twins[1], models.ObjectRole.objects.get(role = item_type))
+            
+            return redirect(reverse(f'detailing-{item_type}', args=[new_item_wr, owr_id] if owr_id>0 else [new_item_wr]))
+        elif twins[0] == 'old':
+            vitem = models.VerificationItem.objects.filter(**{item_type: twins[1]})
+            return redirect(reverse('vitem', args=[vitem[0].id]))
 
 
 
