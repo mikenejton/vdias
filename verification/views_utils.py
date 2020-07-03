@@ -178,7 +178,7 @@ def send_mail(target_user, subject, body):
     msg.send()
 
 
-def twin_detecter(model_name, param, item_type, item_role_name):
+def twin_detecter(model_name, param, item_type, item_role_name, author):
     filter = ['person', 'sneals'] if model_name == 'Person' else ['organization', 'inn']
     item = getattr(models, model_name).objects.filter(**{filter[1]: param})
     if not len(item):
@@ -188,7 +188,8 @@ def twin_detecter(model_name, param, item_type, item_role_name):
         if len(item_roles):
             for item_role in item_roles:
                 if item_role.role.role_name == item_role_name:
-                    vitem = models.VerificationItem.objects.filter()
+                    return ['old', item_role]
+            
             
     
 def object_wr_creater(request, model_name, obj_id):
