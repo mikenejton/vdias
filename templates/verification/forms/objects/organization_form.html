@@ -6,7 +6,7 @@
         @click="changeOrgTab('Staff')">Состав</a>
     <a class="sidebar-menu_item" v-bind:class="{ active: currentOrgTab=='orgScan'}"
         @click="changeOrgTab('orgScan')">Сканы</a>
-    
+    <div class="top-border"></div>
     <div class="hint-box_unfilled">
         {% if owr_href %}
             <div class="input_wrapper"><a class="link" href="{% url owr_href.view obj_id=owr_href.view_id %}">Перейти к организации</a></div>

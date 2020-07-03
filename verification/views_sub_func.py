@@ -102,15 +102,6 @@ def get_owr_context(request, owr_id, create_title, update_title):
         context['form'] = forms.OrganizationForm()
     return context
 
-
-def pwr_call_SS(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
-    context = views_utils.get_base_context(request.user)
-    if views_utils.accessing(pwr_id, 'PersonWithRole', request.user):
-        context = {**context, **get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type)}
-    else:
-        context['err_txt'] = 'Запрашиваемая страница не существует или у Вас недостаточно прав на ее просмотр'
-    pass
-
 def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context = views_utils.get_base_context(request.user)
     if views_utils.accessing(pwr_id, 'PersonWithRole', request.user):
@@ -142,7 +133,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     views_utils.update_logger('Person', new_person.id, '', request.user.extendeduser)
                     pwr = models.PersonWithRole()
                     pwr.person = new_person
-                    pwr.role = pwr_role
+                    pwr.role = models.ObjectRole.objects.get(role_name=pwr_role)
                     pwr.author = request.user.extendeduser
                     if 'related_organization' in request.POST:
                         pwr.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
@@ -221,12 +212,6 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         return context['redirect']
     else:
         return render(request, context['template'], context)
-
-def save_object(request, form, context):
-    pass
-
-def twin_catcher():
-    pass
 
 def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'СНИЛС', 'Видеоприветствие', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}

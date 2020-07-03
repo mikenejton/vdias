@@ -3,24 +3,23 @@
 {% block content %}
 
 <div class="mb-card card_centered" style="background: #fff" id="search-form">
-    <form action="search-item" method="POST">
+    <form method="POST" ref="searchForm">
     {% csrf_token %}
-    <div class="mb-card_header">Введите данные для поиска</div> owr_id {{owr_id}}
+    <div class="mb-card_header">Введите данные для поиска</div>
     <div class="mb-card_body">
         <input type="hidden" name="item_type" v-model='itemType'>
         <div v-if="['agent', 'staff', 'ceo', 'ben'].includes(itemType)" style="display: flex; flex-direction: column;">
-            <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' pattern=".{14,}" title="Номер СНИЛС (14 символов)">
+            <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' pattern=".{14,}" title="Номер СНИЛС (14 символов)" :required="isRequired">
         </div>
         <div v-if="['partner', 'counterparty'].includes(itemType)" style="display: flex; flex-direction: column;">
             <input class="form_input" type="text" name="inn" placeholder="ИНН" v-model="inn" v-mask="'############'"
-                pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов" required>
-            <input class="form_input" type="text" name="ogrn" placeholder="ОГРН" v-model="ogrn"
-                v-mask="'###############'" pattern=".{0}|.{13,15}" title="ОГРН должен содержать от 13 до 15 символов">
+                pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов" :required="isRequired">
         </div>
     </div>
     <div class="mb-card_footer">
         <div class="mb-card_footer_left"></div>
-        <button type="submit" class="btn_prim">Найти</button>
+        <div class="input_wrapper"><button type="submit" class="link" name="cancel" v-on:click="cancelSearch()">Пропустить</button></div>
+        <div class="input_wrapper"><button type="submit" class="btn_prim" name="search">Найти</button></div>
     </div>
     </form>
 </div>
@@ -35,6 +34,13 @@
             sneals: '',
             inn: '',
             ogrn: '',
+            isRequired: true,
+        },
+        methods: {
+            cancelSearch: function(){
+                console.log("it's work!");
+                this.isRequired = false;
+            },
         },
     })
 </script>

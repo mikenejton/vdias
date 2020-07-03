@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.urls import reverse
 from djqscsv import render_to_csv_response
-from . import models, forms, views_utils
+from . import models, forms, views_utils, views_sub_func
 
 
                 
@@ -165,10 +165,10 @@ def new_item_type_selection(request):
         template = 'verification/forms/testforms/new_item_type_selection.html'
         return render(request, template, context)
     else:
-        return redirect(reverse('item-searcher', args=[request.POST['item_type']]))
+        return redirect(reverse('item-searcher', args=[request.POST['item_type'], 0]))
 
 @login_required
-def item_searcher(request, item_type = None, owr_id = None):
+def item_searcher(request, item_type = None, owr_id = 0):
     context = views_utils.get_base_context(request.user)
     if request.method == 'GET':
         if item_type == 'short-item':
@@ -182,6 +182,21 @@ def item_searcher(request, item_type = None, owr_id = None):
         return render(request, template, context)
     
     elif request.method == 'POST':
+        if 'cancel' in request.POST:
+            if owr_id > 0:
+                return redirect(reverse(f'create-{item_type}', args=[owr_id]))
+
+            return redirect(reverse(f'create-{item_type}'))
+
+        if item_type in ['counterparty', 'partner']:
+            twins = views_utils.twin_detecter('organization', request.POST['inn'], item_type)
+        elif item_type in ['agent', 'staff', 'ceo', 'ben']:
+            twins = views_utils.twin_detecter('person', request.POST['sneals'], item_type)
+        
+        if not len(twins):
+            if owr_id > 0:
+                return redirect(reverse(f'create-{item_type}', args=[owr_id]))
+            return redirect(reverse(f'create-{item_type}'))
         
         return render(request, template, context)
 

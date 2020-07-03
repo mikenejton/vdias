@@ -29,7 +29,7 @@
         {% if user.is_authenticated %}
             <ul class="sidebar-menu">
                 <li><a href="{% url 'index' %}" class="sidebar-menu_item {% if request.path == '/' %}active{% endif %}">Главная</a></li>
-                <li><a href="{% url 'create-item' %}" class="sidebar-menu_item {% if '/create-item' in request.path %}active{% endif %}">Создать заявку</a></li>
+                <li><a href="{% url 'item-selection' %}" class="sidebar-menu_item {% if '/item-selection' in request.path %}active{% endif %}">Создать заявку</a></li>
                 <li class="sidebar-menu_legend top-border"><b>Заявки</b></li>
                 <li><a href = "{% url 'vitem-list' param='q_all' %}" class="sidebar-menu_item {% if 'q_all' in request.path %}active{%endif%}">Всего заявок: {{stats.q_all.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_mine' %}" class="sidebar-menu_item {% if 'q_mine' in request.path %}active{%endif%}">Мои заявки: {{stats.q_mine.count}}</a></li>

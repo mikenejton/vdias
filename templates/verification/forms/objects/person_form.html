@@ -2,6 +2,7 @@
     <div class="multitab-form_buttons">
         <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='Person'}" @click="changePersTab('Person')">Физ.лицо</a>
         <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='personScan'}" @click="changePersTab('personScan')">Сканы</a>
+        <div class="top-border"></div>
         <div class="hint-box_unfilled">
             {% if owr_href %}
                 <div class="input_wrapper"><a class="link" href="{% url owr_href.view obj_id=owr_href.view_id %}">Перейти к организации</a></div>
@@ -28,7 +29,7 @@
         {% csrf_token %}
         <div class="mb-card_body card_body-form">
             <div class="card_body-form_column">
-                {% if page_title not in 'Ген. директор, Бенефициар' %}
+                {% if "Ген. директор" not in page_title and "Бенефициар" not in page_title %}
                 <select name="related_manager" class="form_input">
                     <option value="0" selected disabled>Менеджер</option>
                     {% for mngr in mngr_list %}

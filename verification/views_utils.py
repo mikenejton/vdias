@@ -56,7 +56,6 @@ def update_logger(model_name, pk, action, username, new_set=False):
                 new_dl.save()
 
 def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = None):
-
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
         vitem = models.VerificationItem()
@@ -118,13 +117,6 @@ def is_vitem_ready(item_type, item=None):
                 if len(ceo) == 0:
                     is_ready = False
 
-                # sub_items = models.PersonWithRole.objects.filter(related_organization = item, role__in = ['Ген. директор', 'Бенефициар'])
-                # if len(sub_items):
-                #     for sub_item in sub_items:
-                #         sub_item_rsc = required_scan_checking(sub_item.person.id, 'person', sub_item.role)
-                #         if not sub_item_rsc:
-                #             is_ready = False
-        
         vitem = models.VerificationItem.objects.filter(**{item_type: item})
         if len(vitem):
             if vitem[0].is_filled != is_ready:
@@ -184,3 +176,20 @@ def send_mail(target_user, subject, body):
     )
     msg.content_subtype = 'html'
     msg.send()
+
+
+def twin_detecter(model_name, param, item_type, item_role_name):
+    filter = ['person', 'sneals'] if model_name == 'Person' else ['organization', 'inn']
+    item = getattr(models, model_name).objects.filter(**{filter[1]: param})
+    if not len(item):
+        return False
+    else:
+        item_roles = getattr(models, f'{model_name}WithRole').objects.filter(**{ filter[0]: item })
+        if len(item_roles):
+            for item_role in item_roles:
+                if item_role.role.role_name == item_role_name:
+                    vitem = models.VerificationItem.objects.filter()
+            
+    
+def object_wr_creater(request, model_name, obj_id):
+    pass

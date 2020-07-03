@@ -27,7 +27,7 @@ a{
 a.color_link{
     color: #3b7fbb;
 }
-a.link:hover{
+a.link, button.link:hover{
     text-decoration: underline;
 }
 .link_bold{
