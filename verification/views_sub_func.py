@@ -196,7 +196,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                         context['redirect'] = redirect(reverse(view_name, args=[x for x in target_id]))
 
         if pwr_role in ['Ген. директор', 'Бенефициар'] and pwr_id:
-            pwr_is_filled = views_utils.required_scan_checking(context['pwr'].person.id, 'person', pwr_role)
+            pwr_is_filled = views_utils.required_scan_checking(context['pwr'].person.id, 'person', models.ObjectRole.objects.get(role_name = pwr_role))
             if pwr_is_filled:
                 context['owr_href'] = {'view':'detailing-partner' if context['owr'].role.role_name == 'Партнер' else 'detailing-counterparty', 'view_id': owr_id}
             else:
