@@ -119,7 +119,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                             context['pwr'].related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
                             context['pwr'].save()
                     if 'related_organization' in request.POST:
-                        context['pwr'].related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+                        context['pwr'].related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
                         context['pwr'].save()
                     if 'related_manager' in request.POST:
                         context['pwr'].related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
@@ -143,7 +143,9 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     if pwr_role not in ['Ген. директор', 'Бенефициар']:
                         views_utils.vitem_creator(request, pwr, 'person')
                     elif pwr_role == 'Ген. директор':
-                        vitem = models.VerificationItem.objects.filter(organization__organization = pwr.related_organization)
+                        vitem = models.VerificationItem.objects.filter(person__person = pwr.person)
+                        if not len(vitem):
+                            vitem = models.VerificationItem.objects.filter(organization__organization = pwr.related_organization)
                         views_utils.vitem_creator(request, pwr, 'person', True, vitem)
 
                 if pwr_role == 'Агент':
@@ -173,7 +175,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                         pwr.role = pwr_role
                         pwr.author = request.user.extendeduser
                         if 'related_organization' in request.POST:
-                            pwr.related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+                            pwr.related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
                         pwr.save()
                         context['pwr'] = pwr
                         vitem = models.VerificationItem.objects.filter(person__person = pwr.person, is_shadow = False)
@@ -196,7 +198,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         if pwr_role in ['Ген. директор', 'Бенефициар'] and pwr_id:
             pwr_is_filled = views_utils.required_scan_checking(context['pwr'].person.id, 'person', pwr_role)
             if pwr_is_filled:
-                context['owr_href'] = {'view':'detailing-partner' if context['pwr'].role.role_name == 'Партнер' else 'detailing-counterparty', 'view_id': owr_id}
+                context['owr_href'] = {'view':'detailing-partner' if context['owr'].role.role_name == 'Партнер' else 'detailing-counterparty', 'view_id': owr_id}
             else:
                 context['unfilled'].append('Загрузите все необходимые сканы')
         context['template'] = 'verification/forms/common/person_form_common.html'

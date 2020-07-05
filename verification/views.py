@@ -194,8 +194,9 @@ def item_searcher(request, item_type = None, owr_id = 0):
             return redirect(reverse(f'create-{item_type}'))
         elif twins[0] == 'new':
             new_item_wr = views_utils.object_wr_creater(request, twins[1]._meta.model.__name__.replace('WithRole', ''), twins[1], models.ObjectRole.objects.get(role = item_type))
-            is_shadow = len(models.VerificationItem.objects.filter(**{f"{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__id": twins[1].id}).exclude(**{f"{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__role__role_name__in": ['Ген. директор', 'Бенефициар']}))>0
-            views_utils.vitem_creator(request, new_item_wr, twins[1]._meta.model.__name__.replace('WithRole', '').lower(), is_shadow=is_shadow)
+            related_vitems_qs = models.VerificationItem.objects.filter(**{f"{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__id": twins[1].id})
+            is_shadow = len(related_vitems_qs.exclude(**{f"{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__role__role_name__in": ['Ген. директор', 'Бенефициар']})) > 0
+            views_utils.vitem_creator(request, new_item_wr, twins[1]._meta.model.__name__.replace('WithRole', '').lower(), is_shadow=is_shadow, related_vitem=related_vitems_qs)
             return redirect(reverse(f'detailing-{item_type}', args=[new_item_wr.id, owr_id] if owr_id>0 else [new_item_wr.id]))
         elif twins[0] == 'old':
             vitem = models.VerificationItem.objects.filter(**{twins[1]._meta.model.__name__.replace('WithRole', '').lower(): twins[1]})

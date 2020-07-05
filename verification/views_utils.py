@@ -74,6 +74,9 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
         vitem.is_shadow = is_shadow
         new_vitem = vitem.save()
         if not related_vitem is None and len(related_vitem):
+            for field in ['dias_status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status', 'soc', 'soc_status']:
+                setattr(vitem, field, getattr(related_vitem[0], field))
+            
             vitem.related_vitem = related_vitem[0]
             related_vitem[0].related_vitem = vitem
             related_vitem[0].save()
@@ -87,7 +90,9 @@ def required_scan_checking(model_id, model_name, model_role=None):
     if model_name == 'person':
         if model_role in ['Ген. директор', 'Бенефициар']:
             return True
-        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница', 'Видеоприветствие']
+        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница']
+        if model_role == 'Агент':
+            doc_types.append('Видеоприветствие')
     elif model_name == 'organization':
         if model_role == 'Контрагент':
             return True
