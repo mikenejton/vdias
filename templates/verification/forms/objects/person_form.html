@@ -13,7 +13,11 @@
             {% else %}
                 Осталось заполнить:
                 {% for field in unfilled %}
-                <p class="error_txt form_input"><i>{{ field }}</i></p>
+                    <p class="error_txt form_input"><i>{{ field }}</i></p>
+                {% endfor %}
+                <p>Необходимые сканы:</p>
+                {% for doc in req_doc_types %}
+                    <p class="error_txt form_input"><i>{{ doc }}</i></p>
                 {% endfor %}
             {% endif %}
             </div>

@@ -64,6 +64,7 @@ def owr_call(request, owr_id, create_title, update_title):
 
 def get_owr_context(request, owr_id, create_title, update_title):
     context = {'doc_types': ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
+    context['req_doc_types']=['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
     context['unfilled'] = []
     context['divisions'] = models.Division.objects.all()[:2]
     if owr_id:
@@ -214,6 +215,9 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
 
 def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'СНИЛС', 'Видеоприветствие', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
+    context['req_doc_types']=['Паспорт 1 страница', 'Паспорт 2 страница']
+    if pwr_role == 'Агент':
+        context['req_doc_types'].append('Видеоприветствие')
     context['unfilled'] = []
     person_organizations = models.OrganizationWithRole.objects.all()
     if request.user.extendeduser.user_role == 'HR' or pwr_role == 'Штатные сотрудники':
@@ -248,6 +252,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
             if owr_id:
                 vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
             if pwr_role in ['Агент', 'Штатный сотрудник', 'Ген. директор', 'Бенефициар']:
+                
                 person_vitem = models.VerificationItem.objects.filter(person__id = pwr_id)
                 if len(person_vitem):
                     vitem = person_vitem[0]

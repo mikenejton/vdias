@@ -76,7 +76,7 @@
                         <div class="itemform_controls_row_btns">
                             {% if form.dias_status.value in 'В работе, На доработке, Доработано' %}
                                 {% if vitem.to_fix == False %}
-                                    {% if user.extendeduser.user_role.role_lvl < 3 %}
+                                    {% if form.case_officer.value == user.id %}
                                     <button v-show="false" type="submit" name="btn_to_fix" id="btn_to_fix">На доработку</button>
                                     <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="needComment('btn_to_fix')">На доработку</button></div>
                                     {% endif %}

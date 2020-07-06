@@ -118,7 +118,7 @@ def is_vitem_ready(item_type, item=None):
             is_ready = required_scan_checking(getattr(item, item_type).id, item_type, item.role)
         if is_ready:
             if item_type == 'organization':
-                ceo = models.PersonWithRole.objects.filter(related_organization = item, role = models.ObjectRole.objects.get(role_name = 'Ген. директор'))
+                ceo = models.PersonWithRole.objects.filter(related_organization = item.organization, role = models.ObjectRole.objects.get(role_name = 'Ген. директор'))
                 if len(ceo) == 0:
                     is_ready = False
 
