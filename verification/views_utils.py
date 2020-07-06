@@ -85,18 +85,14 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
         return new_vitem
 
 # Проверка сканов объекта, смена статус Заявки
-def required_scan_checking(model_id, model_name, model_role=None):
+def required_scan_checking(model_id, model_name, model_role=None, doc_types=[]):
     scan_list = models.DocStorage.objects.filter(model_name = model_name.title(), model_id = model_id).exclude(to_del = True)
     if model_name == 'person':
         if model_role.role_name in ['Ген. директор', 'Бенефициар']:
             return True
-        doc_types = ['Паспорт 1 страница', 'Паспорт 2 страница']
-        if model_role.role_name == 'Агент':
-            doc_types.append('Видеоприветствие')
     elif model_name == 'organization':
         if model_role.role_name == 'Контрагент':
             return True
-        doc_types = ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
     elif model_name == 'short_item':
         return True
     
@@ -107,7 +103,7 @@ def required_scan_checking(model_id, model_name, model_role=None):
             is_filled = False
     return is_filled
 
-def is_vitem_ready(item_type, item=None):
+def is_vitem_ready(item_type, item=None, doc_types=[]):
     if item_type == 'person':
         if item.role.role_name in ['Ген. директор', 'Бенифициар']:
             return False
@@ -115,7 +111,7 @@ def is_vitem_ready(item_type, item=None):
         if item_type == 'short_item':
             is_ready = True
         else:
-            is_ready = required_scan_checking(getattr(item, item_type).id, item_type, item.role)
+            is_ready = required_scan_checking(getattr(item, item_type).id, item_type, item.role, doc_types)
         if is_ready:
             if item_type == 'organization':
                 ceo = models.PersonWithRole.objects.filter(related_organization = item.organization, role = models.ObjectRole.objects.get(role_name = 'Ген. директор'))

@@ -31,19 +31,20 @@ def owr_call(request, owr_id, create_title, update_title):
                     else:
                         new_org = context['form'].save()
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
-                        owr = models.OrganizationWithRole()
-                        owr.organization = new_org
-                        owr.role = models.ObjectRole.objects.get(role_name = update_title)
-                        if update_title == 'Партнер':
-                            owr.organization_type = request.user.extendeduser.user_role.role_name
-                        else:
-                            owr.organization_type = update_title
-                        owr.author = request.user.extendeduser
+                        owr = views_utils.object_wr_creater(request, 'organization', new_org, models.ObjectRole.objects.get(role_name = update_title))
+                        # owr = models.OrganizationWithRole()
+                        # owr.organization = new_org
+                        # owr.role = models.ObjectRole.objects.get(role_name = update_title)
+                        # if update_title == 'Партнер':
+                        #     owr.organization_type = request.user.extendeduser.user_role.role_name
+                        # else:
+                        #     owr.organization_type = update_title
+                        # owr.author = request.user.extendeduser
                         owr.division = models.Division.objects.get(id = request.POST['division'])
                         owr.save()
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
                         context['owr'] = owr
-
+                        
                         views_utils.vitem_creator(request, owr, 'organization')
 
                     view_name = 'detailing-partner' if context['owr'].role.role_name == 'Партнер' else 'detailing-counterparty'
@@ -82,10 +83,10 @@ def get_owr_context(request, owr_id, create_title, update_title):
                 context['page_title'] = update_title
                 context['owr'] = owr[0]
                 context['roles'] = models.OrganizationWithRole.objects.filter(organization__id = owr[0].organization.id)
-                context['vitem_ready'] = views_utils.is_vitem_ready('organization', context['owr'])
+                context['vitem_ready'] = views_utils.is_vitem_ready('organization', context['owr'], context['req_doc_types'])
                 context['object_title'] = context['owr'].organization.full_name
-                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role__role_name = 'Ген. директор')
-                context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].id, role__role_name = 'Бенефициар')
+                context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].organization.id, role__role_name = 'Ген. директор')
+                context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].organization.id, role__role_name = 'Бенефициар')
                 context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
                 if request.user.extendeduser.user_role.role_lvl <= 3:
                     context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
@@ -237,7 +238,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         if len(pwr):
             context['pwr'] = pwr[0]
             context['roles'] = models.PersonWithRole.objects.filter(person__id = pwr[0].person.id)
-            context['vitem_ready'] = views_utils.is_vitem_ready('person', context['pwr'])
+            context['vitem_ready'] = views_utils.is_vitem_ready('person', context['pwr'], context['req_doc_types'])
             context['pwr_role'] = pwr_role
             if request.user.extendeduser.user_role.role_lvl > 2:
                 if context['pwr'].related_organization:

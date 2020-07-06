@@ -29,8 +29,16 @@
     <div class="hint-box_roles">
         <p class="form_input">Роли:</p>
         {% for role in roles %}
-        <p class="form_input"><i>{{role.role}} ({{role.related_organization}})</i></p>
-        {% endfor %}
+            {% if role.role.role_name == page_title %}
+                <p class="form_input"><i>{{role.role}} ({{role.related_organization}})</i></p>
+            {% else %}
+                {% if role.role.role in 'ceo, ben' %}
+                <p class="form_input"><a href="{% url 'detailing-'|add:role.role.role owr_id=role.related_organization.id obj_id=role.id %}" class="link">{{role.role}} ({{role.related_organization}})</a></p>
+                {% else %}
+                <p class="form_input"><a href="{% url 'detailing-'|add:role.role.role obj_id=role.id %}" class="link">{{role.role}} ({{role.related_organization}})</a></p>
+                {% endif %}
+                {% endif %}
+            {% endfor %}
     </div>
 </div>
 <form action="" method="post" id="organizationForm" v-show="currentOrgTab=='Organization'">
@@ -111,7 +119,7 @@
         {%if ceo %}
         <div class="itemform_controls_row_item">
             {% for pwr in ceo %}
-            <a href="{% url 'detailing-ceo' owr_id=owr.id pwr_id=pwr.id %}" class="link">{{pwr.person.fio}}</a>
+            <a href="{% url 'detailing-ceo' owr_id=owr.id obj_id=pwr.id %}" class="link">{{pwr.person.fio}}</a>
             {%endfor%}
         </div>
         {% else %}
@@ -131,7 +139,7 @@
     {% for ben in bens %}
     <div class="itemform_controls_row spb" style="padding-top: 0.3rem;">
         <div></div>
-        <a href="{% url 'detailing-ben' owr_id=owr.id pwr_id=ben.id %}" class="link">{{ben.person.fio}}</a>
+        <a href="{% url 'detailing-ben' owr_id=owr.id obj_id=ben.id %}" class="link">{{ben.person.fio}}</a>
     </div>
     {%endfor%}
 

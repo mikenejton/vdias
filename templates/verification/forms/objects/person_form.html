@@ -25,7 +25,15 @@
         <div class="hint-box_roles">
             <p class="form_input">Роли:</p>
             {% for role in roles %}
+            {% if role.role.role_name == page_title %}
             <p class="form_input"><i>{{role.role}} ({{role.related_organization}})</i></p>
+            {% else %}
+                {% if role.role.role in 'ceo, ben' %}
+                <p class="form_input"><a href="{% url 'detailing-'|add:role.role.role owr_id=role.related_organization.id obj_id=role.id %}" class="link">{{role.role}} ({{role.related_organization}})</a></p>
+                {% else %}
+                <p class="form_input"><a href="{% url 'detailing-'|add:role.role.role obj_id=role.id %}" class="link">{{role.role}} ({{role.related_organization}})</a></p>
+                {% endif %}
+                {% endif %}
             {% endfor %}
         </div>
     </div>

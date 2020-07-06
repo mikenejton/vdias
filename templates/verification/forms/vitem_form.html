@@ -14,15 +14,15 @@
             </div>
             {%endif%}
             <div style="flex:1;"></div>
-            {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 3 %}
+            <!-- {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 3 %} -->
             <div class="input_wrapper">
                 {% if pwr.role.role_name in 'Ген. директор, Бенефициар' %}
-                <a class="link white-text" href="{% url edit_link.0 owr_id=owr_id pwr_id=edit_link.1%}">Открыть</a>
+                <a class="link white-text" href="{% url edit_link.0 owr_id=owr_id obj_id=edit_link.1%}">Открыть</a>
                 {% else %}
                 <a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1%}">Открыть</a>
                 {% endif %}
             </div>
-            {% endif %}
+            <!-- {% endif %} -->
         </div>
         <div class="gcard_vitem-view_itemform">
             <div class="mb-card_body card_body-form">
@@ -33,7 +33,7 @@
             <!-- FORM -->
             <div class="itemform_controls">
                 {%if vitem.related_vitem%}
-                    <div>{% if vitem.is_shadow %} Основная {% else %} Ведомая {% endif %} заявка: <a class="vitem_form_fields link" href="{% url 'vitem' vitem_id=vitem.related_vitem.id %}">{{ vitem.related_vitem }}</a></div>
+                <div> {{vitem.is_shadow|yesno:'Основная, Ведомая'}} заявка: <a class="vitem_form_fields link" href="{% url 'vitem' vitem_id=vitem.related_vitem.id %}">{{ vitem.related_vitem }}</a></div>
                 {%endif%}
             </div>
             <div class="itemform_controls">
@@ -58,7 +58,7 @@
                     <div class="input_wrapper" >
                         <p>Статус:
                             <input type="hidden" name="dias_status" :value="diasStatus">
-                            <select name="dias_status_select" {% if user.id != form.case_officer.value or form.dias_status.value == 'На доработке' or vitem.is_shadow %} disabled {% endif %} required v-model="diasStatus">
+                            <select name="dias_status_select" {% if user.extendeduser.user_role.role_lvl > 3 or vitem.is_shadow %} disabled {% endif %} required v-model="diasStatus">
                                 <option value="Новая" {% if form.dias_status.value == 'Новая' %} selected {% endif %} hidden>Новая</option>
                                 <option value="В работе" {% if form.dias_status.value == 'В работе'  %} selected {% endif %}>В работе</option>
                                 <option value="Возможен особый контроль" {% if form.dias_status.value == 'Возможен особый контроль'  %} selected {% endif %}>Возможен особый контроль</option>
@@ -71,26 +71,26 @@
                         </p>
                     </div>
                     {% if vitem.is_shadow == False %}
-                    {% if form.case_officer.value == user.id or vitem.author.id == user.id %}
+                    <!-- {% if form.case_officer.value == user.id or vitem.author.id == user.id %} -->
                     <div class="itemform_controls_row">
                         <div class="itemform_controls_row_btns">
                             {% if form.dias_status.value in 'В работе, На доработке, Доработано' %}
                                 {% if vitem.to_fix == False %}
-                                    {% if form.case_officer.value == user.id %}
+                                    <!-- {% if form.case_officer.value == user.id %} -->
                                     <button v-show="false" type="submit" name="btn_to_fix" id="btn_to_fix">На доработку</button>
                                     <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="needComment('btn_to_fix')">На доработку</button></div>
-                                    {% endif %}
+                                    <!-- {% endif %} -->
                                 {% elif vitem.is_filled %}
                                 <button v-show="false" type="submit" name="btn_fixed" id="btn_fixed">Доработано</button>
                                 <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="needComment('btn_fixed')">Доработано</button></div>
                                 {% endif %}
                             {% endif %}
-                            {% if form.case_officer.value == user.id %}
+                            <!-- {% if form.case_officer.value == user.id %} -->
                             <div class="input_wrapper"><button type="submit" class="btn_prim" name="btn_save">Сохранить</button></div>
-                            {% endif %}
+                            <!-- {% endif %} -->
                         </div>
                     </div>
-                    {% endif %}
+                    <!-- {% endif %} -->
                     {% endif %}
                 </div>
 

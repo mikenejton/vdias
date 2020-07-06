@@ -20,13 +20,13 @@ def staff_form(request, obj_id=None):
     return result
 
 @login_required
-def ceo_form(request, owr_id=None, pwr_id=None):
-    result = views_sub_func.pwr_call(request, pwr_id, owr_id, 'Ген. директор', None)
+def ceo_form(request, owr_id=None, obj_id=None):
+    result = views_sub_func.pwr_call(request, obj_id, owr_id, 'Ген. директор', None)
     return result
 
 @login_required
-def ben_form(request, owr_id=None, pwr_id=None):
-    result = views_sub_func.pwr_call(request, pwr_id, owr_id, 'Бенефициар', None)
+def ben_form(request, owr_id=None, obj_id=None):
+    result = views_sub_func.pwr_call(request, obj_id, owr_id, 'Бенефициар', None)
     return result
 # --------------------------------------------------------------
 
@@ -106,7 +106,7 @@ def vitem_form(request, vitem_id=None):
                             views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
                         
-                        return redirect('index')
+                        redirect(reverse('vitem', args=[vitem_id]))
                     elif 'btn_to_fix' in request.POST:
                         vitem.to_fix = True
                         vitem.fixed = False
