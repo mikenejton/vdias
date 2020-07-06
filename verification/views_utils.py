@@ -18,9 +18,9 @@ def get_base_context(user):
     stats.q_finished = stats.q_all.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
     stats.q_not_filled = stats.q_all.filter(is_filled = False, dias_status = 'Новая')
     if user.extendeduser.user_role.role_lvl == 2:
-        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')) #????????? штатник и контрагент?
+        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__role__role_name = 'Штатный сотрудник') | Q(organization__role__role_name = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
-        stats.q_all = stats.q_all.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент')).exclude(Q(is_filled = False) & Q(dias_status = 'Новая'))
+        stats.q_all = stats.q_all.exclude(Q(person__role__role_name = 'Штатный сотрудник') | Q(organization__role__role_name = 'Контрагент')).exclude(Q(is_filled = False) & Q(dias_status = 'Новая'))
         stats.q_new = stats.q_all.filter(dias_status = 'Новая')
         stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
@@ -109,7 +109,7 @@ def required_scan_checking(model_id, model_name, model_role=None):
 
 def is_vitem_ready(item_type, item=None):
     if item_type == 'person':
-        if item.role in ['Ген. директор', 'Бенифициар']:
+        if item.role.role_name in ['Ген. директор', 'Бенифициар']:
             return False
     if item:
         if item_type == 'short_item':
@@ -144,7 +144,7 @@ def accessing(item_id, model_name, user):
         if model_name == 'PersonWithRole':
             if not len(item):
                 return False
-            if item[0].role in ['Ген. директор', 'Бенефициар']:
+            if item[0].role.role_name in ['Ген. директор', 'Бенефициар']:
                 vitem = models.VerificationItem.objects.filter(organization__id = item[0].related_organization.id)
             else:
                 vitem = models.VerificationItem.objects.filter(person__id = item_id)
