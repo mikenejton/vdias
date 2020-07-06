@@ -103,7 +103,7 @@ def get_owr_context(request, owr_id, create_title, update_title):
         context['form'] = forms.OrganizationForm()
     return context
 
-def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
+def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
     context = views_utils.get_base_context(request.user)
     if views_utils.accessing(pwr_id, 'PersonWithRole', request.user):
         context = {**context, **get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type)}

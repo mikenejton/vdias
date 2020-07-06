@@ -5,7 +5,7 @@
         <div class="top-border"></div>
         <div class="hint-box_unfilled">
             {% if owr_href %}
-                <div class="input_wrapper"><a class="link" href="{% url owr_href.view obj_id=owr_href.view_id %}">Перейти к организации</a></div>
+                <div class="input_wrapper"><a class="link" href="{% url owr_href.view obj_id=owr_href.view_id%}">Перейти к организации</a></div>
             {% endif %}
             <div class="input_wrapper">
             {% if owr_href or vitem_ready and vitem_id %}
