@@ -70,10 +70,11 @@
                             </select>
                         </p>
                     </div>
-                    {% if vitem.is_shadow == False %}
+                    
                     <!-- {% if form.case_officer.value == user.id or vitem.author.id == user.id %} -->
                     <div class="itemform_controls_row">
                         <div class="itemform_controls_row_btns">
+                            {% if vitem.is_shadow == False %}
                             {% if form.dias_status.value in 'В работе, На доработке, Доработано' %}
                                 {% if vitem.to_fix == False %}
                                     <!-- {% if form.case_officer.value == user.id %} -->
@@ -85,13 +86,13 @@
                                 <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="needComment('btn_fixed')">Доработано</button></div>
                                 {% endif %}
                             {% endif %}
+                            {% endif %}
                             <!-- {% if form.case_officer.value == user.id %} -->
                             <div class="input_wrapper"><button type="submit" class="btn_prim" name="btn_save">Сохранить</button></div>
                             <!-- {% endif %} -->
                         </div>
                     </div>
                     <!-- {% endif %} -->
-                    {% endif %}
                 </div>
 
                 {% if form.errors %}

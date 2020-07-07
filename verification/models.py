@@ -152,7 +152,7 @@ class PersonWithRole(models.Model):
         return self.id
 
     def __str__(self):
-        return str(self.person)
+        return str(f'{self.person} ({self.role})')
 
     class Meta:
         verbose_name = 'Роль физ.лица'
@@ -211,17 +211,18 @@ class VerificationItem(models.Model):
     edited = models.DateTimeField('Дата изменения', null=True, blank=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
-    def save(self, *args, **kwargs):
+    def save(self, prev_vitem=None, *args, **kwargs):
         if self.fixed:
             self.to_fix = False
         if self.to_fix:
             self.fixed = False
         self.edited = datetime.now(tz=get_current_timezone())
-        if not self.is_shadow and self.related_vitem:
-            for i in ['dias_status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status']:
-                if getattr(self.related_vitem, i) != getattr(self, i):
-                    setattr(self.related_vitem, i, getattr(self, i))
-                self.related_vitem.save()
+        if self.related_vitem:
+            if prev_vitem is None or prev_vitem != self.related_vitem:
+                for i in ['dias_status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status']:
+                    if getattr(self.related_vitem, i) != getattr(self, i):
+                        setattr(self.related_vitem, i, getattr(self, i))
+                self.related_vitem.save(prev_vitem=self)
         super().save(*args, **kwargs)
         return self.id
     
