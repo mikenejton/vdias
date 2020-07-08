@@ -80,7 +80,7 @@ def new_item_type_selection(request):
     context = views_utils.get_base_context(request.user)
     if request.method == 'GET':
         context['page_title'] = 'Тип объекта'
-        template = 'verification/forms/testforms/new_item_type_selection.html'
+        template = 'verification/forms/new_item_type_selection.html'
         return render(request, template, context)
     else:
         return redirect(reverse('item-searcher', args=[request.POST['item_type'], 0]))
@@ -92,7 +92,7 @@ def item_searcher(request, item_type = None, owr_id = 0):
         if item_type == 'short-item':
             return redirect('create-short-item')
 
-        template = 'verification/forms/testforms/search_item.html'
+        template = 'verification/forms/search_item.html'
         context['page_title'] = 'Поиск совпадений'
         context['item_type'] = item_type
         context['owr_id'] = owr_id if owr_id else 0
