@@ -118,7 +118,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                 if pwr_id:
                     if context['pwr'].related_organization:
                         if context['pwr'].related_organization.id != request.POST['related_organization']:
-                            context['pwr'].related_organization = models.OrganizationWithRole.objects.get(id = request.POST['related_organization'])
+                            context['pwr'].related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
                             context['pwr'].save()
                     if 'related_organization' in request.POST:
                         context['pwr'].related_organization = models.Organization.objects.get(id = request.POST['related_organization'])

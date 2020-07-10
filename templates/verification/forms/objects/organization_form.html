@@ -61,7 +61,7 @@
                 <option value="ПАО" {%if form.org_form.value == 'ПАО'%}selected{%endif%}>ПАО</option>
             </select>
             <input class="form_input" type="text" name="org_name" placeholder="Название" required
-                value={%if form.org_name.value %}{{form.org_name.value}}{%endif%}>
+                value="{%if form.org_name.value %}{{form.org_name.value}}{%endif%}">
             <input class="form_input" type="text" name="inn" placeholder="ИНН" v-model="inn" v-mask="'############'"
                 pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов">
             <input class="form_input" type="text" name="ogrn" placeholder="ОГРН" v-model="ogrn"
@@ -69,7 +69,7 @@
             <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'"
                 v-model='phone'>
             <input class="form_input" type="email" name="email" placeholder="Email"
-                value={%if form.email.value %}{{form.email.value}}{%endif%}>
+                value="{%if form.email.value %}{{form.email.value}}{%endif%}">
         </div>
         <div class="card_body-form_column">
             <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации"
