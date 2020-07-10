@@ -26,10 +26,12 @@ def vitem_list(request, param=None):
     template = 'verification/forms/vitem_search_result.html'
     if request.POST:
         if not param:
+            # Единая строка поиска по трем типам объектов
+            # result.filter(Q(person__person__fio__icontains = request.POST['search_str'].upper()) | Q(person__person__sneals = request.POST['search_str']) | Q(organization__organization__full_name__icontains = request.POST['search_str'].upper()) | Q(organization__organization__inn = request.POST['search_str']) | Q(organization__organization__ogrn = request.POST['search_str']) | Q(short_item__item_id__icontains = request.POST['search_str'].upper().strip()))
             if request.POST['person']:
                 result = result.filter(Q(person__person__fio__icontains = request.POST['person'].upper()) | Q(person__person__sneals = request.POST['person']))
             elif request.POST['organization']:
-                result = result.filter(Q(organization__organization__full_name__icontains = request.POST['organization'].upper()) | Q(organization__organization__inn = request.POST['organization']) | Q(organization__organization__ogrn = request.POST['organization']) )
+                result = result.filter(Q(organization__organization__full_name__icontains = request.POST['organization'].upper()) | Q(organization__organization__inn = request.POST['organization']) | Q(organization__organization__ogrn = request.POST['organization']))
             elif request.POST['short_item']:
                 result = result.filter(short_item__item_id__icontains = request.POST['short_item'].upper().strip())
             else:
