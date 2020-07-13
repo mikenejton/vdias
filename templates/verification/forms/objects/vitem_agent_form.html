@@ -10,6 +10,9 @@
     <div class="input_wrapper grid_row">Телефон: <p class="vitem_form_fields">{{ pwr.person.phone_number }}</p></div>
     <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ pwr.person.email }}</p></div>
     <div class="input_wrapper grid_row">Менеджер: <p class="vitem_form_fields">{{ pwr.related_manager }}</p></div>
+    {% if pwr.division %}
+    <div class="input_wrapper grid_row">Позиция: <p class="vitem_form_fields">{{ pwr.division }}</p></div>
+    {% endif %}
 </div>
 <div class="card_body-form_column">
     <div class="input_wrapper grid_row">Город: <p class="vitem_form_fields">{{ pwr.city }}</p></div>
