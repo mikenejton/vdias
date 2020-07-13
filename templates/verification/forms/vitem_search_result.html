@@ -21,23 +21,13 @@
     </thead>
     {% for item in result %}
         {% if item.is_shadow %}<tr class="table_shadow-row">{% else %}<tr>{%endif%}
-            <!-- <td>{% firstof item.person.person item.organization.organization%}</a></td> -->
             <td align="left">{{ item.id }}</td>
             <td align="left"><a class="link" href="{% url 'vitem' vitem_id=item.id %}">
                 {%if item.person.person %}{{item.person.person}}
                 {%elif item.organization.organization %}{{item.organization.organization}}
                 {%else%}Короткая заявка - {{item.short_item.item_id}}
                 {% endif %}
-                <!-- {% firstof item.person.person item.organization.organization item.short_item.item_id%} -->
             </a></td>
-            
-            <!-- {% if item.person %}
-            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{% firstof item.person.person item.organization.organization 'Короткая заявка' %}</a></td>
-            {% elif item.organization %}
-            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">{{ item.organization.organization }}</a></td>
-            {% elif item.short_item %}
-            <td><a class="link" href="{% url 'vitem' vitem_id=item.id %}">Короткая заявка</a></td>
-            {% endif %} -->
             <td align="left">{% firstof item.organization.role item.person.role item.short_item.role %}</td>
             <td>{{ item.is_shadow|yesno:"Да,Нет" }}</td>
             <td>{{ item.is_filled|yesno:"Да,Нет" }}</td>

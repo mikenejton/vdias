@@ -14,7 +14,7 @@
             </div>
             {%endif%}
             <div style="flex:1;"></div>
-            <!-- {% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 3 %} -->
+            <!-- {#% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 3 %#} -->
             <div class="input_wrapper">
                 {% if pwr.role.role_name in 'Ген. директор, Бенефициар' %}
                 <a class="link white-text" href="{% url edit_link.0 owr_id=owr_id obj_id=edit_link.1%}">Открыть</a>
@@ -22,7 +22,7 @@
                 <a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1%}">Открыть</a>
                 {% endif %}
             </div>
-            <!-- {% endif %} -->
+            <!-- {#% endif %#} -->
         </div>
         <div class="gcard_vitem-view_itemform">
             <div class="mb-card_body card_body-form">
@@ -71,28 +71,29 @@
                         </p>
                     </div>
                     
-                    <!-- {% if form.case_officer.value == user.id or vitem.author.id == user.id %} -->
+                    <!-- {#% if form.case_officer.value == user.id or vitem.author.id == user.id %#} -->
                     <div class="itemform_controls_row">
                         <div class="itemform_controls_row_btns">
                             {% if vitem.is_shadow == False %}
                             {% if form.dias_status.value in 'В работе, На доработке, Доработано' %}
                                 {% if vitem.to_fix == False %}
-                                    <!-- {% if form.case_officer.value == user.id %} -->
+                                    <!-- {#% if form.case_officer.value == user.id %#} -->
                                     <button v-show="false" type="submit" name="btn_to_fix" id="btn_to_fix">На доработку</button>
                                     <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="needComment('btn_to_fix')">На доработку</button></div>
-                                    <!-- {% endif %} -->
-                                {% elif vitem.is_filled %}
+                                    <!-- {#% endif %#} -->
+                                {% else %}
+                                <!-- Нужно ли проверять заполненность (is_filled) заявки на верификацию? -->
                                 <button v-show="false" type="submit" name="btn_fixed" id="btn_fixed">Доработано</button>
                                 <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="needComment('btn_fixed')">Доработано</button></div>
                                 {% endif %}
                             {% endif %}
                             {% endif %}
-                            <!-- {% if form.case_officer.value == user.id %} -->
+                            <!-- {#% if form.case_officer.value == user.id %#} -->
                             <div class="input_wrapper"><button type="submit" class="btn_prim" name="btn_save">Сохранить</button></div>
-                            <!-- {% endif %} -->
+                            <!-- {#% endif %#} -->
                         </div>
                     </div>
-                    <!-- {% endif %} -->
+                    <!-- {#% endif %#} -->
                 </div>
 
                 {% if form.errors %}

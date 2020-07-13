@@ -218,7 +218,7 @@ class VerificationItem(models.Model):
             self.fixed = False
         self.edited = datetime.now(tz=get_current_timezone())
         if self.related_vitem:
-            if prev_vitem is None or prev_vitem != self.related_vitem:
+            if (prev_vitem is None or prev_vitem != self.related_vitem) and self.related_vitem.related_vitem == self:
                 for i in ['dias_status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status']:
                     if getattr(self.related_vitem, i) != getattr(self, i):
                         setattr(self.related_vitem, i, getattr(self, i))
