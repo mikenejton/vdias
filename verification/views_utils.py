@@ -189,10 +189,12 @@ def twin_detecter(model_name, param, item_role_name, author=None):
             return ['old', item]
     return ['new', getattr(item, filter[0])]
     
-def object_wr_creater(request, model_name, obj, role):
+def object_wr_creater(request, model_name, obj, role, related_organization_id=None):
     new_obj = getattr(models, f'{model_name}WithRole')()
     setattr(new_obj, model_name.lower(), obj)
     new_obj.author = request.user.extendeduser
     new_obj.role = role
+    if related_organization_id:
+        new_obj.related_organization = models.Organization.objects.get(pk=related_organization_id)
     new_obj.save()
     return new_obj

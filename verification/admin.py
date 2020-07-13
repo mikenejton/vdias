@@ -59,6 +59,8 @@ model_admin_links={
     'docstorage': [['model_name', 'doc_type'], ['doc_type', 'file_name', 'author__user__last_name']],
     'person': [['fio'], ['fio', 'sneals', 'phone_number', 'pass_sn', 'author__user__last_name']],
     'shortitem':[['item_id'], ['item_id', 'role', 'verificated']],
+    'objectrole':[['role',], ['role', 'role_name']],
+    'division': [['division'], ['division', 'division_name']],
     'manager':[['fio'], ['fio', 'subdivision']],
 }
 
