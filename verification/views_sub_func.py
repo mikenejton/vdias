@@ -117,15 +117,20 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
             if context['form'].is_valid():
                 if pwr_id:
                     if context['pwr'].related_organization:
-                        if context['pwr'].related_organization.id != request.POST['related_organization']:
-                            context['pwr'].related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
-                            context['pwr'].save()
-                    if 'related_organization' in request.POST:
-                        context['pwr'].related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
-                        context['pwr'].save()
-                    if 'related_manager' in request.POST:
-                        context['pwr'].related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
-                        context['pwr'].save()
+                        if 'related_organization' in request.POST:
+                            if context['pwr'].related_organization.id != request.POST['related_organization']:
+                                context['pwr'].related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
+                                context['pwr'].save()
+                    if context['pwr'].related_manager:
+                        if 'related_manager' in request.POST:
+                            if context['pwr'].related_manager.id != request.POST['related_manager']:
+                                context['pwr'].related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
+                                context['pwr'].save()
+                    if context['pwr'].division:
+                        if 'division' in request.POST:
+                            if context['pwr'].division.id != request.POST['division']:
+                                context['pwr'].division = models.Division.objects.get(id = request.POST['division'])
+                                context['pwr'].save()
 
                     updated_person = context['form'].save(commit=False)
                     views_utils.update_logger('Person', updated_person.id, 'Обновление записи', request.user.extendeduser, updated_person)
@@ -139,6 +144,10 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                     pwr.author = request.user.extendeduser
                     if 'related_organization' in request.POST:
                         pwr.related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
+                    if 'related_manager' in request.POST:
+                        context['pwr'].related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
+                    if 'division' in request.POST:
+                        context['pwr'].division = models.Division.objects.get(id = request.POST['division'])
                     pwr.save()
                     views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
                     context['pwr'] = pwr
@@ -152,7 +161,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
 
                 if pwr_role == 'Агент':
                     view_name = 'detailing-agent'
-                elif pwr_role == 'Штатный сотрудник':
+                elif pwr_role == 'Сотрудник':
                     view_name = 'detailing-staff'
                 elif pwr_role == 'Ген. директор':
                     view_name = 'detailing-ceo'
@@ -178,6 +187,10 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                         pwr.author = request.user.extendeduser
                         if 'related_organization' in request.POST:
                             pwr.related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
+                        if 'related_manager' in request.POST:
+                            pwr.related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
+                        if 'division' in request.POST:
+                            pwr.division = models.Division.objects.get(id = request.POST['division'])
                         pwr.save()
                         context['pwr'] = pwr
                         vitem = models.VerificationItem.objects.filter(person__person = pwr.person, is_shadow = False)
@@ -185,7 +198,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                             views_utils.vitem_creator(request, pwr, 'person', len(vitem), vitem)
                         if pwr_role == 'Агент':
                             view_name = 'detailing-agent'
-                        elif pwr_role == 'Штатный сотрудник':
+                        elif pwr_role == 'Сотрудник':
                             view_name = 'detailing-staff'
                         elif pwr_role == 'Ген. директор':
                             view_name = 'detailing-ceo'
@@ -221,11 +234,12 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         context['req_doc_types'].append('Видеоприветствие')
     context['unfilled'] = []
     person_organizations = models.OrganizationWithRole.objects.all()
-    if request.user.extendeduser.user_role == 'HR' or pwr_role == 'Штатные сотрудники':
-        person_organizations = person_organizations.filter(organization_type = 'Штатные сотрудники')
+    if request.user.extendeduser.user_role == 'HR' or pwr_role == 'Сотрудник':
+        person_organizations = person_organizations.filter(role__role_name = 'Штат')
     elif request.user.extendeduser.user_role.role_lvl > 3:
-        person_organizations = person_organizations.filter(organization_type = rel_pwr_type)
+        person_organizations = person_organizations.filter(role__role_name = rel_pwr_type)
     context['org_list'] = person_organizations
+    context['divisions'] = models.Division.objects.exclude(division__in=['finbroker', 'finagent'])
     if request.user.extendeduser.user_role.role_lvl <= 2:
         context['mngr_list'] = models.Manager.objects.all()
     else:
@@ -245,6 +259,8 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     context['org_list'] = person_organizations.filter(id = context['pwr'].related_organization.id)
                 if context['pwr'].related_manager:
                     context['mngr_list'] = context['mngr_list'].filter(id = context['pwr'].related_manager.id)
+                if context['pwr'].division:
+                    context['divisions'] = context['divisions'].filter(id = context['pwr'].division.id)
 
             context['form'] = forms.PersonForm(instance=context['pwr'].person)
             context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)
@@ -252,7 +268,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                 context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = True)
             if owr_id:
                 vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
-            if pwr_role in ['Агент', 'Штатный сотрудник', 'Ген. директор', 'Бенефициар']:
+            if pwr_role in ['Агент', 'Сотрудник', 'Ген. директор', 'Бенефициар']:
                 
                 person_vitem = models.VerificationItem.objects.filter(person__id = pwr_id)
                 if len(person_vitem):

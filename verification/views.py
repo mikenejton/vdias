@@ -34,7 +34,7 @@ def vitem_list(request, param=None):
         if request.user.extendeduser.user_role.role_lvl > 3:
             result = result.filter(author__user_role = request.user.extendeduser.user_role)
         elif request.user.extendeduser.user_role.role_lvl == 3:
-            result = result.exclude(Q(person__role = 'Штатный сотрудник') | Q(organization__role = 'Контрагент'))
+            result = result.exclude(Q(person__role = 'Сотрудник') | Q(organization__role = 'Контрагент'))
     if len(result) == 0:
         context['err_txt'] = 'Результаты не найдены'
         template = 'verification/404.html'

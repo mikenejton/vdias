@@ -18,9 +18,9 @@ def get_base_context(user):
     stats.q_finished = stats.q_all.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
     stats.q_not_filled = stats.q_all.filter(is_filled = False)
     if user.extendeduser.user_role.role_lvl == 2:
-        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__role__role_name = 'Штатный сотрудник') | Q(organization__role__role_name = 'Контрагент')) #????????? штатник и контрагент?
+        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
-        stats.q_all = stats.q_all.exclude(Q(person__role__role_name = 'Штатный сотрудник') | Q(organization__role__role_name = 'Контрагент')).exclude(Q(is_filled = False) & Q(dias_status = 'Новая'))
+        stats.q_all = stats.q_all.exclude(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')).exclude(Q(is_filled = False) & Q(dias_status = 'Новая'))
         stats.q_new = stats.q_all.filter(dias_status = 'Новая')
         stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)

@@ -9,7 +9,7 @@
     <div class="mb-card_body">
         <input type="hidden" name="item_type" v-model='itemType'>
         <input type="hidden" name="create_stage" v-model='createStage'>
-        <div v-if="itemType=='Агент' || itemType=='Штатный сотрудник'" style="display: flex; flex-direction: column;">
+        <div v-if="itemType=='Агент' || itemType=='Сотрудник'" style="display: flex; flex-direction: column;">
             <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' pattern=".{14,}" title="Номер СНИЛС (14 символов)">
         </div>
         <div v-if="itemType=='Партнер' || itemType=='Контрагент'" style="display: flex; flex-direction: column;">
