@@ -54,7 +54,7 @@ def scan_delete(request, scan_id=None):
     current_scan = models.DocStorage.objects.get(id=scan_id)
     current_scan.to_del = True
     current_scan.save()
-    return redirect({request.META.get('HTTP_REFERER')})
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required
 def sendmail(request):
