@@ -26,16 +26,7 @@ def vitem_list(request, param=None):
     template = 'verification/forms/vitem_search_result.html'
     if request.POST:
         if not param:
-            # Единая строка поиска по трем типам объектов
             result = result.filter(Q(person__person__fio__icontains = request.POST['search_str'].upper()) | Q(person__person__sneals = request.POST['search_str']) | Q(organization__organization__full_name__icontains = request.POST['search_str'].upper()) | Q(organization__organization__inn = request.POST['search_str']) | Q(organization__organization__ogrn = request.POST['search_str']) | Q(short_item__item_id__icontains = request.POST['search_str'].upper().strip()))
-            # if request.POST['person']:
-            #     result = result.filter(Q(person__person__fio__icontains = request.POST['person'].upper()) | Q(person__person__sneals = request.POST['person']))
-            # elif request.POST['organization']:
-            #     result = result.filter(Q(organization__organization__full_name__icontains = request.POST['organization'].upper()) | Q(organization__organization__inn = request.POST['organization']) | Q(organization__organization__ogrn = request.POST['organization']))
-            # elif request.POST['short_item']:
-            #     result = result.filter(short_item__item_id__icontains = request.POST['short_item'].upper().strip())
-            # else:
-            #     result = {}
     elif param:
         result = getattr(context['stats'], param)
         context['q_name'] = param
@@ -124,81 +115,3 @@ def item_searcher(request, item_type = None, owr_id = 0):
         elif twins[0] == 'old':
             vitem = models.VerificationItem.objects.filter(**{twins[1]._meta.model.__name__.replace('WithRole', '').lower(): twins[1]})
             return redirect(reverse('vitem', args=[vitem[0].id]))
-            
-
-
-
-
-
-    # elif request.POST['create_stage'] == 'type_choice':
-    #     if request.POST['item_type'] == 'Короткая заявка':
-    #         return redirect('create-short-item')
-
-    #     context['page_title'] = 'Поиск совпадений'
-    #     context['item_type'] = request.POST['item_type']
-    #     context['create_stage'] = 'item_search'
-    #     template = 'verification/search_item.html'
-    # elif request.POST['create_stage'] == 'item_search':
-    #     if request.POST['item_type'] in ('Партнер', 'Контрагент'):
-    #         if 'inn' in request.POST:
-    #             found = models.OrganizationWithRole.objects.filter(organization__inn = request.POST['inn'])
-    #         elif 'ogrn' in request.POST:
-    #             found = models.OrganizationWithRole.objects.filter(organization__ogrn = request.POST['ogrn'])
-    #         if len(found):
-    #             is_twin = False
-    #             for owr in found:
-    #                 if owr.role == request.POST['item_type']:
-    #                     vitem = models.VerificationItem.objects.filter(organization = owr)
-    #                     return redirect(reverse('vitem', args=[vitem[0].id]))
-                
-    #             vitem = models.VerificationItem.objects.filter(organization = found[0])
-    #             owr = models.OrganizationWithRole()
-    #             owr.organization = found[0].organization
-    #             owr.role = request.POST['item_type']
-    #             if request.POST['item_type'] == 'Партнер':
-    #                 owr.organization_type = request.user.extendeduser.user_role.role_name
-    #             else:
-    #                 owr.organization_type = request.POST['item_type']
-    #             owr.author = request.user.extendeduser
-    #             owr.save()
-    #             org_admins = models.PersonWithRole.objects.filter(related_organization = found[0], role__in = ['Бенефициар', 'Ген. директор'])
-    #             if len(org_admins):
-    #                 for org_admin in org_admins:
-    #                     new_admin = models.PersonWithRole()
-    #                     new_admin.person = org_admin.person
-    #                     new_admin.related_organization = owr
-    #                     new_admin.role = org_admin.role
-    #                     new_admin.verificated = org_admin.verificated
-    #                     new_admin.author = request.user.extendeduser
-    #                     new_admin.save()
-    #             is_shadow = len(vitem) > 0
-    #             vitem_id = views_utils.vitem_creator(request, owr, 'organization', is_shadow, vitem)
-    #             return redirect(reverse('vitem', args=[vitem_id]))
-    #         elif request.POST['item_type'] == 'Партнер':
-    #             return redirect('create-partner')
-    #         elif request.POST['item_type'] == 'Контрагент':
-    #             return redirect('create-counterparty')
-
-    #     elif request.POST['item_type'] in ('Агент', 'Штатный сотрудник'):
-    #         found = models.PersonWithRole.objects.filter(person__sneals = request.POST['sneals'])
-    #         if len(found):
-    #             vitem = models.VerificationItem.objects.filter(person = found[0], is_shadow = False)
-    #             if found[0].role == request.POST['item_type']:
-    #                 return redirect(reverse('vitem', args=[vitem[0].id]))
-    #             else:
-    #                 pwr = models.PersonWithRole()
-    #                 pwr.person = found[0].person
-    #                 pwr.role = request.POST['item_type']
-    #                 pwr.related_organization = found[0].related_organization
-    #                 pwr.related_manager = found[0].related_manager
-    #                 pwr.author = request.user.extendeduser
-    #                 pwr.save()
-    #                 vitem_id = views_utils.vitem_creator(request, pwr, 'person', len(vitem), vitem)
-    #                 return redirect(reverse('vitem', args=[vitem_id]))
-
-    #         elif request.POST['item_type'] == 'Агент':
-    #             return redirect('create-agent')
-    #         elif request.POST['item_type'] == 'Штатный сотрудник':
-    #             return redirect('create-staff')
-    
-    # return render(request, template, context)
