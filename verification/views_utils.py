@@ -181,7 +181,7 @@ def send_mail(target_user, subject, body):
 
 def twin_detecter(model_name, param, item_role_name, author=None):
     filter = ['person', 'sneals'] if model_name == 'Person' else ['organization', 'inn']
-    item_qs = getattr(models, f'{model_name}WithRole').objects.filter(**{f'{filter[0]}__{filter[1]}': param})
+    item_qs = getattr(models, f'{model_name.capitalize()}WithRole').objects.filter(**{f'{filter[0]}__{filter[1]}': param})
     if not len(item_qs):
         return []
     for item in item_qs:
@@ -190,7 +190,7 @@ def twin_detecter(model_name, param, item_role_name, author=None):
     return ['new', getattr(item, filter[0])]
     
 def object_wr_creater(request, model_name, obj, role, related_organization_id=None):
-    new_obj = getattr(models, f'{model_name}WithRole')()
+    new_obj = getattr(models, f'{model_name.capitalize()}WithRole')()
     setattr(new_obj, model_name.lower(), obj)
     new_obj.author = request.user.extendeduser
     new_obj.role = role
