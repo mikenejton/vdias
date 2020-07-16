@@ -144,6 +144,7 @@ class PersonWithRole(models.Model):
     verificated = models.BooleanField('Верифицирован', default=False)
     related_manager = models.ForeignKey(Manager, on_delete=models.PROTECT, blank=True, null=True)
     division = models.ForeignKey(Division, on_delete=models.PROTECT, verbose_name = 'Подразделение', blank=True, null=True)
+    staff_status = models.CharField('Статус сотрудника', max_length=300, blank=True, null=True)
     related_organization = models.ForeignKey(Organization, on_delete=models.CASCADE, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')

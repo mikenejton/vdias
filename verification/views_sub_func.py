@@ -131,6 +131,10 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                             if context['pwr'].division.id != request.POST['division']:
                                 context['pwr'].division = models.Division.objects.get(id = request.POST['division'])
                                 context['pwr'].save()
+                    if 'staff_status' in request.POST:
+                        if context['pwr'].staff_status != request.POST['staff_status']:
+                            context['pwr'].staff_status = request.POST['staff_status']
+                            context['pwr'].save()
 
                     updated_person = context['form'].save(commit=False)
                     views_utils.update_logger('Person', updated_person.id, 'Обновление записи', request.user.extendeduser, updated_person)
@@ -148,6 +152,8 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                         context['pwr'].related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
                     if 'division' in request.POST:
                         context['pwr'].division = models.Division.objects.get(id = request.POST['division'])
+                    if 'staff_status' in request.POST:
+                        context['pwr'].staff_status = request.POST['staff_status']
                     pwr.save()
                     views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
                     context['pwr'] = pwr
@@ -191,6 +197,8 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                             pwr.related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
                         if 'division' in request.POST:
                             pwr.division = models.Division.objects.get(id = request.POST['division'])
+                        if 'staff_status' in request.POST:
+                            pwr.staff_status = request.POST['staff_status']
                         pwr.save()
                         context['pwr'] = pwr
                         vitem = models.VerificationItem.objects.filter(person__person = pwr.person, is_shadow = False)
@@ -238,8 +246,11 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         person_organizations = person_organizations.filter(role__role_name = 'Штат')
     elif request.user.extendeduser.user_role.role_lvl > 3:
         person_organizations = person_organizations.filter(role__role_name = rel_pwr_type)
+    else:
+        person_organizations = person_organizations.exclude(role__role_name = 'Штат')
     context['org_list'] = person_organizations
     context['divisions'] = models.Division.objects.exclude(division__in=['finbroker', 'finagent'])
+    context['staff_statuses'] = ['Кандидат', 'Активный', 'Уволен', 'Декрет']
     if request.user.extendeduser.user_role.role_lvl <= 2:
         context['mngr_list'] = models.Manager.objects.all()
     else:
@@ -261,6 +272,8 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     context['mngr_list'] = context['mngr_list'].filter(id = context['pwr'].related_manager.id)
                 if context['pwr'].division:
                     context['divisions'] = context['divisions'].filter(id = context['pwr'].division.id)
+                if context['pwr'].staff_status:
+                    context['staff_statuses'] = [context['pwr'].staff_status]
 
             context['form'] = forms.PersonForm(instance=context['pwr'].person)
             context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)

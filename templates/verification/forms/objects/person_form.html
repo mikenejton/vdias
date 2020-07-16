@@ -59,6 +59,16 @@
                 <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" {%if not owr%}required{%endif%}>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
             </div>
             <div class="card_body-form_column">
+                {% if owr %}
+                    <input type="hidden" name="related_organization" value="{{owr.id}}">
+                {% else %}
+                    <select name="related_organization" class="form_input" {% if 'Сотрудник' in page_title %} required {% endif %}>
+                            <option value="0" selected disabled>Организация</option>
+                        {% for org in org_list %}
+                            <option value="{{ org.id}}" {% if pwr.related_organization.id == org.id  %} selected {% endif %}>{{org.organization.full_name}}, {{org.role}}</option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
                 <input class="form_input" type="text" name="city" placeholder="Город" value={%if form.city.value %}{{form.city.value}}{%endif%}>
                 <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'" v-model='phone' {%if not owr%} required {%endif%} pattern=".{11,}" title="Номер телефона (11 цифр)">
                 <input class="form_input" type="email" name="email" placeholder="Email" value={%if form.email.value %}{{form.email.value}}{%endif%}>
@@ -100,28 +110,30 @@
         </div>
         {% endif %}
         <div class="mb-card_footer" v-show="currentPersTab=='Person'">
-            {% if owr %}
-                <div class="mb-card_footer_left"></div>
-                <input type="hidden" name="related_organization" value="{{owr.id}}">
+            {% if 'Сотрудник' in page_title %}
+                <div>
+                    <label for="division">Оформление:</label>
+                    <select name="division" id="division" class="form_input" required>
+                        <option value="0" selected disabled>Оформление</option>
+                        {% for division in divisions %}
+                            <option value="{{ division.id}}" {% if pwr.division.id == division.id  %} selected {% endif %}>{{division.division_name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="staff_status">Статус:</label>
+                    <select name="staff_status" id="staff_status" class="form_input" required>
+                        <option value="0" selected disabled>Статус сотрудника</option>
+                        {% for staff_status in staff_statuses %}
+                            <option value="{{ staff_status }}" {% if pwr.staff_status == staff_status  %} selected {% endif %}>{{staff_status}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             {% else %}
-                <select name="related_organization" class="form_input" {% if 'Сотрудник' in page_title %} required {% endif %}>
-                        <option value="0" selected disabled>Организация</option>
-                    {% for org in org_list %}
-                        <option value="{{ org.id}}" {% if pwr.related_organization.id == org.id  %} selected {% endif %}>{{org.organization.full_name}}, {{org.role}}</option>
-                    {% endfor %}
-                </select>
-                {% if 'Сотрудник' in page_title %}
-                <select name="division" class="form_input" required>
-                    <option value="0" selected disabled>Тип сотрудника</option>
-                    {% for division in divisions %}
-                        <option value="{{ division.id}}" {% if pwr.division.id == division.id  %} selected {% endif %}>{{division.division_name}}</option>
-                    {% endfor %}
-                </select>
-                {%endif%}
+                <div class="mb-card_footer_left"></div>
             {%endif%}
             <button type="submit" class="btn_prim" name="personFormSave" form="personForm" v-show="isEditable">{%if pwr %}Обновить{% else %}Сохранить{% endif %}</button>
         </div>
-
     </form>
     <div v-show="currentPersTab=='personScan'">
         {% if pwr %}
