@@ -60,12 +60,12 @@
             </div>
             <div class="card_body-form_column">
                 {% if owr %}
-                    <input type="hidden" name="related_organization" value="{{owr.id}}">
+                    <input type="hidden" name="related_organization" value="{{owr.organization.id}}">
                 {% else %}
                     <select name="related_organization" class="form_input" {% if 'Сотрудник' in page_title %} required {% endif %}>
                             <option value="0" selected disabled>Организация</option>
                         {% for org in org_list %}
-                            <option value="{{ org.id}}" {% if pwr.related_organization.id == org.id  %} selected {% endif %}>{{org.organization.full_name}}, {{org.role}}</option>
+                            <option value="{{ org.organization.id}}" {% if pwr.related_organization.id == org.organization.id  %} selected {% endif %}>{{org.organization.full_name}}, {{org.role}}</option>
                         {% endfor %}
                     </select>
                 {% endif %}
