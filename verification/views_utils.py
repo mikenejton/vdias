@@ -176,7 +176,11 @@ def send_mail(target_user, subject, body):
         headers={'From': new_msg.email_from}
     )
     msg.content_subtype = 'html'
-    msg.send()
+    try:
+        msg.send()
+        return True
+    except:
+        return False
 
 
 def twin_detecter(model_name, param, item_role_name, author=None):
