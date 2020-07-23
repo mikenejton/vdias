@@ -100,7 +100,6 @@ def item_searcher(request, item_type = None, owr_id = 0):
         org_id = None
         if owr_id != 0:
             org = models.OrganizationWithRole.objects.get(id = owr_id)
-            print(org.organization.id)
             if org:
                 org_id = org.organization.id
         twins = views_utils.twin_detecter('Organization' if item_type in ['counterparty', 'partner'] else 'Person', request.POST['inn' if item_type in ['counterparty', 'partner'] else 'sneals'], item_type)
