@@ -37,6 +37,17 @@ class ObjectRole(models.Model):
     class Meta:
         verbose_name = 'Роль объекта'
         verbose_name_plural = 'Роли объектов'
+
+class ObjectFormField(models.Model):
+    role = models.ForeignKey(ObjectRole, on_delete=models.CASCADE, verbose_name = 'Роль')
+    field_name = models.CharField('Поле', max_length = 200)
+    is_required = models.BooleanField('Обязательность', default=False)
+    def __str__(self):
+        return self.field_name
+    class Meta:
+        verbose_name = 'Поле формы'
+        verbose_name_plural = 'Поля формы'
+
 # -----------------------------------------------------------
 
 # User's extends

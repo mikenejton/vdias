@@ -49,39 +49,39 @@
                     {% endfor %}
                 </select>
                 {% endif %}
-                <input class="form_input" type="text" name="last_name" placeholder="Фамилия" required value={%if form.last_name.value %}{{form.last_name.value}}{%endif%}>
-                <input class="form_input" type="text" name="first_name" placeholder="Имя" required value={%if form.first_name.value %}{{form.first_name.value}}{%endif%}>
-                <input class="form_input" type="text" name="patronymic" placeholder="Отчество" value={%if form.patronymic.value %}{{form.patronymic.value}}{%endif%}>
-                <input class="form_input" type="text" name="prev_fio" placeholder="Предыдущие ФИО" value={%if form.prev_fio.value %}{{form.prev_fio.value}}{%endif%}>
-                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" placeholder="Дата рождения" required value={%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}>
-                <input class="form_input" type="text" name="pob" placeholder="Место рождения" value={%if form.pob.value %}{{form.pob.value}}{%endif%}>
+                <input class="form_input" type="text" name="last_name" placeholder="Фамилия" {% if "last_name" in req_fields %}required{%endif%} value="{%if form.last_name.value %}{{form.last_name.value}}{%endif%}">
+                <input class="form_input" type="text" name="first_name" placeholder="Имя" {% if "first_name" in req_fields %}required{%endif%} value={%if form.first_name.value %}{{form.first_name.value}}{%endif%}>
+                <input class="form_input" type="text" name="patronymic" placeholder="Отчество" {% if "patronymic" in req_fields %}required{%endif%} value={%if form.patronymic.value %}{{form.patronymic.value}}{%endif%}>
+                <input class="form_input" type="text" name="prev_fio" placeholder="Предыдущие ФИО" {% if "prev_fio" in req_fields %}required{%endif%} value={%if form.prev_fio.value %}{{form.prev_fio.value}}{%endif%}>
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" {% if "dob" in req_fields %}required{%endif%} placeholder="Дата рождения" value={%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}>
+                <input class="form_input" type="text" name="pob" placeholder="Место рождения" {% if "pob" in req_fields %}required{%endif%} value="{%if form.pob.value %}{{form.pob.value}}{%endif%}">
                 <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' {%if not owr or owr.organization.org_form == "ИП" and "Ген. директор" in page_title or "Бенефициар" not in page_title and "Ген. директор" not in page_title %}required{%endif%} pattern=".{14,}" title="Номер СНИЛС (14 символов)">
-                <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" {%if not owr%}required{%endif%}>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
+                <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" {% if "adr_reg" in req_fields %}required{%endif%}>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
             </div>
             <div class="card_body-form_column">
                 {% if owr %}
                     <input type="hidden" name="related_organization" value="{{owr.organization.id}}">
                 {% else %}
-                    <select name="related_organization" class="form_input" {% if 'Сотрудник' in page_title %} required {% endif %}>
+                    <select name="related_organization" class="form_input" {% if "related_organization" in req_fields %}required{%endif%}>
                             <option value="0" selected disabled>Организация</option>
                         {% for org in org_list %}
                             <option value="{{ org.organization.id}}" {% if pwr.related_organization.id == org.organization.id  %} selected {% endif %}>{{org.organization.full_name}}, {{org.role}}</option>
                         {% endfor %}
                     </select>
                 {% endif %}
-                <input class="form_input" type="text" name="city" placeholder="Город" value={%if form.city.value %}{{form.city.value}}{%endif%}>
+                <input class="form_input" type="text" name="city" placeholder="Город" {% if "related_organization" in req_fields %}required{%endif%} value={%if form.city.value %}{{form.city.value}}{%endif%}>
                 <div class="itemform_controls_row">
-                    <input class="form_input" style="flex: 1;" type="text" v-model="phone" disabled>
+                    <input class="form_input" style="flex: 1;" type="text" v-model="phone" disabled {% if "phone" in req_fields %}required{%endif%}>
                     <input type="hidden" name="phone_number" v-model="phone">
                     <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="openAddPhoneNumber()">+</button></div>
                     <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="clearPhoneNumber()">X</button></div>
                 </div>
-                <input class="form_input" type="email" name="email" placeholder="Email" value={%if form.email.value %}{{form.email.value}}{%endif%}>
-                <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" v-mask="'#### ######'" v-model='pass_sn' {%if not owr%}required{%endif%} pattern=".{11,}" title="Серия и номер паспорта (11 символов)">
-                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" value={%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}>
-                <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" value={%if form.pass_org.value %}{{form.pass_org.value}}{%endif%}>
-                <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" v-mask="'###-###'" v-model='pass_code' pattern=".{7,}" title="Код подразделения (7 символов)">
-                <textarea class="form_input wide_textarea" type="text" name="adr_fact" placeholder="Адрес проживания">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
+                <input class="form_input" type="email" name="email" placeholder="Email" {% if "email" in req_fields %}required{%endif%} value={%if form.email.value %}{{form.email.value}}{%endif%}>
+                <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" {% if "pass_sn" in req_fields %}required{%endif%} v-mask="'#### ######'" v-model='pass_sn' {%if not owr%}required{%endif%} pattern=".{11,}" title="Серия и номер паспорта (11 символов)">
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" {% if "pass_date" in req_fields %}required{%endif%}value={%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}>
+                <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" {% if "pass_org" in req_fields %}required{%endif%} value={%if form.pass_org.value %}{{form.pass_org.value}}{%endif%}>
+                <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" {% if "pass_code" in req_fields %}required{%endif%} v-mask="'###-###'" v-model='pass_code' pattern=".{7,}" title="Код подразделения (7 символов)">
+                <textarea class="form_input wide_textarea" type="text" name="adr_fact" placeholder="Адрес проживания" {% if "adr_fact" in req_fields %}required{%endif%}>{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
             </div>
             <input type="hidden" name="role" value="{{pwr_role}}">
             {%if pwr %}

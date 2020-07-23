@@ -12,6 +12,7 @@ def owr_call(request, owr_id, create_title, update_title):
     if views_utils.accessing(owr_id, 'OrganizationWithRole', request.user):
         context['template'] = 'verification/forms/common/organization_form_common.html'
         context = {**context, **get_owr_context(request, owr_id, create_title, update_title)}
+        context['req_fields'] = models.ObjectFormField.objects.filter(role__role_name = update_title)
         if 'err_txt' not in context:
             if request.method == 'POST':
                 print(request.POST)
@@ -109,6 +110,7 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
     context = views_utils.get_base_context(request.user)
     if views_utils.accessing(pwr_id, 'PersonWithRole', request.user):
         context = {**context, **get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type)}
+        context['req_fields'] = models.ObjectFormField.objects.filter(role__role_name = pwr_role, is_required = True).values_list('field_name', flat=True)
         if request.method == 'POST':
             if pwr_id:
                 context['form'] = forms.PersonForm(data=request.POST, instance=context['pwr'].person)
@@ -150,11 +152,11 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                     if 'related_organization' in request.POST:
                         pwr.related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
                     if 'related_manager' in request.POST:
-                        context['pwr'].related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
+                        pwr.related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
                     if 'division' in request.POST:
-                        context['pwr'].division = models.Division.objects.get(id = request.POST['division'])
+                        pwr.division = models.Division.objects.get(id = request.POST['division'])
                     if 'staff_status' in request.POST:
-                        context['pwr'].staff_status = request.POST['staff_status']
+                        pwr.staff_status = request.POST['staff_status']
                     pwr.save()
                     views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
                     context['pwr'] = pwr

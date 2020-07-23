@@ -68,7 +68,7 @@
                 v-mask="'###############'" pattern=".{0}|.{13,15}" title="ОГРН должен содержать от 13 до 15 символов">
             <div class="itemform_controls_row">
                 <input class="form_input" style="flex: 1;" type="text" v-model="phone" disabled>
-                <input type="hidden" name="phone_number" v-model="phone" {%if not owr%} required {%endif%}>
+                <input type="hidden" name="phone_number" v-model="phone" required>
                 <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="openAddPhoneNumber()">+</button></div>
                 <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="clearPhoneNumber()">X</button></div>
             </div>
