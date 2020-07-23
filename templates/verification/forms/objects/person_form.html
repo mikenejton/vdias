@@ -70,7 +70,12 @@
                     </select>
                 {% endif %}
                 <input class="form_input" type="text" name="city" placeholder="Город" value={%if form.city.value %}{{form.city.value}}{%endif%}>
-                <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'" v-model='phone' {%if not owr%} required {%endif%} pattern=".{11,}" title="Номер телефона (11 цифр)">
+                <div class="itemform_controls_row">
+                    <input class="form_input" style="flex: 1;" type="text" v-model="phone" disabled>
+                    <input type="hidden" name="phone_number" v-model="phone">
+                    <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="openAddPhoneNumber()">+</button></div>
+                    <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="clearPhoneNumber()">X</button></div>
+                </div>
                 <input class="form_input" type="email" name="email" placeholder="Email" value={%if form.email.value %}{{form.email.value}}{%endif%}>
                 <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" v-mask="'#### ######'" v-model='pass_sn' {%if not owr%}required{%endif%} pattern=".{11,}" title="Серия и номер паспорта (11 символов)">
                 <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" value={%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}>

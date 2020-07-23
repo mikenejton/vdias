@@ -66,8 +66,12 @@
                 pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов">
             <input class="form_input" type="text" name="ogrn" placeholder="ОГРН" v-model="ogrn"
                 v-mask="'###############'" pattern=".{0}|.{13,15}" title="ОГРН должен содержать от 13 до 15 символов">
-            <input class="form_input" type="text" name="phone_number" placeholder="Телефон" v-mask="'###########'"
-                v-model='phone'>
+            <div class="itemform_controls_row">
+                <input class="form_input" style="flex: 1;" type="text" v-model="phone" disabled>
+                <input type="hidden" name="phone_number" v-model="phone" {%if not owr%} required {%endif%}>
+                <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="openAddPhoneNumber()">+</button></div>
+                <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="clearPhoneNumber()">X</button></div>
+            </div>
             <input class="form_input" type="email" name="email" placeholder="Email"
                 value="{%if form.email.value %}{{form.email.value}}{%endif%}">
         </div>

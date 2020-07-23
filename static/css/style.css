@@ -357,6 +357,7 @@ td.deleted{
     display: flex;
     flex-direction: column;
     border-right: 1px solid #ced4da;
+    max-width: 25em;
 }
 .gcard_vitem-view_table{
     grid-area: form-table;

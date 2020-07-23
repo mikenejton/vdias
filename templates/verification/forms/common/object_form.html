@@ -27,29 +27,20 @@
             {% endblock %}
         </div>
     </div>
-    <div class="modal_form" v-if="showModal">
+    <div class="modal_form" v-if="addPhoneNumberFormVisible">
         <div class="mb-card" style="background: #fff">
-            <div class="mb-card_header">Найден дубликат:</div>
+            <div class="mb-card_header">Новый номер</div>
             <div class="mb-card_body">
-                <div class="txt_wrapper">
-                    <p>Найден совпадающий объект: {{twins.first}}</p>
-                    {% for field in form %}
-                        {% if field.errors %}
-                        {%for error in field.errors%}
-                            <p class="error_txt"><i>{{ error }}</i></p>
-                        {% endfor %}
-                        {% endif %}
-                    {% endfor %}
-                    <p>Повторная верификация не нужна.</p>
-                </div>
+                <input class="form_input" type="text" name="new_phone_number" placeholder="Телефон" v-mask="'###########'" v-model='new_phone_number' pattern=".{11,}" title="Номер телефона (11 цифр)">
             </div>
             <div class="mb-card_footer">
                 <div class="mb-card_footer_left"></div>
-                
-                <div class="input_wrapper"><button type="button" class="btn_std" v-on:click="fixNewObject()">Ок, все понятно</button></div>
+                <div class="input_wrapper"><button type="button" class="btn_std" v-on:click="addPhoneNumber()">Добавить</button></div>
+                <div class="input_wrapper"><button type="button" class="btn_std" v-on:click="addPhoneNumberFormVisible=false">Отмена</button></div>
             </div>
         </div>
     </div>
+
 </div>
 <script src="{% static 'js/v-mask.min.js' %}"></script>
 
@@ -60,7 +51,7 @@
         delimiters: ['{', '}'],
         data: {
             sneals: '{{form.sneals.value}}',
-            phone: '{{form.phone_number.value}}',
+            phone: '{{form.phone_number.value}}'.replace("None", ""),
             pass_sn: '{{form.pass_sn.value}}',
             pass_code: '{{form.pass_code.value}}',
             inn: '{{form.inn.value}}',
@@ -72,6 +63,8 @@
             isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or dias_status == None or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
             showModal: {% if twins %}true{% else %}false{% endif %},
             btnName: '',
+            new_phone_number: '',
+            addPhoneNumberFormVisible: false,
         },
         methods:{
             changePersTab:function(tabName){
@@ -86,6 +79,22 @@
             sendFound:function(){
                 this.showModal = false;
             },
+            openAddPhoneNumber:function(){
+                this.addPhoneNumberFormVisible = true;
+            },
+            addPhoneNumber:function(){
+                if(this.new_phone_number.length == 11){
+                    if (this.phone.includes(this.new_phone_number) == false){
+                        this.phone = [this.phone, this.new_phone_number].filter(el => el != '').join('; ')
+                    };
+                    this.new_phone_number = '';
+                    this.addPhoneNumberFormVisible = false;
+                };
+            },
+            clearPhoneNumber:function(){
+                this.phone = '';
+                this.new_phone_number = '';
+            }
         }
     });
 </script>

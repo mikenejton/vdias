@@ -14,6 +14,7 @@ def owr_call(request, owr_id, create_title, update_title):
         context = {**context, **get_owr_context(request, owr_id, create_title, update_title)}
         if 'err_txt' not in context:
             if request.method == 'POST':
+                print(request.POST)
                 if owr_id:
                     context['form'] = forms.OrganizationForm(data=request.POST, instance=context['owr'].organization)
                 else:
