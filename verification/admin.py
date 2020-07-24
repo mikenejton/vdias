@@ -62,7 +62,8 @@ model_admin_links={
     'objectrole':[['role',], ['role', 'role_name']],
     'division': [['division'], ['division', 'division_name']],
     'manager':[['fio'], ['fio', 'subdivision']],
-    'objectformfield':[['role'], ['role__role_name', 'field_name']]
+    'objectformfield':[['role'], ['role__role_name', 'field_name']],
+    'staffdepartment': [['dep_name'], ['dep_name', 'dep_leader']]
 }
 
 for model in apps.get_app_config('verification').get_models():

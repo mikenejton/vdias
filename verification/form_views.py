@@ -104,7 +104,15 @@ def vitem_form(request, vitem_id=None):
                                     if getattr(vitem, key) != ff.cleaned_data[key]:
                                         setattr(vitem, key, ff.cleaned_data[key])
                             views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
+                        
                         vitem.save()
+                        for vitem_object in ['person', 'organization', 'short_item']:
+                            if getattr(vitem, vitem_object):
+                                verificated = 'одобрено' in vitem.dias_status.lower()
+                                if getattr(getattr(vitem, vitem_object), 'verificated') != verificated:
+                                   setattr(getattr(vitem, vitem_object), 'verificated', verificated)
+                                   getattr(vitem, vitem_object).save()
+                                break
                         
                         redirect(reverse('vitem', args=[vitem_id]))
                     elif 'btn_to_fix' in request.POST:

@@ -15,6 +15,16 @@ class Division(models.Model):
         verbose_name = 'Подразделение'
         verbose_name_plural = 'Подразделения'
 
+class StaffDepartment(models.Model):
+    dep_name = models.CharField('Отдел', max_length = 400)
+    dep_leader = models.CharField('Руководитель', max_length = 400)
+    
+    def __str__(self):
+        return f'{self.dep_name} ({self.dep_leader})'
+
+    class Meta:
+        verbose_name = 'Отдел'
+        verbose_name_plural = 'Отделы'
 class Manager(models.Model):
     fio = models.CharField('ФИО', max_length = 200)
     division = models.ForeignKey(Division, on_delete=models.PROTECT, verbose_name = 'Подразделение', blank=True, null=True)
@@ -134,6 +144,8 @@ class Person(models.Model):
     sneals = models.CharField('СНИЛС', max_length = 14, blank=True, null=True, unique=True)
     phone_number = models.CharField('Телефон', max_length = 200, blank=True, null=True, unique=True)
     email = models.EmailField('Email', blank=True, null=True)
+    staff_dep = models.ForeignKey(StaffDepartment, on_delete=models.SET_NULL, verbose_name='Отдел', blank=True, null=True)
+    staff_position = models.CharField('Должность', max_length = 300, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):

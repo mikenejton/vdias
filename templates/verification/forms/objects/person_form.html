@@ -3,7 +3,6 @@
         <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='Person'}" @click="changePersTab('Person')">Физ.лицо</a>
         <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='personScan'}" @click="changePersTab('personScan')">Сканы</a>
         <div class="top-border"></div>
-        {{req_fields}}
         <div class="hint-box_unfilled">
             {% if owr_href %}
                 <div class="input_wrapper"><a class="link" href="{% url owr_href.view obj_id=owr_href.view_id%}">Перейти к организации</a></div>
@@ -26,15 +25,16 @@
         <div class="hint-box_roles">
             <p class="form_input">Роли:</p>
             {% for role in roles %}
-            {% if role.role.role_name == page_title %}
-            <p class="form_input"><i>{{role.role}} ({{role.related_organization}})</i></p>
-            {% else %}
-                {% if role.role.role in 'ceo, ben' %}
-                <p class="form_input"><a href="{% url 'detailing-'|add:role.role.role owr_id=role.related_organization.id obj_id=role.id %}" class="link">{{role.role}} ({{role.related_organization}})</a></p>
+
+                {% if role.role_name == page_title %}
+                    <p class="form_input"><i>{{role.role_name}} ({{role.owr}})</i></p>
                 {% else %}
-                <p class="form_input"><a href="{% url 'detailing-'|add:role.role.role obj_id=role.id %}" class="link">{{role.role}} ({{role.related_organization}})</a></p>
-                {% endif %}
-                {% endif %}
+                    {% if role.role in 'ceo, ben' %}
+                        <p class="form_input"><a href="{% url 'detailing-'|add:role.role owr_id=role.owr.id obj_id=role.role_id %}" class="link">{{role.role_name}} ({{role.owr}})</a></p>
+                    {% else %}
+                        <p class="form_input"><a href="{% url 'detailing-'|add:role.role obj_id=role.role_id %}" class="link">{{role.role_name}} ({{role.owr}})</a></p>
+                    {% endif %}
+                    {% endif %}
             {% endfor %}
         </div>
     </div>
@@ -43,12 +43,20 @@
         <div class="mb-card_body card_body-form">
             <div class="card_body-form_column">
                 {% if "Ген. директор" not in page_title and "Бенефициар" not in page_title %}
-                <select name="related_manager" class="form_input">
+                <select name="related_manager" class="form_input" {% if "related_manager" in req_fields %}required{%endif%}>
                     <option value="0" selected disabled>Менеджер</option>
                     {% for mngr in mngr_list %}
                         <option value="{{ mngr.id}}" {% if pwr.related_manager.id == mngr.id  %} selected {% endif %}>{{mngr}}</option>
                     {% endfor %}
                 </select>
+                {% endif %}
+                {% if "Сотрудник" in page_title %}
+                    <select name="staff_dep" class="form_input" {% if "staff_dep" in req_fields %}required{%endif%}>
+                        <option value="0" selected disabled>Отдел</option>
+                        {% for dep in departments %}
+                            <option value="{{ dep.id}}" {% if pwr.person.staff_dep.id == dep.id  %} selected {% endif %}>{{dep}}</option>
+                        {% endfor %}
+                    </select>
                 {% endif %}
                 <input class="form_input" type="text" name="last_name" placeholder="Фамилия" {% if "last_name" in req_fields %}required{%endif%} value="{%if form.last_name.value %}{{form.last_name.value}}{%endif%}">
                 <input class="form_input" type="text" name="first_name" placeholder="Имя" {% if "first_name" in req_fields %}required{%endif%} value="{%if form.first_name.value %}{{form.first_name.value}}{%endif%}">
@@ -70,10 +78,13 @@
                         {% endfor %}
                     </select>
                 {% endif %}
+                {% if "Сотрудник" in page_title %}
+                <input class="form_input" type="text" name="staff_position" placeholder="Должность" {% if "staff_position" in req_fields %}required{%endif%} value="{%if form.staff_position.value %}{{form.staff_position.value}}{%endif%}">
+                {% endif %}
                 <input class="form_input" type="text" name="city" placeholder="Город" {% if "related_organization" in req_fields %}required{%endif%} value="{%if form.city.value %}{{form.city.value}}{%endif%}">
                 <div class="itemform_controls_row">
-                    <input class="form_input" style="flex: 1;" type="text" v-model="phone" disabled {% if "phone" in req_fields %}required{%endif%}>
-                    <input type="hidden" name="phone_number" v-model="phone">
+                    <input class="form_input" style="flex: 1;" name="phone" type="text" v-model="phone" readonly {% if "phone_number" in req_fields %}required{%endif%} placeholder="Телефон">
+                    <input class="form_input" style="flex: 1;" name="phone_number" type="hidden" v-model="phone" {% if "phone_number" in req_fields %}required{%endif%} placeholder="Телефон">
                     <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="openAddPhoneNumber()">+</button></div>
                     <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="clearPhoneNumber()">X</button></div>
                 </div>

@@ -254,6 +254,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context['org_list'] = person_organizations
     context['divisions'] = models.Division.objects.exclude(division__in=['finbroker', 'finagent'])
     context['staff_statuses'] = ['Кандидат', 'Активный', 'Уволен', 'Декрет']
+    context['departments'] = models.StaffDepartment.objects.all()
     if request.user.extendeduser.user_role.role_lvl <= 2:
         context['mngr_list'] = models.Manager.objects.all()
     else:
@@ -265,7 +266,16 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         pwr = models.PersonWithRole.objects.filter(id = pwr_id)
         if len(pwr):
             context['pwr'] = pwr[0]
-            context['roles'] = models.PersonWithRole.objects.filter(person__id = pwr[0].person.id)
+            roles = models.PersonWithRole.objects.filter(person__id = pwr[0].person.id)
+            if roles:
+                context['roles'] = []
+                for role in roles:
+                    temp_dict = {'role_name': role.role.role_name, 'role':role.role.role, 'role_id': role.id}
+                    if role.related_organization:
+                        owr = models.OrganizationWithRole.objects.get(organization_id = role.related_organization.id)
+                        temp_dict['owr'] = owr
+                    context['roles'].append(temp_dict)
+
             context['vitem_ready'] = views_utils.is_vitem_ready('person', context['pwr'], context['req_doc_types'])
             context['pwr_role'] = pwr_role
             if request.user.extendeduser.user_role.role_lvl > 2:
