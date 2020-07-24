@@ -104,8 +104,8 @@ def vitem_form(request, vitem_id=None):
                                     if getattr(vitem, key) != ff.cleaned_data[key]:
                                         setattr(vitem, key, ff.cleaned_data[key])
                             views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
-                        
                         vitem.save()
+                        
                         for vitem_object in ['person', 'organization', 'short_item']:
                             if getattr(vitem, vitem_object):
                                 verificated = 'одобрено' in vitem.dias_status.lower()
