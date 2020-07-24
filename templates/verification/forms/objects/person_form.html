@@ -83,8 +83,8 @@
                 {% endif %}
                 <input class="form_input" type="text" name="city" placeholder="Город" {% if "related_organization" in req_fields %}required{%endif%} value="{%if form.city.value %}{{form.city.value}}{%endif%}">
                 <div class="itemform_controls_row">
-                    <input class="form_input" style="flex: 1;" name="phone" type="text" v-model="phone" readonly {% if "phone_number" in req_fields %}required{%endif%} placeholder="Телефон">
-                    <input class="form_input" style="flex: 1;" name="phone_number" type="hidden" v-model="phone" {% if "phone_number" in req_fields %}required{%endif%} placeholder="Телефон">
+                    <input class="form_input" type="text" style="flex: 1;" name="phone" placeholder="Телефон" v-model="phone" readonly autocomplete="off">
+                    <input class="form_input" style="flex: 1;position: absolute;opacity: 0;z-index: -1;" name="phone_number" type="text" v-model="phone" {% if "phone_number" in req_fields %}required{%endif%} autocomplete="off">
                     <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="openAddPhoneNumber()">+</button></div>
                     <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="clearPhoneNumber()">X</button></div>
                 </div>

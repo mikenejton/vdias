@@ -46,13 +46,13 @@
     <input type="hidden" name="currentOrgTab" v-model="currentOrgTab">
     <div class="mb-card_body card_body-form">
         <div class="card_body-form_column">
-            <select name="division" required class="form_input">
+            <select name="division" class="form_input" {% if "division" in req_fields %}required{%endif%}>
                 <option value="0" disabled selected>Подразделение</option>
                 {% for division in divisions %}
                     <option value="{{ division.id}}" {% if owr.division.id == division.id  %} selected {% endif %}>{{division}}</option>
                 {% endfor %}
             </select>
-            <select name="org_form" required class="form_input">
+            <select name="org_form" class="form_input" {% if "org_form" in req_fields %}required{%endif%}>
                 <option value="Организационная форма" disabled selected>Организационная форма</option>
                 <option value="ИП" {%if form.org_form.value == 'ИП'%}selected{%endif%}>ИП</option>
                 <option value="АО" {%if form.org_form.value == 'АО'%}selected{%endif%}>АО</option>
@@ -60,25 +60,25 @@
                 <option value="ОАО" {%if form.org_form.value == 'ОАО'%}selected{%endif%}>ОАО</option>
                 <option value="ПАО" {%if form.org_form.value == 'ПАО'%}selected{%endif%}>ПАО</option>
             </select>
-            <input class="form_input" type="text" name="org_name" placeholder="Название" required
+            <input class="form_input" type="text" name="org_name" placeholder="Название" {% if "org_name" in req_fields %}required{%endif%}
                 value="{%if form.org_name.value %}{{form.org_name.value}}{%endif%}">
             <input class="form_input" type="text" name="inn" placeholder="ИНН" v-model="inn" v-mask="'############'"
-                pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов">
+                pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов" {% if "inn" in req_fields %}required{%endif%}>
             <input class="form_input" type="text" name="ogrn" placeholder="ОГРН" v-model="ogrn"
-                v-mask="'###############'" pattern=".{0}|.{13,15}" title="ОГРН должен содержать от 13 до 15 символов">
+                v-mask="'###############'" pattern=".{0}|.{13,15}" title="ОГРН должен содержать от 13 до 15 символов" {% if "ogrn" in req_fields %}required{%endif%}>
             <div class="itemform_controls_row">
-                <input class="form_input" style="flex: 1;" type="text" v-model="phone" disabled>
-                <input type="hidden" name="phone_number" v-model="phone" required>
+                <input class="form_input" type="text" placeholder="Телефон" style="flex: 1;" v-model="phone" readonly autocomplete="off">
+                <input type="text" style="flex: 1;position: absolute;opacity: 0;z-index: -1;" name="phone_number" v-model="phone" {% if "phone_number" in req_fields %}required{%endif%} autocomplete="off">
                 <div class="input_wrapper"><button type="button" class="btn_suc" v-on:click="openAddPhoneNumber()">+</button></div>
                 <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="clearPhoneNumber()">X</button></div>
             </div>
-            <input class="form_input" type="email" name="email" placeholder="Email"
+            <input class="form_input" type="email" name="email" placeholder="Email" {% if "email" in req_fields %}required{%endif%}
                 value="{%if form.email.value %}{{form.email.value}}{%endif%}">
         </div>
         <div class="card_body-form_column">
             <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации"
-                required>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
-            <textarea class="form_input wide_textarea" type="text" name="adr_fact" required
+            {% if "adr_reg" in req_fields %}required{%endif%}>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
+            <textarea class="form_input wide_textarea" type="text" name="adr_fact" {% if "adr_fact" in req_fields %}required{%endif%}
                 placeholder="Фактический адрес">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
         </div>
         {%if owr %}

@@ -12,7 +12,8 @@ def owr_call(request, owr_id, create_title, update_title):
     if views_utils.accessing(owr_id, 'OrganizationWithRole', request.user):
         context['template'] = 'verification/forms/common/organization_form_common.html'
         context = {**context, **get_owr_context(request, owr_id, create_title, update_title)}
-        context['req_fields'] = models.ObjectFormField.objects.filter(role__role_name = update_title)
+        
+        context['req_fields'] = models.ObjectFormField.objects.filter(role__role_name = update_title, is_required = True).values_list('field_name', flat=True)
         if 'err_txt' not in context:
             if request.method == 'POST':
                 print(request.POST)
