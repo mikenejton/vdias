@@ -14,7 +14,6 @@
             </div>
             {%endif%}
             <div style="flex:1;"></div>
-            <!-- {#% if user.extendeduser == vitem.author and vitem.dias_status in 'Новая,На доработке' or user.extendeduser.user_role.role_lvl <= 3 %#} -->
             <div class="input_wrapper">
                 {% if pwr.role.role_name in 'Ген. директор, Бенефициар' %}
                 <a class="link white-text" href="{% url edit_link.0 owr_id=owr_id obj_id=edit_link.1%}">Открыть</a>
@@ -22,7 +21,6 @@
                 <a class="link white-text" href="{% url edit_link.0 obj_id=edit_link.1%}">Открыть</a>
                 {% endif %}
             </div>
-            <!-- {#% endif %#} -->
         </div>
         <div class="gcard_vitem-view_itemform">
             <div class="mb-card_body card_body-form">
@@ -57,16 +55,10 @@
                     
                     <div class="input_wrapper" >
                         <p>Статус:
-                            <input type="hidden" name="dias_status" :value="diasStatus">
-                            <select name="dias_status_select" {% if user.extendeduser.user_role.role_lvl > 3 or vitem.is_shadow %} disabled {% endif %} required v-model="diasStatus">
-                                <option value="Новая" {% if form.dias_status.value == 'Новая' %} selected {% endif %} hidden>Новая</option>
-                                <option value="В работе" {% if form.dias_status.value == 'В работе'  %} selected {% endif %}>В работе</option>
-                                <option value="Возможен особый контроль" {% if form.dias_status.value == 'Возможен особый контроль'  %} selected {% endif %}>Возможен особый контроль</option>
-                                <option value="На доработке" {% if form.dias_status.value == "На доработке"  %} selected {% endif %} hidden>На доработке</option>
-                                <option value="Доработано" {% if form.dias_status.value == "Доработано"  %} selected {% endif %} hidden>Доработано</option>
-                                <option value="Одобрено" {% if form.dias_status.value == "Одобрено"  %} selected {% endif %}>Одобрено</option>
-                                <option value="Одобрено, особый контроль" {% if form.dias_status.value == "Одобрено, особый контроль"  %} selected {% endif %}>Одобрено, особый контроль</option>
-                                <option value="Отказ" {% if form.dias_status.value == "Отказ"  %} selected {% endif %}>Отказ</option>
+                            <select name="status" {% if user.extendeduser.user_role.role_lvl > 3 or vitem.is_shadow or form.status in 'На доработке, Доработано' %} disabled {% endif %} required v-model="status">
+                                {% for status in statuses %}
+                                    <option value="{{ status.id }}" {% if form.status.value == status.id %} selected {% endif %} {% if status.is_hidden %} hidden {%endif%} >{{status}}</option>
+                                {% endfor %}
                             </select>
                         </p>
                     </div>
@@ -75,7 +67,7 @@
                     <div class="itemform_controls_row">
                         <div class="itemform_controls_row_btns">
                             {% if vitem.is_shadow == False %}
-                            {% if form.dias_status.value in 'В работе, На доработке, Доработано' %}
+                            {% if form.status.value == 1 or form.status.value == 3 or form.status.value == 4 %}
                                 {% if vitem.to_fix == False %}
                                     <!-- {#% if form.case_officer.value == user.id %#} -->
                                     <button v-show="false" type="submit" name="btn_to_fix" id="btn_to_fix">На доработку</button>
@@ -318,12 +310,12 @@
             affiliationStatus: '{{form.affiliation_status.value}}',
             socStatus: '{{form.soc_status.value}}',
             vitemType: '{% firstof pwr.role owr.role %}',
-            diasStatus: '{{form.dias_status.value}}',
+            status: '{{form.status.value}}',
             requiredChecks: false,
         },
         computed:{
             requiredByStatus: function(){
-                this.requiredChecks = 'Возможен особый контроль;Одобрено;Одобрено, особый контроль;Отказ'.includes(this.diasStatus);
+                this.requiredChecks = '{% for status in statuses %}{%if status.check_required %}{{status.id}};{%endif%}{%endfor%}'.includes(this.status);
                 return this.requiredChecks
             }
         },

@@ -7,6 +7,6 @@ settings/
 .vscode/
 file_storage/
 denv/
-
+data/
 .env
 db.sqlite3

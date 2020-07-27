@@ -52,7 +52,7 @@ model_admin_links={
     'datalogger': [['model_name'], ['field_name', 'old_value', 'new_value', 'author__user__last_name']],
     'userrole': [['role_name'], ['role_name']],
     'organization': [['org_form', 'org_name'], ['full_name', 'inn', 'ogrn', 'phone_number', 'author__user__last_name']],
-    'verificationitem': [['person', 'organization', 'short_item'], ['person', 'organization', 'dias_status', 'author__user__last_name']],
+    'verificationitem': [['person', 'organization', 'short_item'], ['person', 'organization', 'status', 'author__user__last_name']],
     'vitemchat': [['vitem'], ['msg', 'author__user__last_name']],
     'organizationwithrole': [['organization'], ['organization', 'organization_role', 'author__user__last_name']],
     'personwithrole': [['person'], ['person__fio', 'role', 'author__user__last_name']],
@@ -62,8 +62,9 @@ model_admin_links={
     'objectrole':[['role',], ['role', 'role_name']],
     'division': [['division'], ['division', 'division_name']],
     'manager':[['fio'], ['fio', 'subdivision']],
-    'objectformfield':[['role'], ['role__role_name', 'field_name']],
-    'staffdepartment': [['dep_name'], ['dep_name', 'dep_leader']]
+    'objectformfield':[['role', 'field_name'], ['role__role_name', 'field_name']],
+    'staffdepartment': [['dep_name'], ['dep_name', 'dep_leader']],
+    'diasstatus':[['status'], ['status']]
 }
 
 for model in apps.get_app_config('verification').get_models():

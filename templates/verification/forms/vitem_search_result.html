@@ -31,7 +31,7 @@
             <td align="left">{% firstof item.organization.role item.person.role item.short_item.role %}</td>
             <td>{{ item.is_shadow|yesno:"Да,Нет" }}</td>
             <td>{{ item.is_filled|yesno:"Да,Нет" }}</td>
-            <td>{{ item.dias_status }}</td>
+            <td>{{ item.status }}</td>
             <td align="left">{{ item.case_officer.user.last_name }} {{ item.case_officer.user.first_name }}</td>
             <td align="left">{{ item.edited }}</td>
             <td align="left">{{ item.created }}</td>

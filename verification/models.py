@@ -52,11 +52,22 @@ class ObjectFormField(models.Model):
     role = models.ForeignKey(ObjectRole, on_delete=models.CASCADE, verbose_name = 'Роль')
     field_name = models.CharField('Поле', max_length = 200)
     is_required = models.BooleanField('Обязательность', default=False)
+    field_translate = models.CharField('Перевод', max_length = 200, null=True, blank=True)
     def __str__(self):
         return self.field_name
     class Meta:
         verbose_name = 'Поле формы'
         verbose_name_plural = 'Поля формы'
+
+class DiasStatus(models.Model):
+    status = models.CharField('Статус', max_length = 200)
+    is_hidden = models.BooleanField('Скрытый', default=False)
+    check_required = models.BooleanField('Требует проверки полей', default=False)
+    def __str__(self):
+        return self.status
+    class Meta:
+        verbose_name = 'Статус ДИАС'
+        verbose_name_plural = 'Статусы ДИАС'
 
 # -----------------------------------------------------------
 
@@ -205,7 +216,8 @@ class VerificationItem(models.Model):
     organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank = True, null = True)
     short_item = models.ForeignKey(ShortItem, on_delete=models.CASCADE, blank = True, null = True)
     is_filled = models.BooleanField('Заявка заполнена', default=False)
-    dias_status = models.CharField('Статус проверки', max_length = 300)
+    
+    status = models.ForeignKey(DiasStatus, on_delete=models.SET_NULL, blank = True, null = True)
     to_fix = models.BooleanField('На доработке', default=False)
     fixed = models.BooleanField('Доработано', default=False)
     dias_comment = models.TextField('Комментарий ДИАС', blank=True, null=True, default='')
@@ -243,7 +255,7 @@ class VerificationItem(models.Model):
         self.edited = datetime.now(tz=get_current_timezone())
         if self.related_vitem:
             if (prev_vitem is None or prev_vitem != self.related_vitem) and self.related_vitem.related_vitem == self:
-                for i in ['dias_status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status']:
+                for i in ['status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status']:
                     if getattr(self.related_vitem, i) != getattr(self, i):
                         setattr(self.related_vitem, i, getattr(self, i))
                 self.related_vitem.save(prev_vitem=self)

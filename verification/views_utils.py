@@ -10,31 +10,31 @@ def get_base_context(user):
     context = {}
     stats = UserStats()
     stats.q_all = models.VerificationItem.objects.all().order_by('-created').select_related()
-    stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True)
+    stats.q_new = stats.q_all.filter(status__status = 'Новая', is_filled = True)
     stats.q_mine = stats.q_all.filter(case_officer__user = user)
-    stats.q_at_work = stats.q_all.filter(dias_status = 'В работе')
+    stats.q_at_work = stats.q_all.filter(status__status = 'В работе')
     stats.q_to_fix = stats.q_all.filter(to_fix = True)
-    stats.q_fixed = stats.q_all.filter(fixed = True)
-    stats.q_finished = stats.q_all.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
+    stats.q_fixed = stats.q_all.filter(status__status = 'Доработано')
+    stats.q_finished = stats.q_all.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
     stats.q_not_filled = stats.q_all.filter(is_filled = False)
     if user.extendeduser.user_role.role_lvl == 2:
-        stats.q_new = stats.q_all.filter(dias_status = 'Новая', is_filled = True).filter(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')) #????????? штатник и контрагент?
+        stats.q_new = stats.q_all.filter(status__status = 'Новая', is_filled = True).filter(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
-        stats.q_all = stats.q_all.exclude(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')).exclude(Q(is_filled = False) & Q(dias_status = 'Новая'))
-        stats.q_new = stats.q_all.filter(dias_status = 'Новая')
-        stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
+        stats.q_all = stats.q_all.exclude(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')).exclude(Q(is_filled = False) & Q(status__status = 'Новая'))
+        stats.q_new = stats.q_all.filter(status__status = 'Новая')
+        stats.q_at_work = stats.q_mine.filter(status__status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
         stats.q_fixed = stats.q_mine.filter(fixed = True)
-        stats.q_finished = stats.q_mine.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
+        stats.q_finished = stats.q_mine.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
         stats.q_not_filled = stats.q_mine.filter(is_filled = False)
     elif user.extendeduser.user_role.role_lvl >= 4:
         stats.q_all = stats.q_all.filter(author__user_role = user.extendeduser.user_role)
-        stats.q_new = stats.q_all.filter(dias_status = 'Новая')
+        stats.q_new = stats.q_all.filter(status__status = 'Новая')
         stats.q_mine = stats.q_all.filter(author__user = user)
-        stats.q_at_work = stats.q_mine.filter(dias_status = 'В работе')
+        stats.q_at_work = stats.q_mine.filter(status__status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
         stats.q_fixed = stats.q_mine.filter(fixed = True)
-        stats.q_finished = stats.q_mine.filter(dias_status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
+        stats.q_finished = stats.q_mine.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
         stats.q_not_filled = stats.q_mine.filter(is_filled = False)
     context['stats'] = stats
     return context
@@ -59,7 +59,7 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
         vitem = models.VerificationItem()
-        vitem.dias_status = 'Новая'
+        vitem.status = models.DiasStatus.objects.get(id=1)
         vitem.author = request.user.extendeduser
         if item_type == 'person':
             vitem.person = item
@@ -67,14 +67,14 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
             vitem.organization = item
         elif item_type == 'short_item':
             vitem.short_item = item
-            # vitem.dias_status = 'В работе'
+            # vitem.vitem.status = models.DiasStatus.objects.get(id=2)
             # vitem.case_officer = request.user.extendeduser
             vitem.author = request.user.extendeduser
         
         vitem.is_shadow = is_shadow
         new_vitem = vitem.save()
         if not related_vitem is None and len(related_vitem):
-            for field in ['dias_status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status', 'soc', 'soc_status']:
+            for field in ['status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status', 'soc', 'soc_status']:
                 setattr(vitem, field, getattr(related_vitem[0], field))
             
             vitem.related_vitem = related_vitem[0]

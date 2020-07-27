@@ -76,7 +76,7 @@ def get_owr_context(request, owr_id, create_title, update_title):
         if len(vitem) > 0 and owr_id is not None:
             context['vitem_id'] = vitem[0].id
             context['vitem_is_filled'] = vitem[0].is_filled
-            context['dias_status'] = vitem[0].dias_status
+            context['status'] = vitem[0].status.status
 
         owr = models.OrganizationWithRole.objects.filter(id = owr_id)
         if len(owr) > 0 :
@@ -305,7 +305,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
             if vitem:
                 context['vitem_id'] = vitem.id
                 context['vitem_is_filled'] = vitem.is_filled
-                context['dias_status'] = vitem.dias_status
+                context['status'] = vitem.status.status
             context['page_title'] = pwr_role
             context['object_title'] = context['pwr'].person.fio
             

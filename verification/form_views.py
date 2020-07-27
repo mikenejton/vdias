@@ -53,7 +53,7 @@ def short_item_form(request, obj_id=None):
 @login_required
 def vitem_form(request, vitem_id=None):
     context = views_utils.get_base_context(request.user)
-
+    context['statuses'] = models.DiasStatus.objects.all()
     if views_utils.accessing(vitem_id, 'VerificationItem', request.user):
         if vitem_id:
             vitem_qs = models.VerificationItem.objects.filter(id=vitem_id)
@@ -96,8 +96,6 @@ def vitem_form(request, vitem_id=None):
                 else:
                     if 'btn_save' in request.POST:
                         ff = forms.VerificationItemForm(request.POST)
-                        if 'dias_status' not in request.POST:
-                            ff.dias_status = vitem.dias_status
                         if ff.is_valid():
                             for key in ff.fields:
                                 if hasattr(vitem, key):
@@ -108,7 +106,7 @@ def vitem_form(request, vitem_id=None):
                         
                         for vitem_object in ['person', 'organization', 'short_item']:
                             if getattr(vitem, vitem_object):
-                                verificated = 'одобрено' in vitem.dias_status.lower()
+                                verificated = 'одобрено' in vitem.status.status.lower()
                                 if getattr(getattr(vitem, vitem_object), 'verificated') != verificated:
                                    setattr(getattr(vitem, vitem_object), 'verificated', verificated)
                                    getattr(vitem, vitem_object).save()
@@ -118,20 +116,20 @@ def vitem_form(request, vitem_id=None):
                     elif 'btn_to_fix' in request.POST:
                         vitem.to_fix = True
                         vitem.fixed = False
-                        vitem.dias_status = 'На доработке'
+                        vitem.status = models.DiasStatus.objects.get(id=3)
                         views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
                         views_utils.newChatMessage(vitem, '{}: {}'.format('На доработку', request.POST['fix_comment']), request.user.extendeduser)
                     elif 'btn_fixed' in request.POST:
                         vitem.to_fix = False
                         vitem.fixed = True
-                        vitem.dias_status = 'Доработано'
+                        vitem.status = models.DiasStatus.objects.get(id=4)
                         views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
                         views_utils.newChatMessage(vitem, '{}: {}'.format('Доработано', request.POST['fix_comment']), request.user.extendeduser)
                     elif 'btn_take_to' in request.POST:
                         vitem.case_officer = request.user.extendeduser
-                        vitem.dias_status = 'В работе'
+                        vitem.status = models.DiasStatus.objects.get(id=2)
                         views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
                     elif 'btn_add_comment' in request.POST and len(request.POST['chat_message']) > 0:                    

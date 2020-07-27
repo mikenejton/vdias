@@ -60,7 +60,7 @@
             currentPersTab: 'Person',
             scanFile: '',
             scanType: 'Тип документа',
-            isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and dias_status in 'Новая,На доработке' or dias_status == None or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
+            isEditable: {% if user.extendeduser.user_role == owr.author.user_role or user.extendeduser.user_role == pwr.author.user_role and status in 'Новая,На доработке' or status == None or user.extendeduser.user_role.role_lvl == 1 %}true{%else%}false{%endif%},
             showModal: {% if twins %}true{% else %}false{% endif %},
             btnName: '',
             new_phone_number: '',
