@@ -120,21 +120,21 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
 
             if context['form'].is_valid():
                 if pwr_id:
-                    if context['pwr'].related_organization:
-                        if 'related_organization' in request.POST:
-                            if context['pwr'].related_organization.id != request.POST['related_organization']:
-                                context['pwr'].related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
-                                context['pwr'].save()
-                    if context['pwr'].related_manager:
-                        if 'related_manager' in request.POST:
-                            if context['pwr'].related_manager.id != request.POST['related_manager']:
-                                context['pwr'].related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
-                                context['pwr'].save()
-                    if context['pwr'].division:
-                        if 'division' in request.POST:
-                            if context['pwr'].division.id != request.POST['division']:
-                                context['pwr'].division = models.Division.objects.get(id = request.POST['division'])
-                                context['pwr'].save()
+                    if 'related_organization' in request.POST:
+                        related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
+                        if context['pwr'].related_organization != related_organization:
+                            context['pwr'].related_organization = related_organization
+                            context['pwr'].save()
+                    if 'related_manager' in request.POST:
+                        related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
+                        if context['pwr'].related_manager != related_manager:
+                            context['pwr'].related_manager = related_manager
+                            context['pwr'].save()
+                    if 'division' in request.POST:
+                        division = models.Division.objects.get(id = request.POST['division'])
+                        if context['pwr'].division != division:
+                            context['pwr'].division = division
+                            context['pwr'].save()
                     if 'staff_status' in request.POST:
                         if context['pwr'].staff_status != request.POST['staff_status']:
                             context['pwr'].staff_status = request.POST['staff_status']
