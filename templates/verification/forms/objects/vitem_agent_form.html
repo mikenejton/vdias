@@ -5,29 +5,30 @@
     <div class="input_wrapper grid_row">ФИО: <p class="vitem_form_fields">{{ pwr.person.fio }}</p></div>
     <div class="input_wrapper grid_row">Дата рождения: <p class="vitem_form_fields">{{ pwr.person.dob }}</p></div>
     <div class="input_wrapper grid_row">Место рождения: <p class="vitem_form_fields">{{ pwr.person.pob }}</p></div>
+    <div class="input_wrapper grid_row">Город: <p class="vitem_form_fields">{{ pwr.city }}</p></div>
     <div class="input_wrapper grid_row">Адрес регистрации: <p class="vitem_form_fields">{{ pwr.person.adr_reg }}</p></div>
     <div class="input_wrapper grid_row">Адрес проживания: <p class="vitem_form_fields">{{ pwr.person.adr_fact }}</p></div>
     <div class="input_wrapper grid_row">Телефон: <p class="vitem_form_fields">{{ pwr.person.phone_number }}</p></div>
     <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ pwr.person.email }}</p></div>
-    <div class="input_wrapper grid_row">Менеджер: <p class="vitem_form_fields">{{ pwr.related_manager }}</p></div>
-    {% if pwr.division %}
-    <div class="input_wrapper">
-        <div class="itemform_controls_row">
-        Позиция: <i>{{ pwr.division }}</i> &nbsp;|&nbsp;Статус: <i>{{ pwr.staff_status }}</i>
-        </div>
-    </div>
+    {% if pwr.role.role_name == 'Сотрудник' %}
+    <div class="input_wrapper grid_row">Позиция: <p class="vitem_form_fields">{{ pwr.division }}</p></div>
+    <div class="input_wrapper grid_row">Статус: <p class="vitem_form_fields">{{ pwr.staff_status }}</p></div>
     {% endif %}
 </div>
 <div class="card_body-form_column">
-    <div class="input_wrapper grid_row">Город: <p class="vitem_form_fields">{{ pwr.city }}</p></div>
     <div class="input_wrapper grid_row">Паспорт: <p class="vitem_form_fields">{{ pwr.person.pass_sn }}</p></div>
     <div class="input_wrapper grid_row">Дата выдачи: <p class="vitem_form_fields">{{ pwr.person.pass_date }}</p></div>
     <div class="input_wrapper grid_row">Кем выдан: <p class="vitem_form_fields">{{ pwr.person.pass_org }}</p></div>
     <div class="input_wrapper grid_row">Код подразделения: <p class="vitem_form_fields">{{ pwr.person.pass_code }}</p></div>
     <div class="input_wrapper grid_row">СНИЛС: <p class="vitem_form_fields">{{ pwr.person.sneals }}</p></div>
+    <div class="input_wrapper grid_row">Организация: <p class="vitem_form_fields">{{ pwr.related_organization }}</p></div>
+    {% if pwr.role.role_name == 'Сотрудник' %}
+    <div class="input_wrapper grid_row">Отдел: <p class="vitem_form_fields">{{ pwr.person.staff_dep }}</p></div>
+    <div class="input_wrapper grid_row">Руководитель: <p class="vitem_form_fields">{{ pwr.person.staff_position }}</p></div>
+    {% endif %}
     <div class="input_wrapper grid_row">Дата создания: <p class="vitem_form_fields">{{ pwr.person.created }}</p></div>
     <div class="input_wrapper grid_row">Автор: <p class="vitem_form_fields">{{ pwr.person.author.user.last_name }} {{ pwr.person.author.user.first_name }}</p></div>
-    <div class="input_wrapper grid_row">Организация: <p class="vitem_form_fields">{{ pwr.related_organization }}</p></div>
+    
 </div>
 
 {% endblock %}

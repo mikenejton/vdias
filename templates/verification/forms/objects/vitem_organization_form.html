@@ -2,18 +2,18 @@
 
 {% block form %}
 <div class="card_body-form_column">
+    <div class="input_wrapper grid_row">Подразделение: <p class="vitem_form_fields">{{ owr.division }}</p></div>
     <div class="input_wrapper grid_row">Организационная форма: <p class="vitem_form_fields">{{ owr.organization.org_form }}</p></div>
     <div class="input_wrapper grid_row">Название: <p class="vitem_form_fields">{{ owr.organization.org_name }}</p></div>
     <div class="input_wrapper grid_row">ИНН: <p class="vitem_form_fields">{{ owr.organization.inn }}</p></div>
     <div class="input_wrapper grid_row">ОГРН: <p class="vitem_form_fields">{{ owr.organization.ogrn }}</p></div>
-    <div class="input_wrapper grid_row">Ген. директор: <p class="vitem_form_fields">{%if ceo %} {{ ceo|first }}{%endif%}</p></div>
     <div class="input_wrapper grid_row">Телефон: <p class="vitem_form_fields">{{ owr.organization.phone_number }}</p></div>
+    <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ owr.organization.email }}</p></div>
 </div>
 <div class="card_body-form_column">
-    
-    <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ owr.organization.email }}</p></div>
     <div class="input_wrapper grid_row">Юридический адрес: <p class="vitem_form_fields">{{ owr.organization.adr_reg }}</p></div>
     <div class="input_wrapper grid_row">Фактический адрес: <p class="vitem_form_fields">{{ owr.organization.adr_fact }}</p></div>
+    <div class="input_wrapper grid_row">Ген. директор: <p class="vitem_form_fields">{%if ceo %} {{ ceo|first }}{%endif%}</p></div>
     <div class="input_wrapper grid_row">Бенефициары: <p class="vitem_form_fields">{%if bens|length %}Есть, {{ bens|length }} {% else %}Нет{%endif%}</p></div>
     <div class="input_wrapper grid_row">Дата создания: <p class="vitem_form_fields">{{ owr.organization.created }}</p></div>
     <div class="input_wrapper grid_row">Автор: <p class="vitem_form_fields">{{ owr.organization.author }}</p></div>
