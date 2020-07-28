@@ -29,6 +29,7 @@ class StaffDepartment(models.Model):
 class Manager(models.Model):
     fio = models.CharField('ФИО', max_length = 200)
     division = models.ForeignKey(Division, on_delete=models.PROTECT, verbose_name = 'Подразделение', blank=True, null=True)
+    is_active = models.BooleanField('Активен', default=True)
 
     def __str__(self):
         return f'{self.fio} ({self.division})'

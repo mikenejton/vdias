@@ -257,7 +257,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context['staff_statuses'] = ['Кандидат', 'Активный', 'Уволен', 'Декрет']
     context['departments'] = models.StaffDepartment.objects.all()
     if request.user.extendeduser.user_role.role_lvl <= 2:
-        context['mngr_list'] = models.Manager.objects.all()
+        context['mngr_list'] = models.Manager.objects.filter(is_active = True)
     else:
         context['mngr_list'] = models.Manager.objects.filter(id = 0)
     
