@@ -81,6 +81,14 @@
                 {% if "Сотрудник" in page_title %}
                 <input class="form_input" type="text" name="staff_position" placeholder="Должность" {% if "staff_position" in req_fields %}required{%endif%} value="{%if form.staff_position.value %}{{form.staff_position.value}}{%endif%}">
                 {% endif %}
+                {% if 'agent' in request.path %}
+                <select name="product_type" class="form_input" {% if "product_type" in req_fields %}required{%endif%}>
+                    <option value="" disabled selected>Тип продуктов</option>
+                    {%for p_type in product_types%}
+                        <option value="{{p_type.id}}" {%if pwr.product_type.id == p_type.id %}selected{%endif%}>{{p_type}}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
                 <input class="form_input" type="text" name="city" placeholder="Город" {% if "related_organization" in req_fields %}required{%endif%} value="{%if form.city.value %}{{form.city.value}}{%endif%}">
                 <div class="itemform_controls_row">
                     <input class="form_input" type="text" style="flex: 1;" name="phone" placeholder="Телефон" v-model="phone" readonly autocomplete="off">
@@ -127,7 +135,7 @@
         </div>
         {% endif %}
         <div class="mb-card_footer" v-show="currentPersTab=='Person'">
-            {% if 'Сотрудник' in page_title %}
+            {% if 'staff' in request.path %}
                 <div>
                     <label for="division">Оформление:</label>
                     <select name="division" id="division" class="form_input" required>
@@ -146,6 +154,10 @@
                         {% endfor %}
                     </select>
                 </div>
+            {% elif 'agent' in request.path %}
+            <div>
+                
+            </div>
             {% else %}
                 <div class="mb-card_footer_left"></div>
             {%endif%}

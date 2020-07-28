@@ -41,7 +41,7 @@
             {% endfor %}
     </div>
 </div>
-<form action="" method="post" id="organizationForm" v-show="currentOrgTab=='Organization'">
+<form action="" method="post" id="organizationForm" v-show="currentOrgTab=='Organization'" style="display: flex;flex-direction: column;">
     {% csrf_token %}
     <input type="hidden" name="currentOrgTab" v-model="currentOrgTab">
     <div class="mb-card_body card_body-form">
@@ -49,9 +49,17 @@
             <select name="division" class="form_input" {% if "division" in req_fields %}required{%endif%}>
                 <option value="0" disabled selected>Подразделение</option>
                 {% for division in divisions %}
-                    <option value="{{ division.id}}" {% if owr.division.id == division.id  %} selected {% endif %}>{{division}}</option>
+                    <option value="{{ division.id }}" {% if owr.division.id == division.id  %} selected {% endif %}>{{division}}</option>
                 {% endfor %}
             </select>
+            {% if 'partner' in request.path %}
+            <select name="product_type" class="form_input" {% if "product_type" in req_fields %}required{%endif%}>
+                <option value="" disabled selected>Тип продуктов</option>
+                {%for p_type in product_types%}
+                    <option value="{{p_type.id}}" {%if owr.product_type.id == p_type.id %}selected{%endif%}>{{p_type}}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
             <select name="org_form" class="form_input" {% if "org_form" in req_fields %}required{%endif%}>
                 <option value="Организационная форма" disabled selected>Организационная форма</option>
                 <option value="ИП" {%if form.org_form.value == 'ИП'%}selected{%endif%}>ИП</option>

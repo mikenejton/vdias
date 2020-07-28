@@ -16,7 +16,6 @@ def owr_call(request, owr_id, create_title, update_title):
         context['req_fields'] = models.ObjectFormField.objects.filter(role__role_name = update_title, is_required = True).values_list('field_name', flat=True)
         if 'err_txt' not in context:
             if request.method == 'POST':
-                print(request.POST)
                 if owr_id:
                     context['form'] = forms.OrganizationForm(data=request.POST, instance=context['owr'].organization)
                 else:
@@ -28,6 +27,9 @@ def owr_call(request, owr_id, create_title, update_title):
                         if 'division' in request.POST:
                             context['owr'].division = models.Division.objects.get(id = request.POST['division'])
                             context['owr'].save()
+                        if 'product_type' in request.POST:
+                            context['owr'].product_type = models.ProductType.objects.get(id = request.POST['product_type'])
+                            context['owr'].save()
                         views_utils.update_logger('Organization', updated_organization.id, 'Обновление записи', request.user.extendeduser, updated_organization)
                         updated_organization = context['form'].save()
 
@@ -35,14 +37,6 @@ def owr_call(request, owr_id, create_title, update_title):
                         new_org = context['form'].save()
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
                         owr = views_utils.object_wr_creater(request, 'organization', new_org, models.ObjectRole.objects.get(role_name = update_title))
-                        # owr = models.OrganizationWithRole()
-                        # owr.organization = new_org
-                        # owr.role = models.ObjectRole.objects.get(role_name = update_title)
-                        # if update_title == 'Партнер':
-                        #     owr.organization_type = request.user.extendeduser.user_role.role_name
-                        # else:
-                        #     owr.organization_type = update_title
-                        # owr.author = request.user.extendeduser
                         owr.division = models.Division.objects.get(id = request.POST['division'])
                         owr.save()
                         views_utils.update_logger('Organization', new_org.id, '', request.user.extendeduser)
@@ -71,6 +65,7 @@ def get_owr_context(request, owr_id, create_title, update_title):
     context['req_doc_types']=['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
     context['unfilled'] = []
     context['divisions'] = models.Division.objects.all()[:2]
+    context['product_types'] = models.ProductType.objects.all()
     if owr_id:
         vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
         if len(vitem) > 0 and owr_id is not None:
@@ -124,22 +119,27 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                         related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
                         if context['pwr'].related_organization != related_organization:
                             context['pwr'].related_organization = related_organization
-                            context['pwr'].save()
+
                     if 'related_manager' in request.POST:
                         related_manager = models.Manager.objects.get(id = request.POST['related_manager'])
                         if context['pwr'].related_manager != related_manager:
                             context['pwr'].related_manager = related_manager
-                            context['pwr'].save()
+
                     if 'division' in request.POST:
                         division = models.Division.objects.get(id = request.POST['division'])
                         if context['pwr'].division != division:
                             context['pwr'].division = division
-                            context['pwr'].save()
+
                     if 'staff_status' in request.POST:
                         if context['pwr'].staff_status != request.POST['staff_status']:
                             context['pwr'].staff_status = request.POST['staff_status']
-                            context['pwr'].save()
 
+                    if 'product_type' in request.POST:
+                        p_type = models.ProductType.objects.get(id = request.POST['product_type'])
+                        if context['pwr'].product_type != p_type:
+                            context['pwr'].product_type = p_type
+                    
+                    context['pwr'].save()
                     updated_person = context['form'].save(commit=False)
                     views_utils.update_logger('Person', updated_person.id, 'Обновление записи', request.user.extendeduser, updated_person)
                     updated_person = context['form'].save()
@@ -158,6 +158,9 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                         pwr.division = models.Division.objects.get(id = request.POST['division'])
                     if 'staff_status' in request.POST:
                         pwr.staff_status = request.POST['staff_status']
+                    if 'product_type' in request.POST:
+                        pwr.product_type = models.ProductType.objects.get(id = request.POST['product_type'])
+                    
                     pwr.save()
                     views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
                     context['pwr'] = pwr
@@ -203,6 +206,9 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                             pwr.division = models.Division.objects.get(id = request.POST['division'])
                         if 'staff_status' in request.POST:
                             pwr.staff_status = request.POST['staff_status']
+                        if 'product_type' in request.POST:
+                            pwr.product_type = models.ProductType.objects.get(id = request.POST['product_type'])
+
                         pwr.save()
                         context['pwr'] = pwr
                         vitem = models.VerificationItem.objects.filter(person__person = pwr.person, is_shadow = False)
@@ -254,6 +260,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
         person_organizations = person_organizations.exclude(role__role_name = 'Штат')
     context['org_list'] = person_organizations
     context['divisions'] = models.Division.objects.exclude(division__in=['finbroker', 'finagent'])
+    context['product_types'] = models.ProductType.objects.all()
     context['staff_statuses'] = ['Кандидат', 'Активный', 'Уволен', 'Декрет']
     context['departments'] = models.StaffDepartment.objects.all()
     if request.user.extendeduser.user_role.role_lvl <= 2:
@@ -288,6 +295,8 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     context['divisions'] = context['divisions'].filter(id = context['pwr'].division.id)
                 if context['pwr'].staff_status:
                     context['staff_statuses'] = [context['pwr'].staff_status]
+                if context['pwr'].product_types:
+                    context['product_types'] = context['product_types'].filter(id = context['pwr'].product_type.id)
 
             context['form'] = forms.PersonForm(instance=context['pwr'].person)
             context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)

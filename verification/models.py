@@ -79,7 +79,7 @@ class PartnerShipStatus(models.Model):
         verbose_name_plural = 'Статусы партнерства'
 
 
-class PartnerShipStatus(models.Model):
+class ProductType(models.Model):
     product_type = models.CharField('Тип продуктов', max_length = 200)
     def __str__(self):
         return self.product_type
@@ -142,7 +142,8 @@ class OrganizationWithRole(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     role = models.ForeignKey(ObjectRole, on_delete=models.PROTECT, verbose_name = 'Роль')
     division = models.ForeignKey(Division, on_delete=models.PROTECT, verbose_name = 'Подразделение', blank=True, null=True)
-    product_type = models.ForeignKey(PartnerShipStatus, on_delete=models.PROTECT, verbose_name = 'Тип продуктов', blank=True, null=True)
+    product_type = models.ForeignKey(ProductType, on_delete=models.PROTECT, verbose_name = 'Тип продуктов', blank=True, null=True)
+    partnership_status = models.ForeignKey(PartnerShipStatus, on_delete=models.PROTECT, verbose_name = 'Статус сотрудничества', blank=True, null=True)
     verificated = models.BooleanField('Верифицировано', default=False)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
@@ -198,7 +199,8 @@ class PersonWithRole(models.Model):
     verificated = models.BooleanField('Верифицирован', default=False)
     related_manager = models.ForeignKey(Manager, on_delete=models.PROTECT, blank=True, null=True)
     division = models.ForeignKey(Division, on_delete=models.PROTECT, verbose_name = 'Подразделение', blank=True, null=True)
-    product_type = models.ForeignKey(PartnerShipStatus, on_delete=models.PROTECT, verbose_name = 'Тип продуктов', blank=True, null=True)
+    product_type = models.ForeignKey(ProductType, on_delete=models.PROTECT, verbose_name = 'Тип продуктов', blank=True, null=True)
+    partnership_status = models.ForeignKey(PartnerShipStatus, on_delete=models.PROTECT, verbose_name = 'Статус сотрудничества', blank=True, null=True)
     staff_status = models.CharField('Статус сотрудника', max_length=300, blank=True, null=True)
     related_organization = models.ForeignKey(Organization, on_delete=models.CASCADE, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)

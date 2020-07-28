@@ -64,7 +64,9 @@ model_admin_links={
     'manager':[['fio'], ['fio', 'subdivision']],
     'objectformfield':[['role', 'field_name'], ['role__role_name', 'field_name']],
     'staffdepartment': [['dep_name'], ['dep_name', 'dep_leader']],
-    'diasstatus':[['status'], ['status']]
+    'diasstatus':[['status'], ['status']],
+    'partnershipstatus':[['status'], ['status']],
+    'producttype': [['product_type'], ['product_type']],
 }
 
 for model in apps.get_app_config('verification').get_models():
