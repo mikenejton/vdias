@@ -38,7 +38,20 @@ def get_base_context(user):
         stats.q_not_filled = stats.q_mine.filter(is_filled = False)
     context['stats'] = stats
     return context
+
+def sneals_checking(sneals):
+    k = range(9, 0, -1)
+    pairs = zip(k, [int(x) for x in sneals.replace('-', '').replace(' ', '')[:-2]])
+    csum = sum([k * v for k, v in pairs])
     
+    while csum > 101:
+        csum %= 101
+
+    if csum in (100, 101):
+        csum = 0
+
+    return csum == int(sneals[-2:])
+
 # Логирование действий пользователя
 def update_logger(model_name, pk, action, username, new_set=False):
     if not new_set:

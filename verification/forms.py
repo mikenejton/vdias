@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
 from datetime import datetime
-from . import models
+from . import models, views_utils
 
 class PersonForm(ModelForm):
     class Meta:
@@ -19,6 +19,11 @@ class PersonForm(ModelForm):
                 date_diff = cleaned_data.get('pass_date') - cleaned_data.get('dob')
                 if round(date_diff.days/365.25, 0)  < 14:
                     raise ValidationError({'pass_date': 'Ошибка в дате выдачи паспорта (разница с датой рождения менее 14 лет!'})
+        if cleaned_data.get('sneals'):
+            result = views_utils.sneals_checking(cleaned_data.get('sneals'))
+            print(result)
+            if not result:
+                raise ValidationError({'sneals': 'СНИЛС не соответствует правилам ПФР'})
         
 class OrganizationForm(ModelForm):
     class Meta:

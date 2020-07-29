@@ -101,7 +101,7 @@
                     <div class="input_wrapper"><button type="button" class="btn_warn" v-on:click="clearPhoneNumber()">X</button></div>
                 </div>
                 <input class="form_input" type="email" name="email" placeholder="Email" {% if "email" in req_fields %}required{%endif%} value="{%if form.email.value %}{{form.email.value}}{%endif%}">
-                <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" {% if "pass_sn" in req_fields %}required{%endif%} v-mask="'#### ######'" v-model='pass_sn' {%if not owr%}required{%endif%} pattern=".{11,}" title="Серия и номер паспорта (11 символов)">
+                <input class="form_input" type="text" name="pass_sn" placeholder="Серия/номер паспорта" {% if "pass_sn" in req_fields %}required{%endif%} v-mask="'#### ######'" v-model='pass_sn' pattern=".{11,}" title="Серия и номер паспорта (11 символов)">
                 <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="pass_date" placeholder="Дата выдачи" {% if "pass_date" in req_fields %}required{%endif%} value="{%if form.pass_date.value %}{{form.pass_date.value|date:"d.m.Y"}}{%endif%}">
                 <input class="form_input" type="text" name="pass_org" placeholder="Кем выдан" {% if "pass_org" in req_fields %}required{%endif%} value="{%if form.pass_org.value %}{{form.pass_org.value}}{%endif%}">
                 <input class="form_input" type="text" name="pass_code" placeholder="Код подразделения" {% if "pass_code" in req_fields %}required{%endif%} v-mask="'###-###'" v-model='pass_code' pattern=".{7,}" title="Код подразделения (7 символов)">
