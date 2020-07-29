@@ -118,19 +118,16 @@
                 <input type="hidden" name="owr_id" value="{{owr.id}}">
             {% endif %}
         </div>
-        {%if pwr %}
         <div class={% if 'agent' in request.path %}"card_body-form"{%else%}"card_body"{%endif%}>
             <div class="card_body-form_column">
-                <textarea class="form_input" name="media_folder" placeholder="Папка физ.лица" {% if "media_folder" in req_fields %}required{%endif%} value="{%if form.media_folder.value %}{{form.media_folder.value}}{%endif%}"></textarea>
+                <textarea class="form_input" name="media_folder" placeholder="Папка физ.лица" {% if "media_folder" in req_fields %}required{%endif%}>{{form.media_folder.value}}</textarea>
             </div>
             {% if 'agent' in request.path %}
             <div class="card_body-form_column">
                 <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="video_upload_date" placeholder="Дата загрузки видео" {% if "video_upload_date" in req_fields %}required{%endif%} value="{%if form.video_upload_date.value %}{{form.video_upload_date.value|date:"d.m.Y"}}{%endif%}">
                 <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="video_check_date" placeholder="Дата проврки видео" {% if "video_check_date" in req_fields %}required{%endif%} value="{%if form.video_check_date.value %}{{form.video_check_date.value|date:"d.m.Y"}}{%endif%}">
             </div>
-            {% endif %}
         </div>
-        {%endif%}
         {%if pwr %}
         <div class="card_body-form" style="font-size: 12px;font-style: italic;padding: 0.3rem 0.3rem;">
             <div class="card_body-form_column">Создан: {{pwr.created}}</div>
