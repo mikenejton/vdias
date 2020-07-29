@@ -98,9 +98,10 @@ def vitem_form(request, vitem_id=None):
                         ff = forms.VerificationItemForm(request.POST)
                         if ff.is_valid():
                             for key in ff.fields:
-                                if hasattr(vitem, key):
-                                    if getattr(vitem, key) != ff.cleaned_data[key]:
-                                        setattr(vitem, key, ff.cleaned_data[key])
+                                if key in request.POST:
+                                    if hasattr(vitem, key):
+                                        if getattr(vitem, key) != ff.cleaned_data[key]:
+                                            setattr(vitem, key, ff.cleaned_data[key])
                             views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
                         
