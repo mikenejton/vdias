@@ -75,8 +75,8 @@ class PartnerShipStatus(models.Model):
     def __str__(self):
         return self.status
     class Meta:
-        verbose_name = 'Статус партнерства'
-        verbose_name_plural = 'Статусы партнерства'
+        verbose_name = 'Статус сотрудничества'
+        verbose_name_plural = 'Статусы сотрудничества'
 
 
 class ProductType(models.Model):
