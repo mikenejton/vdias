@@ -104,14 +104,17 @@ def required_scan_checking(model_id, model_name, model_role=None, doc_types=[]):
     return is_filled
 
 def is_vitem_ready(item_type, item=None, doc_types=[]):
-    if item_type == 'person':
-        if item.role.role_name in ['Ген. директор', 'Бенифициар']:
-            return False
+    # if item_type == 'person':
+    #     if item.role.role_name in ['Ген. директор', 'Бенифициар']:
+    #         return False
+    is_ready = False
+    
     if item:
-        if item_type == 'short_item':
-            is_ready = True
-        else:
-            is_ready = required_scan_checking(getattr(item, item_type).id, item_type, item.role, doc_types)
+        is_ready = True
+        # if item_type == 'short_item':
+        #     is_ready = True
+        # else:
+        #     is_ready = required_scan_checking(getattr(item, item_type).id, item_type, item.role, doc_types)
         if is_ready:
             if item_type == 'organization':
                 ceo = models.PersonWithRole.objects.filter(related_organization = item.organization, role = models.ObjectRole.objects.get(role_name = 'Ген. директор'))

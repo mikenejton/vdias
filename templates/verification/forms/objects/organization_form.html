@@ -4,8 +4,8 @@
         @click="changeOrgTab('Organization')">Организация</a>
     <a class="sidebar-menu_item" v-bind:class="{ active: currentOrgTab=='Staff'}"
         @click="changeOrgTab('Staff')">Состав</a>
-    <a class="sidebar-menu_item" v-bind:class="{ active: currentOrgTab=='orgScan'}"
-        @click="changeOrgTab('orgScan')">Сканы</a>
+    <!-- <a class="sidebar-menu_item" v-bind:class="{ active: currentOrgTab=='orgScan'}"
+        @click="changeOrgTab('orgScan')">Сканы</a> -->
     <div class="top-border"></div>
     <div class="hint-box_unfilled">
         {% if owr_href %}
@@ -19,17 +19,13 @@
             {% for field in unfilled %}
             <p class="error_txt form_input"><i>{{ field }}</i></p>
             {% endfor %}
-            <p>Необходимые сканы:</p>
-            {% for doc in req_doc_types %}
-                <p class="error_txt form_input"><i>{{ doc }}</i></p>
-            {% endfor %}
         {% endif %}
         </div>
     </div>
     <div class="hint-box_roles">
         <p class="form_input">Роли:</p>
         {% for role in roles %}
-            {% if role.role.role_name == page_title %}
+            {% if role.role.role in request.path %}
                 <p class="form_input"><i>{{role.role}} ({{role.related_organization}})</i></p>
             {% else %}
                 {% if role.role.role in 'ceo, ben' %}
@@ -82,12 +78,22 @@
             </div>
             <input class="form_input" type="email" name="email" placeholder="Email" {% if "email" in req_fields %}required{%endif%}
                 value="{%if form.email.value %}{{form.email.value}}{%endif%}">
+            {% if 'partner' in request.path %}
+            <select name="partnership_status" class="form_input" {% if "partnership_status" in req_fields %}required{%endif%}>
+                <option value="" disabled selected>Статус сотрудничества</option>
+                {%for p_status in partnership_statuses %}
+                    <option value="{{p_status.id}}" {%if owr.partnership_status.id == p_status.id %}selected{%endif%}>{{p_status}}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
         </div>
         <div class="card_body-form_column">
             <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации"
             {% if "adr_reg" in req_fields %}required{%endif%}>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
             <textarea class="form_input wide_textarea" type="text" name="adr_fact" {% if "adr_fact" in req_fields %}required{%endif%}
                 placeholder="Фактический адрес">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
+            <textarea class="form_input wide_textarea" type="text" name="media_folder" placeholder="Папка организации" {% if "media_folder" in req_fields %}required{%endif%} 
+                value="{%if form.media_folder.value %}{{form.media_folder.value}}{%endif%}"></textarea>
         </div>
         {%if owr %}
         <input type="hidden" name="id" value="{{owr.id}}">
@@ -161,14 +167,6 @@
     </div>
     {%endif%}
 </div>
-<div v-show="currentOrgTab=='orgScan'">
-    {%if owr %}
-    {% include "verification/forms/common/scan_form.html" %}
-    {% else %}
-    <div class="input_wrapper mb-card_body card_body-form_column">
-        <p class="error_txt">Сначала заполните и сохраните данные организации</p>
-    </div>
-    {% endif %}
-</div>
+
 
 {% endblock %}

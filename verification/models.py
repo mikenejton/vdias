@@ -125,6 +125,7 @@ class Organization(models.Model):
     ogrn = models.CharField('ОГРН', max_length = 15, blank=True, null=True, unique=True)
     phone_number = models.CharField('Телефон', max_length = 200, blank=True, null=True)
     email = models.EmailField('Email', blank=True, null=True)
+    media_folder = models.CharField('Папка организации', max_length = 1000, blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
@@ -178,6 +179,9 @@ class Person(models.Model):
     email = models.EmailField('Email', blank=True, null=True)
     staff_dep = models.ForeignKey(StaffDepartment, on_delete=models.SET_NULL, verbose_name='Отдел', blank=True, null=True)
     staff_position = models.CharField('Должность', max_length = 300, blank=True, null=True)
+    media_folder = models.CharField('Папка физ.лица', max_length = 1000, blank=True, null=True)
+    video_upload_date = models.DateField('Дата загрузки видео', blank=True, null=True)
+    video_check_date = models.DateField('Дата проверки видео', blank=True, null=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
@@ -348,6 +352,7 @@ class DocStorage(models.Model):
     class Meta:
         verbose_name = 'Скан'
         verbose_name_plural = 'Сканы'
+
 # -----------------------------------------------------------
 
 # Уведомления пользователя - непонятно, нужно ли

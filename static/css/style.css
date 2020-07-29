@@ -210,6 +210,11 @@ aside.sidebar{
     grid-gap: 1rem;
     min-width: max-content;
 }
+.card_body-form-inlinebox{
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+}
 .card_body-form_column{
     display: flex;
     flex-direction: column;

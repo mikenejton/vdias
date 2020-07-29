@@ -66,7 +66,7 @@ def vitem_form(request, vitem_id=None):
                     context['msgs'] = msgs
                     if vitem.person:
                         context['pwr'] = vitem.person
-                        scan_list = models.DocStorage.objects.filter(model_id = vitem.person.person.id, model_name = 'Person')
+                        # scan_list = models.DocStorage.objects.filter(model_id = vitem.person.person.id, model_name = 'Person')
                         form_template = 'verification/forms/objects/vitem_agent_form.html'
                         context['edit_link'] = [{'Агент': 'detailing-agent', 'Сотрудник': 'detailing-staff', 'Ген. директор': 'detailing-ceo', 'Бенефициар': 'detailing-ben'}[vitem.person.role.role_name], vitem.person.id]
                         if context['pwr'].role.role_name in ['Ген. директор', 'Бенефициар']:
@@ -76,21 +76,21 @@ def vitem_form(request, vitem_id=None):
 
                     elif vitem.organization:
                         context['owr'] = vitem.organization
-                        scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.organization.id, model_name = 'Organization')
+                        # scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.organization.id, model_name = 'Organization')
                         form_template = 'verification/forms/objects/vitem_organization_form.html'
                         context['edit_link'] = ['detailing-partner' if vitem.organization.role.role_name == 'Партнер' else 'detailing-counterparty', vitem.organization.id]
                         context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].organization.id, role__role_name = 'Бенефициар')
                         context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = context['owr'].organization.id, role__role_name = 'Ген. директор')
                     elif vitem.short_item:
                         context['short_item'] = vitem.short_item
-                        scan_list = models.DocStorage.objects.filter(model_name = 'ShortItem')
+                        # scan_list = models.DocStorage.objects.filter(model_name = 'ShortItem')
                         context['edit_link'] = ['detailing-short-item', vitem.short_item.id]
                         form_template = 'verification/forms/objects/vitem_short_item_form.html'
 
-                    context['scan_list'] = scan_list.filter(to_del = False)
+                    # context['scan_list'] = scan_list.filter(to_del = False)
                     
-                    if request.user.extendeduser.user_role.role_lvl <= 3:
-                        context['deleted_scan_list'] = scan_list.filter(to_del = True)
+                    # if request.user.extendeduser.user_role.role_lvl <= 3:
+                    #     context['deleted_scan_list'] = scan_list.filter(to_del = True)
                     context['form'] = forms.VerificationItemForm(instance=vitem)
                     return render(request, form_template, context)
                 else:

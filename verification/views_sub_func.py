@@ -26,10 +26,14 @@ def owr_call(request, owr_id, create_title, update_title):
                         updated_organization = context['form'].save(commit=False)
                         if 'division' in request.POST:
                             context['owr'].division = models.Division.objects.get(id = request.POST['division'])
-                            context['owr'].save()
+                        
                         if 'product_type' in request.POST:
                             context['owr'].product_type = models.ProductType.objects.get(id = request.POST['product_type'])
-                            context['owr'].save()
+                            
+                        if 'partnership_status' in request.POST:
+                            context['owr'].partnership_status = models.PartnerShipStatus.objects.get(id = request.POST['partnership_status'])
+                        
+                        context['owr'].save()
                         views_utils.update_logger('Organization', updated_organization.id, 'Обновление записи', request.user.extendeduser, updated_organization)
                         updated_organization = context['form'].save()
 
@@ -61,11 +65,12 @@ def owr_call(request, owr_id, create_title, update_title):
         return render(request, context['template'], context)
 
 def get_owr_context(request, owr_id, create_title, update_title):
-    context = {'doc_types': ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
-    context['req_doc_types']=['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
-    context['unfilled'] = []
+    # context = {'doc_types': ['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
+    # context['req_doc_types']=['Скан анкеты', 'Скан устава', 'Скан свидетельства о гос.рег.', 'Скан свидетельства о постановке на налоговый учет']
+    context = {'unfilled': []}
     context['divisions'] = models.Division.objects.all()[:2]
     context['product_types'] = models.ProductType.objects.all()
+    context['partnership_statuses'] = models.PartnerShipStatus.objects.all()
     if owr_id:
         vitem = models.VerificationItem.objects.filter(organization__id = owr_id)
         if len(vitem) > 0 and owr_id is not None:
@@ -81,13 +86,14 @@ def get_owr_context(request, owr_id, create_title, update_title):
                 context['page_title'] = update_title
                 context['owr'] = owr[0]
                 context['roles'] = models.OrganizationWithRole.objects.filter(organization__id = owr[0].organization.id)
-                context['vitem_ready'] = views_utils.is_vitem_ready('organization', context['owr'], context['req_doc_types'])
+                context['vitem_ready'] = views_utils.is_vitem_ready('organization', context['owr'])
+                # context['vitem_ready'] = views_utils.is_vitem_ready('organization', context['owr'], context['req_doc_types'])
                 context['object_title'] = context['owr'].organization.full_name
                 context['ceo'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].organization.id, role__role_name = 'Ген. директор')
                 context['bens'] = models.PersonWithRole.objects.filter(related_organization__id = owr[0].organization.id, role__role_name = 'Бенефициар')
-                context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
-                if request.user.extendeduser.user_role.role_lvl <= 3:
-                    context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
+                # context['scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = False)
+                # if request.user.extendeduser.user_role.role_lvl <= 3:
+                #     context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = owr[0].organization.id, model_name = 'Organization', to_del = True)
                 context['form'] = form
                 if not context['vitem_ready']:
                     if len(context['ceo']) == 0:
@@ -133,11 +139,14 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                     if 'staff_status' in request.POST:
                         if context['pwr'].staff_status != request.POST['staff_status']:
                             context['pwr'].staff_status = request.POST['staff_status']
-
                     if 'product_type' in request.POST:
                         p_type = models.ProductType.objects.get(id = request.POST['product_type'])
                         if context['pwr'].product_type != p_type:
                             context['pwr'].product_type = p_type
+                    if 'partnership_status' in request.POST:
+                        partner_type = models.PartnerShipStatus.objects.get(id = request.POST['partnership_status'])
+                        if context['pwr'].partnership_status != partner_type:
+                            context['pwr'].partnership_status = partner_type
                     
                     context['pwr'].save()
                     updated_person = context['form'].save(commit=False)
@@ -160,6 +169,8 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                         pwr.staff_status = request.POST['staff_status']
                     if 'product_type' in request.POST:
                         pwr.product_type = models.ProductType.objects.get(id = request.POST['product_type'])
+                    if 'partnership_status' in request.POST:
+                        pwr.partnership_status = models.PartnerShipStatus.objects.get(id = request.POST['partnership_status'])
                     
                     pwr.save()
                     views_utils.update_logger('PersonWithRole', pwr.id, '', request.user.extendeduser)
@@ -208,6 +219,8 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                             pwr.staff_status = request.POST['staff_status']
                         if 'product_type' in request.POST:
                             pwr.product_type = models.ProductType.objects.get(id = request.POST['product_type'])
+                        if 'partnership_status' in request.POST:
+                            pwr.partnership_status = models.PartnerShipStatus.objects.get(id = request.POST['partnership_status'])
 
                         pwr.save()
                         context['pwr'] = pwr
@@ -229,11 +242,12 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                         context['redirect'] = redirect(reverse(view_name, args=[x for x in target_id]))
 
         if pwr_role in ['Ген. директор', 'Бенефициар'] and pwr_id:
-            pwr_is_filled = views_utils.required_scan_checking(context['pwr'].person.id, 'person', models.ObjectRole.objects.get(role_name = pwr_role))
-            if pwr_is_filled:
-                context['owr_href'] = {'view':'detailing-partner' if context['owr'].role.role_name == 'Партнер' else 'detailing-counterparty', 'view_id': owr_id}
-            else:
-                context['unfilled'].append('Загрузите все необходимые сканы')
+            context['owr_href'] = {'view':'detailing-partner' if context['owr'].role.role_name == 'Партнер' else 'detailing-counterparty', 'view_id': owr_id}
+            # pwr_is_filled = views_utils.required_scan_checking(context['pwr'].person.id, 'person', models.ObjectRole.objects.get(role_name = pwr_role))
+            # if pwr_is_filled:
+            #     context['owr_href'] = {'view':'detailing-partner' if context['owr'].role.role_name == 'Партнер' else 'detailing-counterparty', 'view_id': owr_id}
+            # else:
+            #     context['unfilled'].append('Загрузите все необходимые сканы')
         context['template'] = 'verification/forms/common/person_form_common.html'
     else:
         context['err_txt'] = 'Запрашиваемая страница не существует или у Вас недостаточно прав на ее просмотр'
@@ -246,11 +260,11 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
         return render(request, context['template'], context)
 
 def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
-    context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'СНИЛС', 'Видеоприветствие', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
-    context['req_doc_types']=['Паспорт 1 страница', 'Паспорт 2 страница']
-    if pwr_role == 'Агент':
-        context['req_doc_types'].append('Видеоприветствие')
-    context['unfilled'] = []
+    # context = {'doc_types': ['Паспорт 1 страница', 'Паспорт 2 страница', 'СНИЛС', 'Видеоприветствие', 'Кронос', 'КонтурФокус', 'ФССП', 'Иной документ']}
+    # context['req_doc_types']=['Паспорт 1 страница', 'Паспорт 2 страница']
+    # if pwr_role == 'Агент':
+    #     context['req_doc_types'].append('Видеоприветствие')
+    context = {'unfilled': []}
     person_organizations = models.OrganizationWithRole.objects.all()
     if request.user.extendeduser.user_role == 'HR' or pwr_role == 'Сотрудник':
         person_organizations = person_organizations.filter(role__role_name = 'Штат')
@@ -263,6 +277,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context['product_types'] = models.ProductType.objects.all()
     context['staff_statuses'] = ['Кандидат', 'Активный', 'Уволен', 'Декрет']
     context['departments'] = models.StaffDepartment.objects.all()
+    context['partnership_statuses'] = models.PartnerShipStatus.objects.all()
     if request.user.extendeduser.user_role.role_lvl <= 2:
         context['mngr_list'] = models.Manager.objects.filter(is_active = True)
     else:
@@ -284,7 +299,8 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                         temp_dict['owr'] = owr
                     context['roles'].append(temp_dict)
 
-            context['vitem_ready'] = views_utils.is_vitem_ready('person', context['pwr'], context['req_doc_types'])
+            context['vitem_ready'] = views_utils.is_vitem_ready('person', context['pwr'])
+            # context['vitem_ready'] = views_utils.is_vitem_ready('person', context['pwr'], context['req_doc_types'])
             context['pwr_role'] = pwr_role
             if request.user.extendeduser.user_role.role_lvl > 2:
                 if context['pwr'].related_organization:
@@ -299,9 +315,9 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
                     context['product_types'] = context['product_types'].filter(id = context['pwr'].product_type.id)
 
             context['form'] = forms.PersonForm(instance=context['pwr'].person)
-            context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)
-            if request.user.extendeduser.user_role.role_lvl <= 3:
-                context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = True)
+            # context['scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = False)
+            # if request.user.extendeduser.user_role.role_lvl <= 3:
+            #     context['deleted_scan_list'] = models.DocStorage.objects.filter(model_id = context['pwr'].person.id, model_name = 'Person', to_del = True)
             if owr_id:
                 vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
             if pwr_role in ['Агент', 'Сотрудник', 'Ген. директор', 'Бенефициар']:

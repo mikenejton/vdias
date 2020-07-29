@@ -1,7 +1,7 @@
 {% block person_form %}
     <div class="multitab-form_buttons">
         <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='Person'}" @click="changePersTab('Person')">Физ.лицо</a>
-        <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='personScan'}" @click="changePersTab('personScan')">Сканы</a>
+        <!-- <a class="sidebar-menu_item" v-bind:class="{ active: currentPersTab=='personScan'}" @click="changePersTab('personScan')">Сканы</a> -->
         <div class="top-border"></div>
         <div class="hint-box_unfilled">
             {% if owr_href %}
@@ -15,10 +15,6 @@
                 {% for field in unfilled %}
                     <p class="error_txt form_input"><i>{{ field }}</i></p>
                 {% endfor %}
-                <p>Необходимые сканы:</p>
-                {% for doc in req_doc_types %}
-                    <p class="error_txt form_input"><i>{{ doc }}</i></p>
-                {% endfor %}
             {% endif %}
             </div>
         </div>
@@ -26,7 +22,7 @@
             <p class="form_input">Роли:</p>
             {% for role in roles %}
 
-                {% if role.role_name == page_title %}
+                {% if role.role in request.path %}
                     <p class="form_input"><i>{{role.role_name}} ({{role.owr}})</i></p>
                 {% else %}
                     {% if role.role in 'ceo, ben' %}
@@ -42,7 +38,7 @@
         {% csrf_token %}
         <div class="mb-card_body card_body-form">
             <div class="card_body-form_column">
-                {% if "Ген. директор" not in page_title and "Бенефициар" not in page_title %}
+                {% if 'ben' not in request.path and 'ceo' not in request.path %}
                 <select name="related_manager" class="form_input" {% if "related_manager" in req_fields %}required{%endif%}>
                     <option value="0" selected disabled>Менеджер</option>
                     {% for mngr in mngr_list %}
@@ -50,7 +46,7 @@
                     {% endfor %}
                 </select>
                 {% endif %}
-                {% if "Сотрудник" in page_title %}
+                {% if 'staff' in request.path %}
                     <select name="staff_dep" class="form_input" {% if "staff_dep" in req_fields %}required{%endif%}>
                         <option value="0" selected disabled>Отдел</option>
                         {% for dep in departments %}
@@ -58,13 +54,21 @@
                         {% endfor %}
                     </select>
                 {% endif %}
+                {% if 'agent' in request.path %}
+                <select name="partnership_status" class="form_input" {% if "partnership_status" in req_fields %}required{%endif%}>
+                    <option value="" disabled selected>Статус сотрудничества</option>
+                    {%for p_status in partnership_statuses %}
+                        <option value="{{p_status.id}}" {%if pwr.partnership_status.id == p_status.id %}selected{%endif%}>{{p_status}}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
                 <input class="form_input" type="text" name="last_name" placeholder="Фамилия" {% if "last_name" in req_fields %}required{%endif%} value="{%if form.last_name.value %}{{form.last_name.value}}{%endif%}">
                 <input class="form_input" type="text" name="first_name" placeholder="Имя" {% if "first_name" in req_fields %}required{%endif%} value="{%if form.first_name.value %}{{form.first_name.value}}{%endif%}">
                 <input class="form_input" type="text" name="patronymic" placeholder="Отчество" {% if "patronymic" in req_fields %}required{%endif%} value="{%if form.patronymic.value %}{{form.patronymic.value}}{%endif%}">
                 <input class="form_input" type="text" name="prev_fio" placeholder="Предыдущие ФИО" {% if "prev_fio" in req_fields %}required{%endif%} value="{%if form.prev_fio.value %}{{form.prev_fio.value}}{%endif%}">
                 <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" {% if "dob" in req_fields %}required{%endif%} placeholder="Дата рождения" value="{%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}">
                 <input class="form_input" type="text" name="pob" placeholder="Место рождения" {% if "pob" in req_fields %}required{%endif%} value="{%if form.pob.value %}{{form.pob.value}}{%endif%}">
-                <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' {%if owr.organization.org_form == "ИП" and "Ген. директор" in page_title or "sneals" in req_fields %}required{%endif%} pattern=".{14,}" title="Номер СНИЛС (14 символов)">
+                <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' {%if owr.organization.org_form == "ИП" and 'ceo' in request.path or "sneals" in req_fields %}required{%endif%} pattern=".{14,}" title="Номер СНИЛС (14 символов)">
                 <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" {% if "adr_reg" in req_fields %}required{%endif%}>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
             </div>
             <div class="card_body-form_column">
@@ -78,7 +82,7 @@
                         {% endfor %}
                     </select>
                 {% endif %}
-                {% if "Сотрудник" in page_title %}
+                {% if 'staff' in request.path %}
                 <input class="form_input" type="text" name="staff_position" placeholder="Должность" {% if "staff_position" in req_fields %}required{%endif%} value="{%if form.staff_position.value %}{{form.staff_position.value}}{%endif%}">
                 {% endif %}
                 {% if 'agent' in request.path %}
@@ -114,6 +118,19 @@
                 <input type="hidden" name="owr_id" value="{{owr.id}}">
             {% endif %}
         </div>
+        {%if pwr %}
+        <div class={% if 'agent' in request.path %}"card_body-form"{%else%}"card_body"{%endif%}>
+            <div class="card_body-form_column">
+                <textarea class="form_input" name="media_folder" placeholder="Папка физ.лица" {% if "media_folder" in req_fields %}required{%endif%} value="{%if form.media_folder.value %}{{form.media_folder.value}}{%endif%}"></textarea>
+            </div>
+            {% if 'agent' in request.path %}
+            <div class="card_body-form_column">
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="video_upload_date" placeholder="Дата загрузки видео" {% if "video_upload_date" in req_fields %}required{%endif%} value="{%if form.video_upload_date.value %}{{form.video_upload_date.value|date:"d.m.Y"}}{%endif%}">
+                <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="video_check_date" placeholder="Дата проврки видео" {% if "video_check_date" in req_fields %}required{%endif%} value="{%if form.video_check_date.value %}{{form.video_check_date.value|date:"d.m.Y"}}{%endif%}">
+            </div>
+            {% endif %}
+        </div>
+        {%endif%}
         {%if pwr %}
         <div class="card_body-form" style="font-size: 12px;font-style: italic;padding: 0.3rem 0.3rem;">
             <div class="card_body-form_column">Создан: {{pwr.created}}</div>
@@ -154,24 +171,11 @@
                         {% endfor %}
                     </select>
                 </div>
-            {% elif 'agent' in request.path %}
-            <div>
-                
-            </div>
             {% else %}
                 <div class="mb-card_footer_left"></div>
             {%endif%}
             <button type="submit" class="btn_prim" name="personFormSave" form="personForm" v-show="isEditable">{%if pwr %}Обновить{% else %}Сохранить{% endif %}</button>
         </div>
     </form>
-    <div v-show="currentPersTab=='personScan'">
-        {% if pwr %}
-            {% include "verification/forms/common/scan_form.html" %}
-        {% else %}
-            <div class="input_wrapper">
-                <p class="error_txt">Сначала заполните и сохраните данные физ.лица</p>
-            </div>
-        {% endif %}
-    </div>
     
 {% endblock %}

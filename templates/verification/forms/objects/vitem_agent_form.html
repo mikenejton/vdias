@@ -12,7 +12,12 @@
     <div class="input_wrapper grid_row">Email: <p class="vitem_form_fields">{{ pwr.person.email }}</p></div>
     {% if pwr.role.role_name == 'Сотрудник' %}
     <div class="input_wrapper grid_row">Позиция: <p class="vitem_form_fields">{{ pwr.division }}</p></div>
-    <div class="input_wrapper grid_row">Статус: <p class="vitem_form_fields">{{ pwr.staff_status }}</p></div>
+    <div class="input_wrapper grid_row">Статус работника: <p class="vitem_form_fields">{{ pwr.staff_status }}</p></div>
+    {% endif %}
+    <div class="input_wrapper grid_row">Папка физ.лица: <p class="vitem_form_fields">{{ pwr.media_folder }}</p></div>
+    {% if pwr.role.role_name == 'Агент' %}
+    <div class="input_wrapper grid_row">Дата загрузки видео: <p class="vitem_form_fields">{{ pwr.person.video_upload_date }}</p></div>
+    <div class="input_wrapper grid_row">Дата проверки видео: <p class="vitem_form_fields">{{ pwr.person.video_check_date }}</p></div>
     {% endif %}
 </div>
 <div class="card_body-form_column">
@@ -22,9 +27,13 @@
     <div class="input_wrapper grid_row">Код подразделения: <p class="vitem_form_fields">{{ pwr.person.pass_code }}</p></div>
     <div class="input_wrapper grid_row">СНИЛС: <p class="vitem_form_fields">{{ pwr.person.sneals }}</p></div>
     <div class="input_wrapper grid_row">Организация: <p class="vitem_form_fields">{{ pwr.related_organization }}</p></div>
+    <div class="input_wrapper grid_row">Менеджер: <p class="vitem_form_fields">{{ pwr.related_manager }}</p></div>
     {% if pwr.role.role_name == 'Сотрудник' %}
     <div class="input_wrapper grid_row">Отдел: <p class="vitem_form_fields">{{ pwr.person.staff_dep }}</p></div>
-    <div class="input_wrapper grid_row">Руководитель: <p class="vitem_form_fields">{{ pwr.person.staff_position }}</p></div>
+    <div class="input_wrapper grid_row">Должность: <p class="vitem_form_fields">{{ pwr.person.staff_position }}</p></div>
+    {%elif pwr.role.role_name == 'Агент' %}
+    <div class="input_wrapper grid_row">Тип продуктов: <p class="vitem_form_fields">{{ pwr.product_type }}</p></div>
+    <div class="input_wrapper grid_row">Статус сотрудничества: <p class="vitem_form_fields">{{ pwr.partnership_status }}</p></div>
     {% endif %}
     <div class="input_wrapper grid_row">Дата создания: <p class="vitem_form_fields">{{ pwr.person.created }}</p></div>
     <div class="input_wrapper grid_row">Автор: <p class="vitem_form_fields">{{ pwr.person.author.user.last_name }} {{ pwr.person.author.user.first_name }}</p></div>

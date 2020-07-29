@@ -29,11 +29,11 @@
                 {% endblock %}
             </div>
             <!-- FORM -->
+            {%if vitem.related_vitem%}
             <div class="itemform_controls">
-                {%if vitem.related_vitem%}
                 <div> {{vitem.is_shadow|yesno:'Основная, Ведомая'}} заявка: <a class="vitem_form_fields link" href="{% url 'vitem' vitem_id=vitem.related_vitem.id %}">{{ vitem.related_vitem }}</a></div>
-                {%endif%}
             </div>
+            {%endif%}
             <div class="itemform_controls">
                 <div class="itemform_controls_row">
                     <div class="itemform_controls_row">Автор заявки: <i>{{vitem.author}}</i></div>
@@ -244,7 +244,7 @@
                 <div class="input_wrapper"><button type="submit" class="btn_std" name="btn_add_comment" id="btn_add_comment">Отправить</button></div>
             </div>
         </div>
-        <div class="gcard_vitem-view_table">
+        <!-- <div class="gcard_vitem-view_table">
         {% if scan_list %}
             <table>
                 <thead>
@@ -276,7 +276,7 @@
             </table>
         {% endif %}
         </div>
-    </div>
+    </div> -->
     <div class="modal_form" v-if="showModal">
         <div class="mb-card" style="background: #fff;">
             <div v-model="btnName" v-show="false"></div>
