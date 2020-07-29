@@ -120,7 +120,7 @@
         </div>
         <div class={% if 'agent' in request.path %}"card_body-form"{%else%}"card_body"{%endif%}>
             <div class="card_body-form_column">
-                <textarea class="form_input" name="media_folder" placeholder="Папка физ.лица" {% if "media_folder" in req_fields %}required{%endif%}>{{form.media_folder.value}}</textarea>
+                <textarea class="form_input" name="media_folder" placeholder="Папка физ.лица" {% if "media_folder" in req_fields %}required{%endif%}>{% if form.media_folder.value %}{{form.media_folder.value}}{% endif %}</textarea>
             </div>
             {% if 'agent' in request.path %}
             <div class="card_body-form_column">

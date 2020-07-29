@@ -93,7 +93,7 @@
             <textarea class="form_input wide_textarea" type="text" name="adr_fact" {% if "adr_fact" in req_fields %}required{%endif%}
                 placeholder="Фактический адрес">{%if form.adr_fact.value %}{{form.adr_fact.value}}{%endif%}</textarea>
             <textarea class="form_input wide_textarea" type="text" name="media_folder" placeholder="Папка организации"
-                {% if "media_folder" in req_fields %}required{%endif%}>{{form.media_folder.value}}</textarea>
+                {% if "media_folder" in req_fields %}required{%endif%}>{% if form.media_folder.value %}{{form.media_folder.value}}{%endif%}</textarea>
         </div>
         {%if owr %}
         <input type="hidden" name="id" value="{{owr.id}}">

@@ -5,7 +5,7 @@
     <div class="input_wrapper grid_row">ФИО: <p class="vitem_form_fields">{{ pwr.person.fio }}</p></div>
     <div class="input_wrapper grid_row">Дата рождения: <p class="vitem_form_fields">{{ pwr.person.dob }}</p></div>
     <div class="input_wrapper grid_row">Место рождения: <p class="vitem_form_fields">{{ pwr.person.pob }}</p></div>
-    <div class="input_wrapper grid_row">Город: <p class="vitem_form_fields">{{ pwr.city }}</p></div>
+    <div class="input_wrapper grid_row">Город: <p class="vitem_form_fields">{{ pwr.person.city }}</p></div>
     <div class="input_wrapper grid_row">Адрес регистрации: <p class="vitem_form_fields">{{ pwr.person.adr_reg }}</p></div>
     <div class="input_wrapper grid_row">Адрес проживания: <p class="vitem_form_fields">{{ pwr.person.adr_fact }}</p></div>
     <div class="input_wrapper grid_row">Телефон: <p class="vitem_form_fields">{{ pwr.person.phone_number }}</p></div>
@@ -14,7 +14,7 @@
     <div class="input_wrapper grid_row">Позиция: <p class="vitem_form_fields">{{ pwr.division }}</p></div>
     <div class="input_wrapper grid_row">Статус работника: <p class="vitem_form_fields">{{ pwr.staff_status }}</p></div>
     {% endif %}
-    <div class="input_wrapper grid_row">Папка физ.лица: <p class="vitem_form_fields">{{ pwr.media_folder }}</p></div>
+    <div class="input_wrapper grid_row">Папка физ.лица: <p class="vitem_form_fields">{{ pwr.person.media_folder }}</p></div>
     {% if pwr.role.role_name == 'Агент' %}
     <div class="input_wrapper grid_row">Дата загрузки видео: <p class="vitem_form_fields">{{ pwr.person.video_upload_date }}</p></div>
     <div class="input_wrapper grid_row">Дата проверки видео: <p class="vitem_form_fields">{{ pwr.person.video_check_date }}</p></div>
