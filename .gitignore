@@ -10,3 +10,4 @@ denv/
 data/
 .env
 db.sqlite3
+run_server.py
