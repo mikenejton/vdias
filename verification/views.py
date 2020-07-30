@@ -81,15 +81,14 @@ def new_item_type_selection(request):
 @login_required
 def item_searcher(request, item_type = None, owr_id = 0):
     context = views_utils.get_base_context(request.user)
+    template = 'verification/forms/search_item.html'
+    context['page_title'] = 'Поиск совпадений'
+    context['item_type'] = item_type
+    context['owr_id'] = owr_id if owr_id else 0
+    context['form'] = forms.SearchForm()
     if request.method == 'GET':
         if item_type == 'short-item':
             return redirect('create-short-item')
-
-        template = 'verification/forms/search_item.html'
-        context['page_title'] = 'Поиск совпадений'
-        context['item_type'] = item_type
-        context['owr_id'] = owr_id if owr_id else 0
-        return render(request, template, context)
     
     elif request.method == 'POST':
         if 'cancel' in request.POST:
@@ -98,24 +97,28 @@ def item_searcher(request, item_type = None, owr_id = 0):
 
             return redirect(reverse(f'create-{item_type}'))
         org_id = None
-        if owr_id != 0:
-            org = models.OrganizationWithRole.objects.get(id = owr_id)
-            if org:
-                org_id = org.organization.id
-        twins = views_utils.twin_detecter('Organization' if item_type in ['counterparty', 'partner'] else 'Person', request.POST['inn' if item_type in ['counterparty', 'partner'] else 'sneals'], item_type)
-        if not len(twins):
-            if owr_id > 0:
-                return redirect(reverse(f'create-{item_type}', args=[owr_id]))
-            return redirect(reverse(f'create-{item_type}'))
-        elif twins[0] == 'new':
-            new_item_wr = views_utils.object_wr_creater(request, twins[1]._meta.model.__name__.replace('WithRole', ''), twins[1], models.ObjectRole.objects.get(role = item_type), org_id)
-            related_vitems_qs = models.VerificationItem.objects.filter(**{f"{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__id": twins[1].id})
-            is_shadow = len(related_vitems_qs.exclude(**{f"{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__role__role_name__in": ['Ген. директор', 'Бенефициар']})) > 0
-            if new_item_wr.role.role_name != 'Бенефициар':
-                views_utils.vitem_creator(request, new_item_wr, twins[1]._meta.model.__name__.replace('WithRole', '').lower(), is_shadow=is_shadow, related_vitem=related_vitems_qs)
-                return redirect(reverse(f'detailing-{item_type}', args=[owr_id, new_item_wr.id] if owr_id>0 else [new_item_wr.id]))
-            else:
-                return redirect(reverse(f'detailing-{item_type}', args=[owr_id, new_item_wr.id] if owr_id>0 else [new_item_wr.id]))
-        elif twins[0] == 'old':
-            vitem = models.VerificationItem.objects.filter(**{twins[1]._meta.model.__name__.replace('WithRole', '').lower(): twins[1]})
-            return redirect(reverse('vitem', args=[vitem[0].id]))
+        context['form'] = forms.SearchForm(data=request.POST)
+        if context['form'].is_valid():
+            if owr_id != 0:
+                org = models.OrganizationWithRole.objects.get(id = owr_id)
+                if org:
+                    org_id = org.organization.id
+            twins = views_utils.twin_detecter('Organization' if item_type in ['counterparty', 'partner'] else 'Person', request.POST['inn' if item_type in ['counterparty', 'partner'] else 'sneals'], item_type)
+            if not len(twins):
+                if owr_id > 0:
+                    return redirect(reverse(f'create-{item_type}', args=[owr_id]))
+                return redirect(reverse(f'create-{item_type}'))
+            elif twins[0] == 'new':
+                new_item_wr = views_utils.object_wr_creater(request, twins[1]._meta.model.__name__.replace('WithRole', ''), twins[1], models.ObjectRole.objects.get(role = item_type), org_id)
+                related_vitems_qs = models.VerificationItem.objects.filter(**{f"{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__id": twins[1].id})
+                is_shadow = len(related_vitems_qs.exclude(**{f"{twins[1]._meta.model.__name__.replace('WithRole', '').lower()}__role__role_name__in": ['Ген. директор', 'Бенефициар']})) > 0
+                if new_item_wr.role.role_name != 'Бенефициар':
+                    views_utils.vitem_creator(request, new_item_wr, twins[1]._meta.model.__name__.replace('WithRole', '').lower(), is_shadow=is_shadow, related_vitem=related_vitems_qs)
+                    return redirect(reverse(f'detailing-{item_type}', args=[owr_id, new_item_wr.id] if owr_id>0 else [new_item_wr.id]))
+                else:
+                    return redirect(reverse(f'detailing-{item_type}', args=[owr_id, new_item_wr.id] if owr_id>0 else [new_item_wr.id]))
+            elif twins[0] == 'old':
+                vitem = models.VerificationItem.objects.filter(**{twins[1]._meta.model.__name__.replace('WithRole', '').lower(): twins[1]})
+                return redirect(reverse('vitem', args=[vitem[0].id]))
+    
+    return render(request, template, context)

@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="mb-card card_centered" style="background: #fff" id="search-form">
-    <form method="POST" ref="searchForm" v-on:submit.prevent="snealsValidate">
+    <form method="POST" ref="searchForm">
     {% csrf_token %}
     <div class="mb-card_header">Введите данные для поиска</div>
     <div class="mb-card_body">
@@ -15,12 +15,16 @@
             <input class="form_input" type="text" name="inn" placeholder="ИНН" v-model="inn" v-mask="'############'"
                 pattern=".{0}|.{10,12}" title="ИНН должен содержать от 10 до 12 символов" :required="isRequired">
         </div>
+    </div>        
+    {% if form.errors %}
+    <div class="mb-card_errors">
+        {% for field in form %}
+            {% if field.errors %}
+                <p class="error_txt">{%for error in field.errors%}<i>{{ error }}</i>{% endfor %}</p>
+            {% endif %}
+        {% endfor %}
     </div>
-    <div class="mb-card_errors" v-if='errorMessage.length'>
-        <div class="alert alert-danger">
-            <p class="error_txt"><i>{ errorMessage }</i></p>
-        </div>
-    </div>
+    {% endif %}
     <div class="mb-card_footer">
         <div class="mb-card_footer_left"></div>
         <div class="input_wrapper"><button type="submit" class="link" name="cancel" v-on:click="cancelSearch()">Пропустить</button></div>
@@ -40,42 +44,11 @@
             inn: '',
             ogrn: '',
             isRequired: true,
-            errorMessage: '',
         },
         methods: {
             cancelSearch: function(){
                 this.isRequired = false;
             },
-            snealsValidate: function () {
-                let result = false;
-                this.errorMessage = '';
-                if (this.sneals.length){
-                    let sneals = this.sneals.replace('-', '').replace(' ', '')
-                    var sum = 0;
-                    for (var i = 0; i < 9; i++) {
-                        sum += parseInt(sneals[i]) * (9 - i);
-                    }
-                    var checkDigit = 0;
-                    if (sum < 100) {
-                        checkDigit = sum;
-                    } else if (sum > 101) {
-                        checkDigit = parseInt(sum % 101);
-                        if (checkDigit === 100) {
-                            checkDigit = 0;
-                        }
-                    }
-                    if (checkDigit === parseInt(sneals.slice(-2))) {
-                        result = true;
-                    } else {
-                        this.errorMessage = 'СНИЛС не соответствует правилам ПФР!';
-                    }
-                }else{
-                    result = true;
-                }
-                if (result){
-                    this.$refs.searchForm.submit();
-                }
-            }
         },
     })
 </script>

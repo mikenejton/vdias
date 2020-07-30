@@ -198,16 +198,16 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                 context['redirect'] = redirect(reverse(view_name, args=[x for x in target_id]))
             elif not pwr_id:
                 person_fio = ' '.join([context['form'].data['last_name'], context['form'].data['first_name'], context['form'].data['patronymic']])
-                context['twins'] = models.PersonWithRole.objects.filter(Q(person__pass_sn = context['form'].data['pass_sn']) | Q(person__sneals = context['form'].data['sneals']) | Q(person__phone_number = context['form'].data['phone_number']) | Q(person__fio = person_fio, person__dob = context['form'].data['dob'] ))
+                context['twins'] = models.PersonWithRole.objects.filter(Q(person__pass_sn = context['form'].data['pass_sn']) | Q(person__sneals = context['form'].data['sneals']) | Q(person__phone_number = context['form'].data['phone_number']) | Q(person__fio = person_fio, person__dob = context['form'].data['dob']) if len(context['form'].data['dob'])> 5 else Q(person__fio = person_fio))
                 if len(context['twins']):
                     is_new_twin = True
                     for twin in context['twins']:
-                        if twin.role == pwr_role:
+                        if twin.role.role_name == pwr_role:
                             is_new_twin = False
                     if is_new_twin:
                         pwr = models.PersonWithRole()
                         pwr.person = context['twins'][0].person
-                        pwr.role = pwr_role
+                        pwr.role = models.ObjectRole.objects.get(role_name = pwr_role)
                         pwr.author = request.user.extendeduser
                         if 'related_organization' in request.POST:
                             pwr.related_organization = models.Organization.objects.get(id = request.POST['related_organization'])
@@ -240,6 +240,9 @@ def pwr_call(request, pwr_id, owr_id, pwr_role, rel_pwr_type,):
                         if owr_id:
                             target_id.insert(0, owr_id)
                         context['redirect'] = redirect(reverse(view_name, args=[x for x in target_id]))
+                    else:
+                        # context['err_txt'] = 'По указанным данным есть совпадения в Базе'
+                        context['form'].add_error('', f'По указанным данным есть совпадения в Базе, объект { context["twins"][0] }')
 
         if pwr_role in ['Ген. директор', 'Бенефициар'] and pwr_id:
             context['owr_href'] = {'view':'detailing-partner' if context['owr'].role.role_name == 'Партнер' else 'detailing-counterparty', 'view_id': owr_id}

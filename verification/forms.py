@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from django import forms
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from . import models, views_utils
@@ -21,10 +22,20 @@ class PersonForm(ModelForm):
                     raise ValidationError({'pass_date': 'Ошибка в дате выдачи паспорта (разница с датой рождения менее 14 лет!'})
         if cleaned_data.get('sneals'):
             result = views_utils.sneals_checking(cleaned_data.get('sneals'))
-            print(result)
             if not result:
                 raise ValidationError({'sneals': 'СНИЛС не соответствует правилам ПФР'})
         
+class SearchForm(forms.Form):
+    sneals = forms.CharField(max_length=14, required=False)
+    inn = forms.CharField(max_length=12, required=False)
+
+    def clean(self):
+        cleaned_data=super(SearchForm, self).clean()
+        if cleaned_data.get('sneals'):
+            result = views_utils.sneals_checking(cleaned_data.get('sneals'))
+            if not result:
+                raise ValidationError({'sneals': 'СНИЛС не соответствует правилам ПФР'})
+
 class OrganizationForm(ModelForm):
     class Meta:
         model = models.Organization
