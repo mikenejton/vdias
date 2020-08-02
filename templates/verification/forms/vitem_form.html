@@ -173,7 +173,7 @@
                         </div>
                         <div class="txt_wrapper" v-show="vitemType == 'Сотрудник'"><textarea name="soc" placeholder="Социальные сети" :disabled="socStatus != 'Есть информация'" :required="socStatus == 'Есть информация'">{{vitem.soc}}</textarea></div>
                         
-                        <div class="itemform_controls_row spb" v-show="СотvitemType == 'Партнер'">
+                        <div class="itemform_controls_row spb" v-show="vitemType == 'Партнер'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">КонтурФокус:</legend></div>
                             <div class="itemform_controls_row_item">
                                 <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Нет информации" id="contur_focus_status_ok" {%if form.contur_focus_status.value == 'Нет информации' %} checked {% endif %} :required="requiredByStatus && vitemType == 'Партнер'"></div>
@@ -182,7 +182,7 @@
                                 <div class="input_wrapper"><label for="contur_focus_status_not_ok">Есть информация</label></div>
                             </div>
                         </div>
-                        <div class="txt_wrapper" v-show="СотvitemType == 'Партнер'"><textarea name="contur_focus" placeholder="Информация по Контур Фокус" :disabled="conturFocusStatus != 'Есть информация'" :required="conturFocusStatus == 'Есть информация'">{{vitem.contur_focus}}</textarea></div>
+                        <div class="txt_wrapper" v-show="vitemType == 'Партнер'"><textarea name="contur_focus" placeholder="Информация по Контур Фокус" :disabled="conturFocusStatus != 'Есть информация'" :required="conturFocusStatus == 'Есть информация'">{{vitem.contur_focus}}</textarea></div>
                     </div>
                     
                     <div class="card_body-form_column">
