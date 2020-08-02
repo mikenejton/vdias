@@ -10,31 +10,34 @@ def get_base_context(user):
     context = {}
     stats = UserStats()
     stats.q_all = models.VerificationItem.objects.all().order_by('-created').select_related()
+    stats.q_not_closed = stats.q_all.exclude(status__status__in = ['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
     stats.q_new = stats.q_all.filter(status__status = 'Новая')
     stats.q_mine = stats.q_all.filter(case_officer__user = user)
     stats.q_at_work = stats.q_all.filter(status__status = 'В работе')
     stats.q_to_fix = stats.q_all.filter(to_fix = True)
     stats.q_fixed = stats.q_all.filter(status__status = 'Доработано')
-    stats.q_finished = stats.q_all.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
+    stats.q_finished = stats.q_all.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
     stats.q_not_filled = stats.q_all.filter(is_filled = False)
     if user.extendeduser.user_role.role_lvl == 2:
         stats.q_new = stats.q_all.filter(status__status = 'Новая').filter(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
         stats.q_all = stats.q_all.exclude(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')).exclude(Q(is_filled = False) & Q(status__status = 'Новая'))
+        stats.q_not_closed = stats.q_all.exclude(status__status = 'Закрыто')
         stats.q_new = stats.q_all.filter(status__status = 'Новая')
         stats.q_at_work = stats.q_mine.filter(status__status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
         stats.q_fixed = stats.q_mine.filter(status__status = 'Доработано')
-        stats.q_finished = stats.q_mine.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
+        stats.q_finished = stats.q_mine.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
         stats.q_not_filled = stats.q_mine.filter(is_filled = False)
     elif user.extendeduser.user_role.role_lvl >= 4:
         stats.q_all = stats.q_all.filter(author__user_role = user.extendeduser.user_role)
+        stats.q_not_closed = stats.q_all.exclude(status__status = 'Закрыто')
         stats.q_new = stats.q_all.filter(status__status = 'Новая')
         stats.q_mine = stats.q_all.filter(author__user = user)
         stats.q_at_work = stats.q_mine.filter(status__status = 'В работе')
         stats.q_to_fix = stats.q_mine.filter(to_fix = True)
         stats.q_fixed = stats.q_mine.filter(status__status = 'Доработано')
-        stats.q_finished = stats.q_mine.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль'])
+        stats.q_finished = stats.q_mine.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
         stats.q_not_filled = stats.q_mine.filter(is_filled = False)
     context['stats'] = stats
     return context
