@@ -162,27 +162,27 @@
                         </div>
                         <div class="txt_wrapper"><textarea name="fssp" placeholder="Информация по ФССП" :disabled="fsspStatus != 'Есть информация'" :required="fsspStatus == 'Есть информация'">{{vitem.fssp}}</textarea></div>
                         
-                        <div class="itemform_controls_row spb" v-show="vitemType == 'Штат'">
+                        <div class="itemform_controls_row spb" v-show="vitemType == 'Сотрудник'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Соц.сети:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Нет информации" id="soc_status_ok" {%if form.soc_status.value == 'Нет информации' %} checked {% endif %} :required="requiredByStatus && vitemType == 'Штат'"></div>
+                                <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Нет информации" id="soc_status_ok" {%if form.soc_status.value == 'Нет информации' %} checked {% endif %} :required="requiredByStatus && vitemType == 'Сотрудник'"></div>
                                 <div class="input_wrapper"><label for="soc_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="soc_status" v-model="socStatus" value="Есть информация" id="soc_status_not_ok" {%if form.soc_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="soc_status_not_ok">Есть информация</label></div>
                             </div>
                         </div>
-                        <div class="txt_wrapper" v-show="vitemType == 'Штат'"><textarea name="soc" placeholder="Социальные сети" :disabled="socStatus != 'Есть информация'" :required="socStatus == 'Есть информация'">{{vitem.soc}}</textarea></div>
+                        <div class="txt_wrapper" v-show="vitemType == 'Сотрудник'"><textarea name="soc" placeholder="Социальные сети" :disabled="socStatus != 'Есть информация'" :required="socStatus == 'Есть информация'">{{vitem.soc}}</textarea></div>
                         
-                        <div class="itemform_controls_row spb" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'">
+                        <div class="itemform_controls_row spb" v-show="СотvitemType == 'Партнер'">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">КонтурФокус:</legend></div>
                             <div class="itemform_controls_row_item">
-                                <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Нет информации" id="contur_focus_status_ok" {%if form.contur_focus_status.value == 'Нет информации' %} checked {% endif %} :required="requiredByStatus && vitemType == 'Партнер' || vitemType == 'Брокер'"></div>
+                                <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Нет информации" id="contur_focus_status_ok" {%if form.contur_focus_status.value == 'Нет информации' %} checked {% endif %} :required="requiredByStatus && vitemType == 'Партнер'"></div>
                                 <div class="input_wrapper"><label for="contur_focus_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="contur_focus_status" v-model="conturFocusStatus" value="Есть информация" id="contur_focus_status_not_ok" {%if form.contur_focus_status.value == 'Есть информация' %} checked {% endif %}></div>
                                 <div class="input_wrapper"><label for="contur_focus_status_not_ok">Есть информация</label></div>
                             </div>
                         </div>
-                        <div class="txt_wrapper" v-show="vitemType == 'Партнер' || vitemType == 'Брокер'"><textarea name="contur_focus" placeholder="Информация по Контур Фокус" :disabled="conturFocusStatus != 'Есть информация'" :required="conturFocusStatus == 'Есть информация'">{{vitem.contur_focus}}</textarea></div>
+                        <div class="txt_wrapper" v-show="СотvitemType == 'Партнер'"><textarea name="contur_focus" placeholder="Информация по Контур Фокус" :disabled="conturFocusStatus != 'Есть информация'" :required="conturFocusStatus == 'Есть информация'">{{vitem.contur_focus}}</textarea></div>
                     </div>
                     
                     <div class="card_body-form_column">
@@ -277,7 +277,7 @@
             bankruptcyStatus: '{{form.bankruptcy_status.value}}',
             affiliationStatus: '{{form.affiliation_status.value}}',
             socStatus: '{{form.soc_status.value}}',
-            vitemType: '{% firstof pwr.role owr.role %}',
+            vitemType: '{% firstof pwr.role.role_name owr.role.role_name %}',
             status: '{{form.status.value}}',
             requiredChecks: false,
         },
