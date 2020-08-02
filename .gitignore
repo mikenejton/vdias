@@ -9,5 +9,5 @@ file_storage/
 denv/
 data/
 .env
-db.sqlite3
+*.sqlite3
 run_server.py

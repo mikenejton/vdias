@@ -268,7 +268,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     # if pwr_role == 'Агент':
     #     context['req_doc_types'].append('Видеоприветствие')
     context = {'unfilled': []}
-    person_organizations = models.OrganizationWithRole.objects.all()
+    person_organizations = models.OrganizationWithRole.objects.all().order_by('organization__org_name')
     if request.user.extendeduser.user_role == 'HR' or pwr_role == 'Сотрудник':
         person_organizations = person_organizations.filter(role__role_name = 'Штат')
     elif request.user.extendeduser.user_role.role_lvl > 3:
@@ -324,7 +324,7 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
             if owr_id:
                 vitem = models.VerificationItem.objects.filter(organization__id = owr_id)[0]
             if pwr_role in ['Агент', 'Сотрудник', 'Ген. директор', 'Бенефициар']:
-                
+                vitem = None
                 person_vitem = models.VerificationItem.objects.filter(person__id = pwr_id)
                 if len(person_vitem):
                     vitem = person_vitem[0]
