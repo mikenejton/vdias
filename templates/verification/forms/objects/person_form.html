@@ -78,7 +78,7 @@
                     <select name="related_organization" class="form_input" {% if "related_organization" in req_fields %}required{%endif%}>
                             <option value="0" selected disabled>Организация</option>
                         {% for org in org_list %}
-                            <option value="{{ org.organization.id }}" {% if pwr.related_organization.id == org.organization.id  %} selected {% endif %}>{{org.organization.org_name}}, {{org.organization.org_form}}, {{org.role}}</option>
+                            <option value="{{ org.organization.id }}" {% if pwr.related_organization.id == org.organization.id  %} selected {% endif %}>{{org.organization.org_name}}, {{org.organization.org_form}}, {{org.role}}, ИНН {{org.organization.inn}}</option>
                         {% endfor %}
                     </select>
                 {% endif %}

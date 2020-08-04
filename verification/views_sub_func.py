@@ -281,10 +281,11 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     context['staff_statuses'] = ['Кандидат', 'Активный', 'Уволен', 'Декрет']
     context['departments'] = models.StaffDepartment.objects.all()
     context['partnership_statuses'] = models.PartnerShipStatus.objects.all()
-    if request.user.extendeduser.user_role.role_lvl <= 2:
-        context['mngr_list'] = models.Manager.objects.filter(is_active = True)
+    if pwr_role == 'Сотрудник':
+        context['mngr_list'] = models.Manager.objects.filter(is_active = True, division__division_name = 'Штат')
     else:
-        context['mngr_list'] = models.Manager.objects.filter(id = 0)
+        context['mngr_list'] = models.Manager.objects.filter(is_active = True).exclude(division__division_name = 'Штат')
+
     
     if owr_id:
         context['owr'] = models.OrganizationWithRole.objects.get(id=owr_id)
