@@ -130,6 +130,7 @@ class Organization(models.Model):
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
     def save(self, *args, **kwargs):
+        self.org_name = self.org_name.replace('"', '').strip()
         self.full_name = ' '.join(filter(None, [self.org_form, self.org_name])).upper()
         super().save(*args, **kwargs)
         return self.id
