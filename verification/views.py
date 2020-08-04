@@ -62,11 +62,10 @@ def sendmail(request):
     return redirect('index')
 
 def export_csv(request, param=None):
-    if request.POST:
-        qs = 'queryset to save'
-        return render_to_csv_response(qs)
-    else:
-        return redirect(request.META.get('HTTP_REFERER'))
+    
+    qs = models.VerificationItem.objects.exclude(person__isnull=True).values('id', 'person__id', 'person__person__sneals', 'person__person__fio', 'person__related_organization__full_name', 'created', 'status__status', 'person__person__comment', 'person__product_type__product_type')
+    return render_to_csv_response(qs)
+        # return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required
 def new_item_type_selection(request):

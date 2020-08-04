@@ -10,6 +10,7 @@ urlpatterns = [
     path('vitem-list/<str:param>', views.vitem_list, name='vitem-list'),
     # path('scan/upload/', views.scan_upload, name='scan-upload'),
     # path('scan/delete/<int:scan_id>/', views.scan_delete, name='scan-delete'),
+    path('export/<str:param>', views.export_csv, name='export'),
     path('vitem/<int:vitem_id>/', form_views.vitem_form, name='vitem'),
     path('item-selection', views.new_item_type_selection, name='item-selection'),
     path('item-searcher/<str:item_type>&<int:owr_id>', views.item_searcher, name='item-searcher'),
