@@ -51,7 +51,7 @@
                     <div class="itemform_controls_row">Исполнитель: <i>{{vitem.case_officer}}</i></div>
                     <input type="hidden" name="case_officer" value="{{form.case_officer.value}}">
                     {% else %}
-                        {% 1 == 2 %}
+                        {% if 1 == 2 %}
                             {% if user.extendeduser.user_role.role_lvl <= 3 and not vitem.is_shadow %}
                             &nbsp;|&nbsp;
                             <div class="itemform_controls_row"><button type="submit" class="btn_suc" name="btn_take_to">Принять в работу</button></div>

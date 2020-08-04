@@ -83,7 +83,7 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
             vitem.organization = item
         elif item_type == 'short_item':
             vitem.short_item = item
-            # vitem.vitem.status = models.DiasStatus.objects.get(id=2)
+            vitem.vitem.status = models.DiasStatus.objects.get(id=2)
             vitem.case_officer = request.user.extendeduser
             vitem.author = request.user.extendeduser
         
