@@ -66,6 +66,8 @@ def vitem_form(request, vitem_id=None):
                     context['msgs'] = msgs
                     if vitem.person:
                         context['pwr'] = vitem.person
+                        # context['roles'] = models.PersonWithRole.objects.filter(person__id = context['pwr'].person.id).exclude(id = context['pwr'].id)
+                        context['roles'] = models.PersonWithRole.objects.filter(person__id = context['pwr'].person.id)
                         # scan_list = models.DocStorage.objects.filter(model_id = vitem.person.person.id, model_name = 'Person')
                         form_template = 'verification/forms/objects/vitem_agent_form.html'
                         context['edit_link'] = [{'Агент': 'detailing-agent', 'Сотрудник': 'detailing-staff', 'Ген. директор': 'detailing-ceo', 'Бенефициар': 'detailing-ben'}[vitem.person.role.role_name], vitem.person.id]
@@ -76,6 +78,7 @@ def vitem_form(request, vitem_id=None):
 
                     elif vitem.organization:
                         context['owr'] = vitem.organization
+                        context['roles'] = models.OrganizationWithRole.objects.filter(organization__id = context['owr'].organization.id).exclude(id = context['owr'].id)
                         # scan_list = models.DocStorage.objects.filter(model_id = vitem.organization.organization.id, model_name = 'Organization')
                         form_template = 'verification/forms/objects/vitem_organization_form.html'
                         context['edit_link'] = ['detailing-partner' if vitem.organization.role.role_name == 'Партнер' else 'detailing-counterparty', vitem.organization.id]

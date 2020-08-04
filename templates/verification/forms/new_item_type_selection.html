@@ -8,17 +8,17 @@
         <div class="mb-card_body">
             <input type="hidden" name="create_stage" value="{{create_stage}}">
             <select name="item_type" v-model='itemType'>
-            {% if user.extendeduser.user_role.role_lvl < 3 %}
-                <option value="short-item">Короткая заявка</option>
-            {%endif%}
             {% if user.extendeduser.user_role.role_name != "HR" %}
+                <option value="agent">Агент</option>    
                 <option value="partner">Партнер</option>
-                <option value="agent">Агент</option>
             {% endif %}
             {% if user.extendeduser.user_role.role_name == "HR" or user.extendeduser.user_role.role_name == "admin" %}
                 <option value="staff">Сотрудник</option>
             {% endif %}
                 <option value="counterparty">Контрагент</option>
+            {% if user.extendeduser.user_role.role_lvl < 3 %}
+                <option value="short-item">Короткая заявка</option>
+            {%endif%}            
             </select>
         </div>
         <div class="mb-card_footer">

@@ -102,6 +102,11 @@
         <input type="hidden" name="author" value="{{request.user.extendeduser.id}}">
         {% endif %}
     </div>
+    <div class="card_body">
+        <div class="card_body-form_column">
+            <textarea class="form_input" name="comment" placeholder="Примечание" {% if "comment" in req_fields %}required{%endif%}>{% if form.comment.value %}{{form.comment.value}}{% endif %}</textarea>
+        </div>
+    </div>
     {%if owr %}
     <div class="card_body-form" style="font-size: 12px;font-style: italic;padding: 0.3rem 0.3rem;">
         <div class="card_body-form_column">Создан: {{owr.created}}</div>

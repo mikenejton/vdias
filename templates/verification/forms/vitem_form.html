@@ -29,11 +29,20 @@
                 {% endblock %}
             </div>
             <!-- FORM -->
-            {%if vitem.related_vitem%}
+            
             <div class="itemform_controls">
-                <div> {{vitem.is_shadow|yesno:'Основная, Ведомая'}} заявка: <a class="vitem_form_fields link" href="{% url 'vitem' vitem_id=vitem.related_vitem.id %}">{{ vitem.related_vitem }}</a></div>
+                <div>
+                    {%if roles %}
+                        Роли: 
+                        {% for role in roles %}
+                            <i>{{ role.role }}</i>;
+                        {% endfor %}
+                    {%endif%}
+                    {%if vitem.related_vitem%}
+                        {{vitem.is_shadow|yesno:'Основная, Ведомая'}} заявка: <a class="vitem_form_fields link" href="{% url 'vitem' vitem_id=vitem.related_vitem.id %}">{{ vitem.related_vitem }}</a>
+                    {%endif%}
+                </div>
             </div>
-            {%endif%}
             <div class="itemform_controls">
                 <div class="itemform_controls_row">
                     <div class="itemform_controls_row">Автор заявки: <i>{{vitem.author}}</i></div>

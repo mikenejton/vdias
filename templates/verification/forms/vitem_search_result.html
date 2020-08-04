@@ -7,6 +7,7 @@
 <table>
     <thead>
         <tr>
+            <th>#</th>
             <th>ID заявки</th>
             <th>Объект</th>
             <th>Роль</th>
@@ -21,6 +22,7 @@
     </thead>
     {% for item in result %}
         {% if item.is_shadow %}<tr class="table_shadow-row">{% else %}<tr>{%endif%}
+            <td align="left">{{ forloop.counter }}</td>
             <td align="left">{{ item.id }}</td>
             <td align="left"><a class="link" href="{% url 'vitem' vitem_id=item.id %}">
                 {%if item.person.person %}{{item.person.person}}

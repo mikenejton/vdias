@@ -118,6 +118,11 @@
                 <input type="hidden" name="owr_id" value="{{owr.id}}">
             {% endif %}
         </div>
+        <div class="card_body">
+            <div class="card_body-form_column">
+                <textarea class="form_input" name="comment" placeholder="Примечание" {% if "comment" in req_fields %}required{%endif%}>{% if form.comment.value %}{{form.comment.value}}{% endif %}</textarea>
+            </div>
+        </div>
         <div class={% if 'agent' in request.path %}"card_body-form"{%else%}"card_body"{%endif%}>
             <div class="card_body-form_column">
                 <textarea class="form_input" name="media_folder" placeholder="Папка физ.лица" {% if "media_folder" in req_fields %}required{%endif%}>{% if form.media_folder.value %}{{form.media_folder.value}}{% endif %}</textarea>
