@@ -142,7 +142,7 @@ class Organization(models.Model):
         verbose_name_plural = 'Организации'
 
 class OrganizationWithRole(models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='owr')
     role = models.ForeignKey(ObjectRole, on_delete=models.PROTECT, verbose_name = 'Роль')
     division = models.ForeignKey(Division, on_delete=models.PROTECT, verbose_name = 'Подразделение', blank=True, null=True)
     product_type = models.ForeignKey(ProductType, on_delete=models.PROTECT, verbose_name = 'Тип продуктов', blank=True, null=True)
@@ -201,7 +201,7 @@ class Person(models.Model):
         verbose_name_plural = 'Физ.лица'
 
 class PersonWithRole(models.Model):
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='pwr')
     role = models.ForeignKey(ObjectRole, on_delete=models.PROTECT, verbose_name = 'Роль')
     verificated = models.BooleanField('Верифицирован', default=False)
     related_manager = models.ForeignKey(Manager, on_delete=models.PROTECT, blank=True, null=True)
@@ -242,8 +242,8 @@ class ShortItem(models.Model):
         verbose_name_plural = 'Короткие заявки'
 
 class VerificationItem(models.Model):
-    person = models.ForeignKey(PersonWithRole, on_delete=models.CASCADE, blank = True, null = True)
-    organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank = True, null = True)
+    person = models.ForeignKey(PersonWithRole, on_delete=models.CASCADE, blank = True, null = True, related_name='vitem_pwr')
+    organization = models.ForeignKey(OrganizationWithRole, on_delete=models.CASCADE, blank = True, null = True, related_name='vitem_owr')
     short_item = models.ForeignKey(ShortItem, on_delete=models.CASCADE, blank = True, null = True)
     is_filled = models.BooleanField('Заявка заполнена', default=False)
     

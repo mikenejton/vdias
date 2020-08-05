@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, F, Count, Subquery, OuterRef, IntegerField
 from django.urls import reverse
 from djqscsv import render_to_csv_response
 from . import models, forms, views_utils, views_sub_func
@@ -62,9 +62,15 @@ def sendmail(request):
     return redirect('index')
 
 def export_csv(request, param=None):
-    
-    qs = models.VerificationItem.objects.exclude(person__isnull=True).values('id', 'person__id', 'person__person__sneals', 'person__person__fio', 'person__related_organization__full_name', 'created', 'status__status', 'person__person__comment', 'person__product_type__product_type')
-    return render_to_csv_response(qs)
+    # fieldset = ['agents_count', 'id', 'person__id', 'person__person__sneals', 'person__person__fio', 'person__related_organization__full_name', 'created', 'status__status', 'person__person__comment', 'person__product_type__product_type']
+    fieldset = ['agents_count', 'staff_count', 'org_form', 'org_name', 'owr__vitem_owr__status__status', 'owr__role__role_name']
+    q = models.Organization.objects.annotate(
+        agents_count=Count("personwithrole", filter=~Q(personwithrole__role__role_name__in = ['Ген. директор', 'Бенефициар', 'Сотрудник']))
+    ).annotate(
+        taff_count=Count("personwithrole", filter=Q(personwithrole__role__role_name__in = ['Ген. директор', 'Бенефициар', 'Сотрудник']))
+    ).prefetch_related('owr', 'owr__vitem_owr')
+    qs_to_csv = q.values(*fieldset)
+    return render_to_csv_response(qs_to_csv, delimiter=';')
         # return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required

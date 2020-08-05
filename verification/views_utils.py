@@ -13,19 +13,19 @@ def get_base_context(user):
     stats.q_not_closed = stats.q_all.exclude(status__status__in = ['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
     stats.q_new = stats.q_all.filter(status__status = 'Новая')
     stats.q_mine = stats.q_all.filter(case_officer__user = user)
-    stats.q_at_work = stats.q_all.filter(status__status__in = ['В работе', 'Возможен особый контроль'])
-    stats.q_to_fix = stats.q_all.filter(to_fix = True)
+    stats.q_at_work = stats.q_all.filter(status__status = 'В работе')
+    stats.q_to_fix = stats.q_all.filter(status__status__in = ['В работе', 'Возможен особый контроль'])
     stats.q_fixed = stats.q_all.filter(status__status = 'Доработано')
     stats.q_finished = stats.q_all.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
     stats.q_not_filled = stats.q_all.filter(is_filled = False)
-    if user.extendeduser.user_role.role_lvl == 2:
-        stats.q_new = stats.q_all.filter(status__status = 'Новая').filter(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')) #????????? штатник и контрагент?
+    # if user.extendeduser.user_role.role_lvl == 2:
+    #     stats.q_new = stats.q_all.filter(status__status = 'Новая').filter(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')) #????????? штатник и контрагент?
     if user.extendeduser.user_role.role_lvl == 3:
         stats.q_all = stats.q_all.exclude(Q(person__role__role_name = 'Сотрудник') | Q(organization__role__role_name = 'Контрагент')).exclude(Q(is_filled = False) & Q(status__status = 'Новая'))
         stats.q_not_closed = stats.q_all.exclude(status__status = 'Закрыто')
         stats.q_new = stats.q_all.filter(status__status = 'Новая')
         stats.q_at_work = stats.q_mine.filter(status__status = 'В работе')
-        stats.q_to_fix = stats.q_mine.filter(to_fix = True)
+        stats.q_to_fix = stats.q_mine.filter(status__status__in = ['В работе', 'Возможен особый контроль'])
         stats.q_fixed = stats.q_mine.filter(status__status = 'Доработано')
         stats.q_finished = stats.q_mine.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
         stats.q_not_filled = stats.q_mine.filter(is_filled = False)
@@ -35,7 +35,7 @@ def get_base_context(user):
         stats.q_new = stats.q_all.filter(status__status = 'Новая')
         stats.q_mine = stats.q_all.filter(author__user = user)
         stats.q_at_work = stats.q_mine.filter(status__status = 'В работе')
-        stats.q_to_fix = stats.q_mine.filter(to_fix = True)
+        stats.q_to_fix = stats.q_mine.filter(status__status__in = ['В работе', 'Возможен особый контроль'])
         stats.q_fixed = stats.q_mine.filter(status__status = 'Доработано')
         stats.q_finished = stats.q_mine.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
         stats.q_not_filled = stats.q_mine.filter(is_filled = False)
@@ -75,17 +75,15 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
         vitem = models.VerificationItem()
-        vitem.status = models.DiasStatus.objects.get(id=1)
+        vitem.status = models.DiasStatus.objects.get(id=2)
         vitem.author = request.user.extendeduser
+        vitem.case_officer = request.user.extendeduser
         if item_type == 'person':
             vitem.person = item
         elif item_type == 'organization':
             vitem.organization = item
         elif item_type == 'short_item':
             vitem.short_item = item
-            vitem.vitem.status = models.DiasStatus.objects.get(id=2)
-            vitem.case_officer = request.user.extendeduser
-            vitem.author = request.user.extendeduser
         
         vitem.is_shadow = is_shadow
         new_vitem = vitem.save()
