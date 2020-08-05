@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, F, Count, Subquery, OuterRef, IntegerField
+from django.db.models import Q, F, Count, Max
 from django.urls import reverse
 from djqscsv import render_to_csv_response
 from . import models, forms, views_utils, views_sub_func
@@ -62,16 +62,31 @@ def sendmail(request):
     return redirect('index')
 
 def export_csv(request, param=None):
-    # fieldset = ['agents_count', 'id', 'person__id', 'person__person__sneals', 'person__person__fio', 'person__related_organization__full_name', 'created', 'status__status', 'person__person__comment', 'person__product_type__product_type']
-    fieldset = ['agents_count', 'staff_count', 'org_form', 'org_name', 'owr__vitem_owr__status__status', 'owr__role__role_name']
-    q = models.Organization.objects.annotate(
-        agents_count=Count("personwithrole", filter=~Q(personwithrole__role__role_name__in = ['Ген. директор', 'Бенефициар', 'Сотрудник']))
-    ).annotate(
-        taff_count=Count("personwithrole", filter=Q(personwithrole__role__role_name__in = ['Ген. директор', 'Бенефициар', 'Сотрудник']))
-    ).prefetch_related('owr', 'owr__vitem_owr')
-    qs_to_csv = q.values(*fieldset)
-    return render_to_csv_response(qs_to_csv, delimiter=';')
-        # return redirect(request.META.get('HTTP_REFERER'))
+    fieldset = []
+    q = None
+    if param == 'organizations':
+        q = models.Organization.objects.annotate(
+            agents_count=Count("personwithrole", filter=~Q(personwithrole__role__role_name__in = ['Ген. директор', 'Бенефициар', 'Сотрудник']))
+        ).annotate(
+            ceo=Max('personwithrole__person__fio', filter=Q(personwithrole__role__role_name = 'Ген. директор'))
+        ).prefetch_related('owr', 'owr__vitem_owr')
+        fieldset = ['id', 'owr__role__role_name', 'org_form', 'org_name', 'agents_count', 'inn', 'ogrn', 'ceo', 'adr_reg', 'owr__division__division_name', 'owr__product_type__product_type', 'owr__partnership_status__status', 'comment', 'media_folder', 'created', 'owr__vitem_owr__created', 'owr__vitem_owr__status__status', 'owr__vitem_owr__dias_comment', 'owr__vitem_owr__case_officer__user__last_name', 'author__user__last_name', 'owr__vitem_owr__fms_not_ok', 'owr__vitem_owr__docs_full', 'owr__vitem_owr__reg_checked', 'owr__vitem_owr__rosfin', 'owr__vitem_owr__cronos', 'owr__vitem_owr__cronos_status', 'owr__vitem_owr__fssp', 'owr__vitem_owr__fssp_status', 'owr__vitem_owr__bankruptcy', 'owr__vitem_owr__bankruptcy_status', 'owr__vitem_owr__court', 'owr__vitem_owr__court_status', 'owr__vitem_owr__contur_focus', 'owr__vitem_owr__contur_focus_status', 'owr__vitem_owr__affiliation', 'owr__vitem_owr__affiliation_status', 'owr__vitem_owr__soc', 'owr__vitem_owr__soc_status']
+    
+    elif param == 'persons':
+        q = models.Person.objects.annotate(
+            roles_count=Count("pwr")
+        ).prefetch_related('pwr', 'pwr__vitem_pwr')
+        
+        fieldset = ['id', 'pwr__role__role_name', 'roles_count', 'sneals', 'fio', 'pwr__related_organization__full_name', 'city', 'dob', 'phone_number', 'pwr__related_manager__division__division_name', 'pwr__product_type__product_type', 'pwr__partnership_status__status', 'comment', 'media_folder', 'video_upload_date', 'video_check_date', 'created', 'pwr__vitem_pwr__created', 'pwr__vitem_pwr__status__status', 'pwr__vitem_pwr__dias_comment', 'pwr__vitem_pwr__case_officer__user__last_name', 'author__user__last_name', 'pwr__vitem_pwr__fms_not_ok', 'pwr__vitem_pwr__docs_full', 'pwr__vitem_pwr__reg_checked', 'pwr__vitem_pwr__rosfin', 'pwr__vitem_pwr__cronos', 'pwr__vitem_pwr__cronos_status', 'pwr__vitem_pwr__fssp', 'pwr__vitem_pwr__fssp_status', 'pwr__vitem_pwr__bankruptcy', 'pwr__vitem_pwr__bankruptcy_status', 'pwr__vitem_pwr__court', 'pwr__vitem_pwr__court_status', 'pwr__vitem_pwr__contur_focus', 'pwr__vitem_pwr__contur_focus_status', 'pwr__vitem_pwr__affiliation', 'pwr__vitem_pwr__affiliation_status', 'pwr__vitem_pwr__soc', 'pwr__vitem_pwr__soc_status']
+    elif param == 'vitems':
+        q = models.VerificationItem.objects.all()
+        fieldset = ['person__person__fio', 'organization__organization__full_name'] 
+
+    if q is not None:
+        qs_to_csv = q.values(*fieldset)
+        return render_to_csv_response(qs_to_csv, delimiter=';')
+    else:
+        return redirect('index')
 
 @login_required
 def new_item_type_selection(request):

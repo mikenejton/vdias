@@ -43,8 +43,8 @@
         <div class="mb-card" id="vueStats">
             <div class="mb-card_header">Распределение</div>
             <div class="mb-card_body" style="flex-direction: row; align-items: flex-end; margin: 10px; justify-content: space-around;">
-                <div v-for="block in activeHyst" v-bind:style="{height: 'calc(' + block.h + '% - 10px)'}" class="hyst-block">
-                    {block.name}
+                <div v-for="block in activeHyst" v-bind:style="{height: 'calc(' + block.h + '% + 10px)'}" class="hyst-block">
+                    {block.name}: {block.count}
                     <span class="hyst-block_hint">Количество: {block.count}</span>
                 </div>
             </div>
