@@ -61,32 +61,115 @@ def sendmail(request):
     views_utils.send_mail('dp@finfort.ru', 'Тема письма', 'Это вроде как от Юли<br>Но не от Юли!')
     return redirect('index')
 
-def export_csv(request, param=None):
-    fieldset = []
-    q = None
-    if param == 'organizations':
-        q = models.Organization.objects.annotate(
-            agents_count=Count("personwithrole", filter=~Q(personwithrole__role__role_name__in = ['Ген. директор', 'Бенефициар', 'Сотрудник']))
-        ).annotate(
-            ceo=Max('personwithrole__person__fio', filter=Q(personwithrole__role__role_name = 'Ген. директор'))
-        ).prefetch_related('owr', 'owr__vitem_owr')
-        fieldset = ['id', 'owr__role__role_name', 'org_form', 'org_name', 'agents_count', 'inn', 'ogrn', 'ceo', 'adr_reg', 'owr__division__division_name', 'owr__product_type__product_type', 'owr__partnership_status__status', 'comment', 'media_folder', 'created', 'owr__vitem_owr__created', 'owr__vitem_owr__status__status', 'owr__vitem_owr__dias_comment', 'owr__vitem_owr__case_officer__user__last_name', 'author__user__last_name', 'owr__vitem_owr__fms_not_ok', 'owr__vitem_owr__docs_full', 'owr__vitem_owr__reg_checked', 'owr__vitem_owr__rosfin', 'owr__vitem_owr__cronos', 'owr__vitem_owr__cronos_status', 'owr__vitem_owr__fssp', 'owr__vitem_owr__fssp_status', 'owr__vitem_owr__bankruptcy', 'owr__vitem_owr__bankruptcy_status', 'owr__vitem_owr__court', 'owr__vitem_owr__court_status', 'owr__vitem_owr__contur_focus', 'owr__vitem_owr__contur_focus_status', 'owr__vitem_owr__affiliation', 'owr__vitem_owr__affiliation_status', 'owr__vitem_owr__soc', 'owr__vitem_owr__soc_status']
-    
-    elif param == 'persons':
-        q = models.Person.objects.annotate(
-            roles_count=Count("pwr")
-        ).prefetch_related('pwr', 'pwr__vitem_pwr')
-        
-        fieldset = ['id', 'pwr__role__role_name', 'roles_count', 'sneals', 'fio', 'pwr__related_organization__full_name', 'city', 'dob', 'phone_number', 'pwr__related_manager__division__division_name', 'pwr__product_type__product_type', 'pwr__partnership_status__status', 'comment', 'media_folder', 'video_upload_date', 'video_check_date', 'created', 'pwr__vitem_pwr__created', 'pwr__vitem_pwr__status__status', 'pwr__vitem_pwr__dias_comment', 'pwr__vitem_pwr__case_officer__user__last_name', 'author__user__last_name', 'pwr__vitem_pwr__fms_not_ok', 'pwr__vitem_pwr__docs_full', 'pwr__vitem_pwr__reg_checked', 'pwr__vitem_pwr__rosfin', 'pwr__vitem_pwr__cronos', 'pwr__vitem_pwr__cronos_status', 'pwr__vitem_pwr__fssp', 'pwr__vitem_pwr__fssp_status', 'pwr__vitem_pwr__bankruptcy', 'pwr__vitem_pwr__bankruptcy_status', 'pwr__vitem_pwr__court', 'pwr__vitem_pwr__court_status', 'pwr__vitem_pwr__contur_focus', 'pwr__vitem_pwr__contur_focus_status', 'pwr__vitem_pwr__affiliation', 'pwr__vitem_pwr__affiliation_status', 'pwr__vitem_pwr__soc', 'pwr__vitem_pwr__soc_status']
-    elif param == 'vitems':
-        q = models.VerificationItem.objects.all()
-        fieldset = ['person__person__fio', 'organization__organization__full_name'] 
+def export_csv(request):
+    if request.method == 'POST':
+        if 'report_name' in request.POST:
+            if request.POST['report_name'] == 'organizations':
+                q = models.Organization.objects.annotate(
+                    agents_count=Count("personwithrole", filter=~Q(personwithrole__role__role_name__in = ['Ген. директор', 'Бенефициар', 'Сотрудник']))
+                ).annotate(
+                    ceo=Max('personwithrole__person__fio', filter=Q(personwithrole__role__role_name = 'Ген. директор'))
+                ).prefetch_related('owr', 'owr__vitem_owr')
+                fieldset = ['id', 'owr__role__role_name', 'org_form', 'org_name', 'agents_count', 'inn', 'ogrn', 'ceo', 'adr_reg', 'owr__division__division_name', 'owr__product_type__product_type', 'owr__partnership_status__status', 'comment', 'media_folder', 'created', 'owr__vitem_owr__created', 'owr__vitem_owr__status__status', 'owr__vitem_owr__dias_comment', 'owr__vitem_owr__case_officer__user__last_name', 'author__user__last_name', 'owr__vitem_owr__fms_not_ok', 'owr__vitem_owr__docs_full', 'owr__vitem_owr__reg_checked', 'owr__vitem_owr__rosfin', 'owr__vitem_owr__cronos', 'owr__vitem_owr__cronos_status', 'owr__vitem_owr__fssp', 'owr__vitem_owr__fssp_status', 'owr__vitem_owr__bankruptcy', 'owr__vitem_owr__bankruptcy_status', 'owr__vitem_owr__court', 'owr__vitem_owr__court_status', 'owr__vitem_owr__contur_focus', 'owr__vitem_owr__contur_focus_status', 'owr__vitem_owr__affiliation', 'owr__vitem_owr__affiliation_status', 'owr__vitem_owr__soc', 'owr__vitem_owr__soc_status']
+            
+            elif request.POST['report_name'] == 'persons':
+                q = models.Person.objects.annotate(
+                    roles_count=Count("pwr")
+                ).prefetch_related('pwr', 'pwr__vitem_pwr')
+                
+                fieldset = ['id', 'pwr__role__role_name', 'roles_count', 'sneals', 'fio', 'pwr__related_organization__full_name', 'staff_dep__dep_name', 'staff_position', 'owr__staff_status', 'city', 'dob', 'phone_number', 'pwr__related_manager__division__division_name', 'pwr__product_type__product_type', 'pwr__partnership_status__status', 'comment', 'media_folder', 'video_upload_date', 'video_check_date', 'created', 'author__user__last_name', 'pwr__vitem_pwr__status__status', 'pwr__vitem_pwr__dias_comment', 'pwr__vitem_pwr__case_officer__user__last_name', 'pwr__vitem_pwr__created', 'pwr__vitem_pwr__fms_not_ok', 'pwr__vitem_pwr__docs_full', 'pwr__vitem_pwr__reg_checked', 'pwr__vitem_pwr__rosfin', 'pwr__vitem_pwr__cronos', 'pwr__vitem_pwr__cronos_status', 'pwr__vitem_pwr__fssp', 'pwr__vitem_pwr__fssp_status', 'pwr__vitem_pwr__bankruptcy', 'pwr__vitem_pwr__bankruptcy_status', 'pwr__vitem_pwr__court', 'pwr__vitem_pwr__court_status', 'pwr__vitem_pwr__contur_focus', 'pwr__vitem_pwr__contur_focus_status', 'pwr__vitem_pwr__affiliation', 'pwr__vitem_pwr__affiliation_status', 'pwr__vitem_pwr__soc', 'pwr__vitem_pwr__soc_status']
+            elif request.POST['report_name'] == 'vitems':
+                q = models.VerificationItem.objects.all()
+                fieldset = [
+                    'id',
+                    'person__person__id',
+                    'person__person__fio',
+                    'person__person__prev_fio',
+                    'person__role__role_name',
+                    'person__verificated',
+                    'person__related_manager__fio',
+                    'person__related_manager__division__division_name',
+                    'person__division__division_name',
+                    'person__product_type__product_type',
+                    'person__partnership_status__status',
+                    'person__staff_status',
+                    'person__related_organization__full_name',
+                    'person__created',
+                    'person__author__user__last_name',
+                    'person__person__dob',
+                    'person__person__pob',
+                    'person__person__adr_reg',
+                    'person__person__adr_fact',
+                    'person__person__city',
+                    'person__person__pass_sn',
+                    'person__person__pass_date',
+                    'person__person__pass_org',
+                    'person__person__pass_code',
+                    'person__person__sneals',
+                    'person__person__phone_number',
+                    'person__person__email',
+                    'person__person__staff_dep__dep_name',
+                    'person__person__staff_position',
+                    'person__person__comment',
+                    'person__person__media_folder',
+                    'person__person__video_upload_date',
+                    'person__person__video_check_date',
+                    'person__person__created',
+                    'person__person__author__user__last_name',
+                    'organization__organization__id',
+                    'organization__organization__org_form',
+                    'organization__organization__org_name',
+                    'organization__role__role_name',
+                    'organization__division__division_name',
+                    'organization__product_type__product_type',
+                    'organization__partnership_status__status',
+                    'organization__verificated', 'organization__created',
+                    'organization__author__user__last_name',
+                    'organization__organization__adr_reg',
+                    'organization__organization__adr_fact',
+                    'organization__organization__inn',
+                    'organization__organization__ogrn',
+                    'organization__organization__phone_number',
+                    'organization__organization__email',
+                    'organization__organization__media_folder',
+                    'organization__organization__comment',
+                    'organization__organization__created',
+                    'organization__organization__author__user__last_name',
+                    'is_filled',
+                    'status__status',
+                    'to_fix',
+                    'fixed',
+                    'dias_comment',
+                    'case_officer__user__last_name',
+                    'related_vitem', 'is_shadow',
+                    'fms_not_ok', 'rosfin',
+                    'docs_full',
+                    'reg_checked',
+                    'cronos_status',
+                    'cronos',
+                    'fssp_status',
+                    'fssp',
+                    'bankruptcy_status',
+                    'bankruptcy',
+                    'court_status',
+                    'court',
+                    'contur_focus_status',
+                    'contur_focus',
+                    'affiliation_status',
+                    'affiliation',
+                    'soc_status',
+                    'soc',
+                    'edited',
+                    'created',
+                    'author__user__last_name'
+                ]
 
-    if q is not None:
-        qs_to_csv = q.values(*fieldset)
-        return render_to_csv_response(qs_to_csv, delimiter=';')
-    else:
-        return redirect('index')
+            qs_to_csv = q.values(*fieldset)
+            return render_to_csv_response(qs_to_csv, delimiter=';')
+    
+        context = views_utils.get_base_context(request.user)
+        context['err_txt'] = 'Не указан отчет для выгрузки'
+        return render(request, 'verification/404.html', context)
 
 @login_required
 def new_item_type_selection(request):

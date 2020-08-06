@@ -164,9 +164,9 @@ aside.sidebar{
 .index-grid{
     display: grid;
     grid-template-areas:
-        "search chat"
-        "stats chat"
-        "fill-box chat";
+        "search report chat"
+        "stats stats chat"
+        "fill-box fill-box chat";
     grid-gap: 1rem;
     overflow-y: auto;
 }

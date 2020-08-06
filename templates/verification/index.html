@@ -19,6 +19,39 @@
             </div>
         </form>
     </div>
+    <div class="component_wrapper" style="grid-area: report;">
+        <form method="post" action="{% url 'export' %}" style="width: 100%;">
+            {% csrf_token %}
+            <div class="mb-card">
+                <div class="mb-card_header">Отчеты</div>
+                <div class="mb-card_body">
+                    <div class="input_wrapper">
+                        <select name="report_name">
+                            <option value="None" disabled selected>Выберите отчет</option>
+                            <option value="vitems">Все заявки</option>
+                            <option value="persons">Физ.лица</option>
+                            <option value="organizations">Организации</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-card_footer">
+                    <div class="mb-card_footer_left"></div>
+                    <button type="submit" class="btn_std">Найти</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="component_wrapper" style="grid-area: stats; height: 250px; justify-self: center;">
+        <div class="mb-card" id="vueStats">
+            <div class="mb-card_header">Распределение</div>
+            <div class="mb-card_body" style="flex-direction: row; align-items: flex-end; margin: 10px; justify-content: space-around;">
+                <div v-for="block in activeHyst" v-bind:style="{height: 'calc(' + block.h + '% - 10px)'}" class="hyst-block">
+                    {block.name}: {block.count}
+                    <span class="hyst-block_hint">Количество: {block.count}</span>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="component_wrapper" style="grid-area: chat; overflow-y: auto;">
         <div class="mb-card" style="width: 100%">
             <div class="mb-card_header">Последние сообщения</div>
@@ -35,17 +68,6 @@
                         </div>
                     {% endfor %}
                     <div style="padding: 0.5rem;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="component_wrapper" style="grid-area: stats; height: 250px; justify-self: center;">
-        <div class="mb-card" id="vueStats">
-            <div class="mb-card_header">Распределение</div>
-            <div class="mb-card_body" style="flex-direction: row; align-items: flex-end; margin: 10px; justify-content: space-around;">
-                <div v-for="block in activeHyst" v-bind:style="{height: 'calc(' + block.h + '% + 10px)'}" class="hyst-block">
-                    {block.name}: {block.count}
-                    <span class="hyst-block_hint">Количество: {block.count}</span>
                 </div>
             </div>
         </div>

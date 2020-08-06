@@ -11,3 +11,4 @@ data/
 .env
 *.sqlite3
 run_server.py
+DevPlan.txt
