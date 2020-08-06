@@ -55,7 +55,7 @@ model_admin_links={
     'verificationitem': [['person', 'organization', 'short_item'], ['person__person__fio', 'organization__organization__full_name', 'status__status', 'author__user__last_name']],
     'vitemchat': [['vitem'], ['msg', 'author__user__last_name']],
     'organizationwithrole': [['organization'], ['organization__full_name', 'role__role_name', 'author__user__last_name']],
-    'personwithrole': [['person'], ['person__fio', 'role__role_name', 'author__user__last_name']],
+    'personwithrole': [['person'], ['person__fio', 'role__role_name', 'author__user__last_name', 'related_organization__full_name']],
     'docstorage': [['model_name', 'doc_type'], ['doc_type', 'file_name', 'author__user__last_name']],
     'person': [['fio'], ['fio', 'sneals', 'phone_number', 'pass_sn', 'author__user__last_name']],
     'shortitem':[['item_id'], ['item_id', 'role__role_name', 'verificated']],
