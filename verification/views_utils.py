@@ -14,7 +14,7 @@ def get_base_context(user):
     stats.q_new = stats.q_all.filter(status__status = 'Новая')
     stats.q_mine = stats.q_all.filter(case_officer__user = user)
     stats.q_at_work = stats.q_all.filter(status__status = 'В работе')
-    stats.q_to_fix = stats.q_all.filter(status__status__in = ['В работе', 'Возможен особый контроль'])
+    stats.q_to_fix = stats.q_all.filter(status__status__in = ['На доработке', 'Возможен особый контроль'])
     stats.q_fixed = stats.q_all.filter(status__status = 'Доработано')
     stats.q_finished = stats.q_all.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
     stats.q_not_filled = stats.q_all.filter(is_filled = False)
@@ -25,7 +25,7 @@ def get_base_context(user):
         stats.q_not_closed = stats.q_all.exclude(status__status = 'Закрыто')
         stats.q_new = stats.q_all.filter(status__status = 'Новая')
         stats.q_at_work = stats.q_mine.filter(status__status = 'В работе')
-        stats.q_to_fix = stats.q_mine.filter(status__status__in = ['В работе', 'Возможен особый контроль'])
+        stats.q_to_fix = stats.q_mine.filter(status__status__in = ['На доработке', 'Возможен особый контроль'])
         stats.q_fixed = stats.q_mine.filter(status__status = 'Доработано')
         stats.q_finished = stats.q_mine.filter(status__status__in=['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
         stats.q_not_filled = stats.q_mine.filter(is_filled = False)
@@ -88,7 +88,7 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
         vitem.is_shadow = is_shadow
         new_vitem = vitem.save()
         if not related_vitem is None and len(related_vitem):
-            for field in ['status', 'dias_comment', 'case_officer', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status', 'soc', 'soc_status']:
+            for field in ['status', 'dias_comment', 'fms_not_ok', 'docs_full', 'reg_checked', 'rosfin', 'cronos', 'cronos_status', 'fssp', 'fssp_status', 'bankruptcy', 'bankruptcy_status', 'court', 'court_status', 'contur_focus', 'contur_focus_status', 'affiliation', 'affiliation_status', 'soc', 'soc_status']:
                 setattr(vitem, field, getattr(related_vitem[0], field))
             
             vitem.related_vitem = related_vitem[0]
@@ -97,6 +97,7 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
             vitem.is_filled = related_vitem[0].is_filled
             new_vitem = vitem.save()
         return new_vitem
+    return False
 
 # Проверка сканов объекта, смена статус Заявки
 def required_scan_checking(model_id, model_name, model_role=None, doc_types=[]):

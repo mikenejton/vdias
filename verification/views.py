@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, F, Count, Max
+from django.db.models import Q, F, Count, Max, OuterRef, Subquery, IntegerField
 from django.urls import reverse
 from djqscsv import render_to_csv_response
 from . import models, forms, views_utils, views_sub_func
@@ -73,10 +73,11 @@ def export_csv(request):
                 fieldset = ['id', 'owr__role__role_name', 'org_form', 'org_name', 'agents_count', 'inn', 'ogrn', 'ceo', 'adr_reg', 'owr__division__division_name', 'owr__product_type__product_type', 'owr__partnership_status__status', 'comment', 'media_folder', 'created', 'owr__vitem_owr__created', 'owr__vitem_owr__status__status', 'owr__vitem_owr__dias_comment', 'owr__vitem_owr__case_officer__user__last_name', 'author__user__last_name', 'owr__vitem_owr__fms_not_ok', 'owr__vitem_owr__docs_full', 'owr__vitem_owr__reg_checked', 'owr__vitem_owr__rosfin', 'owr__vitem_owr__cronos', 'owr__vitem_owr__cronos_status', 'owr__vitem_owr__fssp', 'owr__vitem_owr__fssp_status', 'owr__vitem_owr__bankruptcy', 'owr__vitem_owr__bankruptcy_status', 'owr__vitem_owr__court', 'owr__vitem_owr__court_status', 'owr__vitem_owr__contur_focus', 'owr__vitem_owr__contur_focus_status', 'owr__vitem_owr__affiliation', 'owr__vitem_owr__affiliation_status', 'owr__vitem_owr__soc', 'owr__vitem_owr__soc_status']
             
             elif request.POST['report_name'] == 'persons':
+                sub_q = models.Person.objects.annotate(r_count=Count('pwr')).values('r_count')
                 q = models.Person.objects.annotate(
                     roles_count=Count("pwr")
                 ).prefetch_related('pwr', 'pwr__vitem_pwr')
-                
+                # print([sub_q_val for sub_q_val in sub_q])
                 fieldset = ['id', 'pwr__role__role_name', 'roles_count', 'sneals', 'fio', 'pwr__related_organization__full_name', 'staff_dep__dep_name', 'staff_position', 'pwr__staff_status', 'city', 'dob', 'phone_number', 'pwr__related_manager__division__division_name', 'pwr__product_type__product_type', 'pwr__partnership_status__status', 'comment', 'media_folder', 'video_upload_date', 'video_check_date', 'created', 'author__user__last_name', 'pwr__vitem_pwr__status__status', 'pwr__vitem_pwr__dias_comment', 'pwr__vitem_pwr__case_officer__user__last_name', 'pwr__vitem_pwr__created', 'pwr__vitem_pwr__fms_not_ok', 'pwr__vitem_pwr__docs_full', 'pwr__vitem_pwr__reg_checked', 'pwr__vitem_pwr__rosfin', 'pwr__vitem_pwr__cronos', 'pwr__vitem_pwr__cronos_status', 'pwr__vitem_pwr__fssp', 'pwr__vitem_pwr__fssp_status', 'pwr__vitem_pwr__bankruptcy', 'pwr__vitem_pwr__bankruptcy_status', 'pwr__vitem_pwr__court', 'pwr__vitem_pwr__court_status', 'pwr__vitem_pwr__contur_focus', 'pwr__vitem_pwr__contur_focus_status', 'pwr__vitem_pwr__affiliation', 'pwr__vitem_pwr__affiliation_status', 'pwr__vitem_pwr__soc', 'pwr__vitem_pwr__soc_status']
             elif request.POST['report_name'] == 'vitems':
                 q = models.VerificationItem.objects.all()
