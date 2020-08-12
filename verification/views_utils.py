@@ -75,7 +75,7 @@ def vitem_creator(request, item, item_type, is_shadow=False, related_vitem = Non
     vitem = models.VerificationItem.objects.filter(**{item_type: item})
     if not len(vitem):
         vitem = models.VerificationItem()
-        vitem.status = models.DiasStatus.objects.get(id=2)
+        vitem.status = models.DiasStatus.objects.get(id=1)
         vitem.author = request.user.extendeduser
         vitem.case_officer = request.user.extendeduser
         if item_type == 'person':
