@@ -68,7 +68,7 @@
                 <input class="form_input" type="text" name="prev_fio" placeholder="Предыдущие ФИО" {% if "prev_fio" in req_fields %}required{%endif%} value="{%if form.prev_fio.value %}{{form.prev_fio.value}}{%endif%}">
                 <input class="form_input" type="text" onfocus="(this.type='date')" onfocusout="((this.value.length == 0) ? this.type='text': this.type='date')" name="dob" {% if "dob" in req_fields %}required{%endif%} placeholder="Дата рождения" value="{%if form.dob.value %}{{form.dob.value|date:"d.m.Y"}}{%endif%}">
                 <input class="form_input" type="text" name="pob" placeholder="Место рождения" {% if "pob" in req_fields %}required{%endif%} value="{%if form.pob.value %}{{form.pob.value}}{%endif%}">
-                <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' {%if owr.organization.org_form == "ИП" and 'ceo' in request.path or "sneals" in req_fields %}required{%endif%} pattern=".{14,}" title="Номер СНИЛС (14 символов)">
+                <input class="form_input" type="text" name="sneals" placeholder="СНИЛС" v-mask="'###-###-### ##'" v-model='sneals' {% if "sneals" in req_fields %}required{%endif%} pattern=".{14,}" title="Номер СНИЛС (14 символов)">
                 <textarea class="form_input wide_textarea" type="text" name="adr_reg" placeholder="Адрес регистрации" {% if "adr_reg" in req_fields %}required{%endif%}>{%if form.adr_reg.value %}{{form.adr_reg.value}}{%endif%}</textarea>
             </div>
             <div class="card_body-form_column">
