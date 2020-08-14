@@ -49,7 +49,7 @@ def auto_register(model, ldl, sf):
         pass
 
 model_admin_links={
-    'datalogger': [['model_name'], ['field_name', 'old_value', 'new_value', 'author__user__last_name']],
+    'datalogger': [['model_name'], ['model_id', 'model_name', 'field_name', 'old_value', 'new_value', 'author__user__last_name']],
     'userrole': [['role_name'], ['id', 'role_name']],
     'organization': [['org_form', 'org_name'], ['full_name', 'inn', 'ogrn', 'phone_number', 'author__user__last_name']],
     'verificationitem': [['person', 'organization', 'short_item'], ['id', 'person__person__fio', 'organization__organization__full_name', 'status__status', 'author__user__last_name']],
