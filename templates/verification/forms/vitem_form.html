@@ -202,6 +202,8 @@
                         <div class="itemform_controls_row spb">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Суды:</legend></div>
                             <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="court_status" v-model="courtStatus" value="Не проверялось" id="court_status_none" {%if form.court_status.value == 'Не проверялось' %} checked {% endif %} :required="requiredByStatus"></div>
+                                <div class="input_wrapper"><label for="court_status_none">Не проверялось</label></div>
                                 <div class="input_wrapper"><input type="radio" name="court_status" v-model="courtStatus" value="Нет информации" id="court_status_ok" {%if form.court_status.value == 'Нет информации' %} checked {% endif %} :required="requiredByStatus"></div>
                                 <div class="input_wrapper"><label for="court_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="court_status" v-model="courtStatus" value="Есть информация" id="court_status_not_ok" {%if form.court_status.value == 'Есть информация' %} checked {% endif %}></div>
@@ -213,6 +215,8 @@
                         <div class="itemform_controls_row spb">
                             <div class="itemform_controls_row_item"><legend class="vitem_dias-legend">Информация по банкротсву:</legend></div>
                             <div class="itemform_controls_row_item">
+                                <div class="input_wrapper"><input type="radio" name="bankruptcy_status" v-model="bankruptcyStatus" value="Не проверялось" id="bankruptcy_status_none" {%if form.bankruptcy_status.value == 'Не проверялось' %} checked {% endif %} :required="requiredByStatus"></div>
+                                <div class="input_wrapper"><label for="bankruptcy_status_none">Не проверялось</label></div>
                                 <div class="input_wrapper"><input type="radio" name="bankruptcy_status" v-model="bankruptcyStatus" value="Нет информации" id="bankruptcy_status_ok" {%if form.bankruptcy_status.value == 'Нет информации' %} checked {% endif %} :required="requiredByStatus"></div>
                                 <div class="input_wrapper"><label for="bankruptcy_status_ok">Нет информации</label></div>
                                 <div class="input_wrapper"><input type="radio" name="bankruptcy_status" v-model="bankruptcyStatus" value="Есть информация" id="bankruptcy_status_not_ok" {%if form.bankruptcy_status.value == 'Есть информация' %} checked {% endif %}></div>

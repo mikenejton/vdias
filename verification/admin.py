@@ -39,7 +39,7 @@ def auto_register(model, ldl, sf):
     my_admin = type('MyAdmin', (admin.ModelAdmin,), 
                         {'list_display':field_list, 
                         'list_display_links': ldl,
-                        'search_fields': [x for x in sf if x != 'id'] if sf else [],
+                        'search_fields': [x for x in sf] if sf else [],
                         }
                     )
     try:
@@ -50,7 +50,7 @@ def auto_register(model, ldl, sf):
 
 model_admin_links={
     'datalogger': [['model_name'], ['field_name', 'old_value', 'new_value', 'author__user__last_name']],
-    'userrole': [['role_name'], ['role_name']],
+    'userrole': [['role_name'], ['id', 'role_name']],
     'organization': [['org_form', 'org_name'], ['full_name', 'inn', 'ogrn', 'phone_number', 'author__user__last_name']],
     'verificationitem': [['person', 'organization', 'short_item'], ['id', 'person__person__fio', 'organization__organization__full_name', 'status__status', 'author__user__last_name']],
     'vitemchat': [['vitem'], ['msg', 'author__user__last_name']],
