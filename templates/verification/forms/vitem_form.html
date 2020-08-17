@@ -321,12 +321,14 @@
             checkStatus: function(){
                 if (this.status == 7){
                     if('{{form.original_post_date.value}}' != 'None'){
-                        this.originalPostDate = '{{form.original_post_date.value}}';
+                        this.originalPostDate = '{{form.original_post_date.value|date:"Y-m-d"}}';
                     }else{
                         currentDate = new Date();
                         currentDate.setDate(currentDate.getDate() + 30);
                         this.originalPostDate = currentDate.toISOString().slice(0, 10);
                     }
+                }else{
+                    this.originalPostDate = '{{form.original_post_date.value|date:"Y-m-d"}}';
                 }
             },
             setOriginalPostedDate: function(){
@@ -335,7 +337,7 @@
                     this.originalPostDate = currentDate.toISOString().slice(0, 10);
                 }else{
                     if('{{form.original_post_date.value}}' != 'None'){
-                        this.originalPostDate = '{{form.original_post_date.value}}';
+                        this.originalPostDate = '{{form.original_post_date.value|date:"Y-m-d"}}';
                     }else{
                         this.checkStatus();
                     }
