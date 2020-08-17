@@ -10,6 +10,7 @@ def get_base_context(user):
     context = {}
     stats = UserStats()
     stats.q_all = models.VerificationItem.objects.all().order_by('-created').select_related()
+    stats.q_original_in_progress = stats.q_all.filter(is_original_posted = False).exclude(original_post_date = None)
     stats.q_not_closed = stats.q_all.exclude(status__status__in = ['Отказ', 'Одобрено', 'Одобрено, особый контроль', 'Одобрено без оплаты', 'Одобрено руководством'])
     stats.q_new = stats.q_all.filter(status__status = 'Новая')
     stats.q_mine = stats.q_all.filter(case_officer__user = user)

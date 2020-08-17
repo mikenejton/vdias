@@ -39,6 +39,7 @@
                 <li><a href = "{% url 'vitem-list' param='q_at_work' %}" class="sidebar-menu_item {% if 'q_at_work' in request.path %}active{%endif%}">В работе: {{stats.q_at_work.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_to_fix' %}" class="sidebar-menu_item {% if 'q_to_fix' in request.path %}active{%endif%}">На доработке: {{stats.q_to_fix.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_fixed' %}" class="sidebar-menu_item {% if 'q_fixed' in request.path %}active{%endif%}">Доработано: {{stats.q_fixed.count}}</a></li>
+                <li><a href = "{% url 'vitem-list' param='q_original_in_progress' %}" class="sidebar-menu_item {% if 'q_original_in_progress' in request.path %}active{%endif%}">Ждем оригиналы: {{stats.q_original_in_progress.count}}</a></li>
                 <li><a href = "{% url 'vitem-list' param='q_finished' %}" class="sidebar-menu_item {% if 'q_finished' in request.path %}active{%endif%}">Закрыто: {{stats.q_finished.count}}</a></li>
                 {% if user.extendeduser.user_role.role_lvl <= 2 or user.extendeduser.user_role.role_lvl > 3 %}
                 <li><a href = "{% url 'vitem-list' param='q_not_filled' %}" class="sidebar-menu_item top-border {% if 'q_not_filled' in request.path %}active{%endif%}">Недозаполнено: {{stats.q_not_filled.count}}</a></li>

@@ -15,6 +15,7 @@
             <th>Заявка заполнена</th>
             <th>Статус</th>
             <th>Исполнитель</th>
+            <th>Ждем оригиналы</th>
             <th>Изменено</th>
             <th>Дата создания</th>
             <th>Автор</th>
@@ -35,7 +36,17 @@
             <td>{{ item.is_filled|yesno:"Да,Нет" }}</td>
             <td>{{ item.status }}</td>
             <td align="left">{{ item.case_officer.user.last_name }} {{ item.case_officer.user.first_name }}</td>
-            <td align="left">{{ item.edited }}</td>
+            <td align="left">
+                {% if item.original_post_date %}
+                    {% if item.is_original_posted %}<b>Получен:</b> {%endif%}
+                    {{ item.original_post_date }}
+                {%endif%}
+            </td>
+            <td align="left">
+                {% if item.edited %}
+                    {{ item.edited }}
+                {%endif%}
+            </td>
             <td align="left">{{ item.created }}</td>
             <td align="left">{{ item.author.user.last_name }} {{ item.author.user.first_name }}</td>
         </tr>

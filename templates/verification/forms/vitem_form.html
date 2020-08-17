@@ -66,14 +66,13 @@
                     
                     <div class="input_wrapper" >
                         <p>Статус:
-                            <select name="status" {% if user.extendeduser.user_role.role_lvl > 3 or vitem.is_shadow or form.status in 'На доработке, Доработано' %} disabled {% endif %} required v-model="status">
+                            <select name="status" {% if user.extendeduser.user_role.role_lvl > 3 or vitem.is_shadow or form.status in 'На доработке, Доработано' %} disabled {% endif %} required v-model="status" @change="checkStatus">
                                 {% for status in statuses %}
                                     <option value="{{ status.id }}" {% if form.status.value == status.id %} selected {% endif %} {% if status.is_hidden %} hidden {%endif%} >{{status}}</option>
                                 {% endfor %}
                             </select>
                         </p>
                     </div>
-                    
                     <!-- {#% if form.case_officer.value == user.id or vitem.author.id == user.id %#} -->
                     <div class="itemform_controls_row">
                         <div class="itemform_controls_row_btns">
@@ -98,7 +97,12 @@
                     </div>
                     <!-- {#% endif %#} -->
                 </div>
-
+                <div class="itemform_controls_row" v-if="status==7 && vitemType == 'Агент'">
+                    <div class="growing_block"></div>
+                    <div class="input_wrapper"><i>Получение оригинала:</i></div>
+                    <div class="input_wrapper"><input type="checkbox" name="is_original_posted" @change="setOriginalPostedDate" v-model="isOriginalPosted"></div>
+                    <div class="input_wrapper"><input type="date" name="original_post_date" required id="original_post_date" value="{%if form.original_post_date.value %}{{form.original_post_date.value|date:"d.m.Y"}}{%endif%}" v-model="originalPostDate"></div>
+                </div>
                 {% if form.errors %}
                 <div class="itemform_controls_row">
                     <div class="mb-card_errors">
@@ -294,7 +298,11 @@
             socStatus: '{{form.soc_status.value}}',
             vitemType: '{% firstof pwr.role.role_name owr.role.role_name %}',
             status: '{{form.status.value}}',
+            originalPostDate: '{{form.original_post_date.value|date:"Y-m-d"}}',
+            isOriginalPosted: '{{form.is_original_posted.value}}'=='True',
             requiredChecks: false,
+            isSpecialControl: false,
+
         },
         computed:{
             requiredByStatus: function(){
@@ -309,6 +317,29 @@
                 };
                 this.showModal = true;
                 this.btnName = sendBtnName;
+            },
+            checkStatus: function(){
+                if (this.status == 7){
+                    if('{{form.original_post_date.value}}' != 'None'){
+                        this.originalPostDate = '{{form.original_post_date.value}}';
+                    }else{
+                        currentDate = new Date();
+                        currentDate.setDate(currentDate.getDate() + 30);
+                        this.originalPostDate = currentDate.toISOString().slice(0, 10);
+                    }
+                }
+            },
+            setOriginalPostedDate: function(){
+                if (this.isOriginalPosted){
+                    currentDate = new Date();
+                    this.originalPostDate = currentDate.toISOString().slice(0, 10);
+                }else{
+                    if('{{form.original_post_date.value}}' != 'None'){
+                        this.originalPostDate = '{{form.original_post_date.value}}';
+                    }else{
+                        this.checkStatus();
+                    }
+                }
             },
             sendFromModal: function(){
                 sub_btn = document.getElementById(this.btnName)

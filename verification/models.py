@@ -274,6 +274,8 @@ class VerificationItem(models.Model):
     soc_status = models.CharField('Соцсети', max_length = 300, blank=True, null=True, default='')
     soc = models.TextField('Соцсети', blank=True, null=True, default='')
 
+    original_post_date = models.DateField('Дата получения оригинала', blank=True, null=True)
+    is_original_posted = models.BooleanField('Оригинал получен', default=False)
     edited = models.DateTimeField('Дата изменения', null=True, blank=True)
     created = models.DateTimeField('Дата создания', auto_now_add=True)
     author = models.ForeignKey(ExtendedUser, on_delete=models.PROTECT, verbose_name='Автор')
