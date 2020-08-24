@@ -16,6 +16,9 @@
                     <p class="error_txt form_input"><i>{{ field }}</i></p>
                 {% endfor %}
             {% endif %}
+            {% for field in warnings %}
+                <p class="error_txt form_input"><i>{{ field }}</i></p>
+            {% endfor %}
             </div>
         </div>
         <div class="hint-box_roles">

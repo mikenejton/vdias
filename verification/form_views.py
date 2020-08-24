@@ -105,6 +105,8 @@ def vitem_form(request, vitem_id=None):
                                     if hasattr(vitem, key):
                                         if getattr(vitem, key) != ff.cleaned_data[key]:
                                             setattr(vitem, key, ff.cleaned_data[key])
+                            if 'is_original_posted' not in request.POST:
+                                vitem.is_original_posted = False
                             views_utils.update_logger('VerificationItem', vitem.id, 'Обновление записи', request.user.extendeduser, vitem)
                         vitem.save()
                         

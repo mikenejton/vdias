@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from django import forms
 from django.core.exceptions import ValidationError
 from datetime import datetime
+from math import floor
 from . import models, views_utils
 
 class PersonForm(ModelForm):
@@ -12,13 +13,13 @@ class PersonForm(ModelForm):
         cleaned_data=super(PersonForm, self).clean()
         if cleaned_data.get('dob'):
             date_diff = datetime.now().date() - cleaned_data.get('dob')
-            if round(date_diff.days/365.25, 0)  < 18:
-                raise ValidationError({'dob': 'Возраст менее 18-ти лет!'})
-            elif round(date_diff.days/365.25, 0)  > 99:
+            if floor(date_diff.days/365.25)  < 16:
+                raise ValidationError({'dob': 'Возраст менее 16-ти лет!'})
+            elif floor(date_diff.days/365.25)  > 99:
                 raise ValidationError({'dob': 'Возраст более 99-ти лет!'})
             if cleaned_data.get('pass_date'):
                 date_diff = cleaned_data.get('pass_date') - cleaned_data.get('dob')
-                if round(date_diff.days/365.25, 0)  < 14:
+                if floor(date_diff.days/365.25)  < 14:
                     raise ValidationError({'pass_date': 'Ошибка в дате выдачи паспорта (разница с датой рождения менее 14 лет!'})
         if cleaned_data.get('sneals'):
             result = views_utils.sneals_checking(cleaned_data.get('sneals'))

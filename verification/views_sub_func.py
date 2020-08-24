@@ -1,8 +1,8 @@
-
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.db.models import Q
-
+from datetime import datetime
+from math import floor
 from . import models
 from . import forms
 from . import views_utils
@@ -292,6 +292,10 @@ def get_pwr_context(request, pwr_id, owr_id, pwr_role, rel_pwr_type):
     if pwr_id:
         pwr = models.PersonWithRole.objects.filter(id = pwr_id)
         if len(pwr):
+            date_diff = datetime.now().date() - pwr[0].person.dob
+            if floor(date_diff.days/365.25)  < 18:
+                context['warnings'] = ['Возраст менее 18-ти лет!']
+            
             context['pwr'] = pwr[0]
             roles = models.PersonWithRole.objects.filter(person__id = pwr[0].person.id)
             if roles:
